@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity$LoginFragment">
+
+    <LinearLayout
+        android:id="@+id/buttons_layout_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:elevation="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="112dp"
+            android:background="@color/dark_blue" >
+            <ImageView
+                android:src="@drawable/logo_russia"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <EditText
+            android:layout_marginTop="64dp"
+            android:id="@+id/login_edit_text"
+            style="@style/CredentialsEditText"
+            android:hint="@string/enter">
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/password_edit_text"
+            style="@style/CredentialsEditText"
+            android:hint="@string/password"
+            android:imeActionLabel="@string/enter"
+            android:inputType="textPassword" />
+
+        <com.devspark.robototextview.widget.RobotoButton
+            android:id="@+id/enter_button"
+            android:layout_width="@dimen/enter_button_width"
+            android:layout_height="@dimen/enter_button_height"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/btn_bg_selector"
+            android:gravity="center"
+            android:text="@string/enter"
+            android:textColor="@color/white"
+            android:textSize="@dimen/top_bar_button_text_size" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        style="@style/RiaProgressBar"
+        android:layout_below="@+id/buttons_layout_container"
+        android:layout_marginTop="2dp" />
+
+
+</RelativeLayout>
