@@ -24,7 +24,7 @@ public class ChatMessageListenerWrap implements ChatMessageListener {
     public void processMessage(Chat chat, Message message) {
         if (message.getType() == Message.Type.chat) {
 
-            RosterEntry re = findRosterEntryByUser(chat.getParticipant());
+            /*RosterEntry re = findRosterEntryByUser(chat.getParticipant());
             //TODO: Handle chat from people NOT in the roster
             if (re != null) {
                 Intent i = new Intent();
@@ -43,7 +43,7 @@ public class ChatMessageListenerWrap implements ChatMessageListener {
                         Activity.RESULT_CANCELED, null, null);
             } else {
                 //What to do if they're not on the roster?
-            }
+            }*/
         }
     }
 

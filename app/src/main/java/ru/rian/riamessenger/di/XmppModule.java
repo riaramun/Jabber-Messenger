@@ -9,12 +9,10 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.services.ChatMessageListenerWrap;
-import ru.rian.riamessenger.xmpp.RiaRosterListener;
+import ru.rian.riamessenger.xmpp.SmackRosterListener;
 import ru.rian.riamessenger.xmpp.SendMsgBroadcastReceiver;
-import ru.rian.riamessenger.xmpp.SmackWrapper;
 
 /**
  * Created by Roman on 6/19/2015.
@@ -25,7 +23,6 @@ import ru.rian.riamessenger.xmpp.SmackWrapper;
 public class XmppModule {
 
     private final Context context;
-    private final ConnectionListener connectionListener;
     final UserAppPreference userAppPreference;
 /*
     @Provides
@@ -34,8 +31,6 @@ public class XmppModule {
         return new RiaXMPPConnection();
     }
 */
-
-
 
     @Provides
     @Singleton
@@ -53,8 +48,8 @@ public class XmppModule {
 
     @Provides
     @Singleton
-    RiaRosterListener provideRiaRosterListener() {
-        return new RiaRosterListener();
+    SmackRosterListener provideRiaRosterListener() {
+        return new SmackRosterListener();
     }
 
 

@@ -35,10 +35,12 @@ import ru.rian.riamessenger.model.RosterGroupModel;
 public class ContactsLoader extends BaseRiaLoader {
 
     int tabIdloader = -1;
+    Boolean isUpdating = false;
 
     public ContactsLoader(Context ctx, Bundle args) {
         super(ctx);
         tabIdloader = args.getInt(ContactsActivity.ARG_TAB_ID);
+        isUpdating = args.getBoolean(ContactsActivity.ARG_IS_UPDATING);
 
     }
 
@@ -52,9 +54,9 @@ public class ContactsLoader extends BaseRiaLoader {
 
     @Override
     public List<?> loadInBackground() {
-
-        List<?> rosterDataList = retrieveDataFromRoster();
-        return rosterDataList;
+        if (!isUpdating) {
+            return retrieveDataFromRoster();
+        } else return null;
         // This method is called on a background thread and should generate a
         // new set of data to be delivered back to the client.
     }

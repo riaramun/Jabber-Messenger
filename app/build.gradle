@@ -37,7 +37,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.jakewharton:butterknife:+'
     compile 'com.google.dagger:dagger:2.0'
-    compile 'com.jakewharton.timber:timber:2.7.1'
+    //compile 'com.jakewharton.timber:timber:2.7.1'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     //testCompile ('com.squareup.assertj:assertj-android:1.0.0'){
       //  exclude group: 'com.android.support', module: 'support-annotations'
@@ -51,8 +51,8 @@ dependencies {
    // provided 'javax.annotation:jsr250-api:1.0'
     provided "org.projectlombok:lombok:1.16.2"
 
-    compile "org.igniterealtime.smack:smack-android:4.1.0"
-    compile "org.igniterealtime.smack:smack-tcp:4.1.0"
+    compile "org.igniterealtime.smack:smack-android:+"
+    compile "org.igniterealtime.smack:smack-tcp:+"
     compile 'com.parse.bolts:bolts-android:1.1.4'
    // compile 'com.squareup.retrofit:retrofit:1.9.0'
 

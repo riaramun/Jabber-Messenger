@@ -21,9 +21,11 @@ import butterknife.OnTextChanged;
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaConstants;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.client.AuthClientEvent;
-import ru.rian.riamessenger.riaevents.service.RiaServiceEvent;
+
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 public class LoginActivity extends RiaBaseActivity {
 
@@ -81,13 +83,16 @@ public class LoginActivity extends RiaBaseActivity {
         passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
 
-    public void onEvent(AuthClientEvent eventName) {
-        progressBar.setVisibility(View.GONE);
-        if (eventName.isAuth()) {
-            Intent intent = new Intent(this, ContactsActivity.class);
-            startActivity(intent);
-        }
+    @Override
+    protected void authenticated() {
+        Intent intent = new Intent(this, ContactsActivity.class);
+        startActivity(intent);
     }
+
+    @Override
+    protected void dbUpdated() {
+    }
+
 
     @Override
     public void onStart() {
@@ -109,7 +114,7 @@ public class LoginActivity extends RiaBaseActivity {
 
             userAppPreference.setLoginStringKey(loginEditText.getText().toString());
             userAppPreference.setPassStringKey(passwordEditText.getText().toString());
-            EventBus.getDefault().post(new RiaServiceEvent(RiaServiceEvent.RiaEvent.SIGN_IN));
+            RiaEventBus.post(RiaServiceEvent.RiaEvent.SIGN_IN);
         }
     }
 

@@ -4,22 +4,12 @@ package ru.rian.riamessenger.services;
 //TODO: Above seems to be done and working, but now need to update methods
 // to just return asmack objects such as Roster rather than the simple wrappers
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
-import android.text.TextUtils;
 import android.util.Log;
-
-import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.roster.Roster;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,18 +21,19 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import lombok.Getter;
 import ru.rian.riamessenger.RiaBaseApplication;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.di.DaggerXmppServiceComponent;
 import ru.rian.riamessenger.di.SystemServicesModule;
 import ru.rian.riamessenger.di.XmppModule;
 import ru.rian.riamessenger.di.XmppServiceComponent;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.client.AuthClientEvent;
-import ru.rian.riamessenger.riaevents.client.RosterClientEvent;
-import ru.rian.riamessenger.riaevents.service.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.xmpp.RosterConnectingTimer;
 import ru.rian.riamessenger.xmpp.SmackWrapper;
 
 
-public class RiaXmppService extends Service implements ConnectionListener {
+public class RiaXmppService extends Service {
 
     private static RiaXmppService instance = null;
 
@@ -61,7 +52,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
         super();
         Log.i("RiaService", "RiaService()");
         RiaBaseApplication.component().inject(this);
-        smackWrapper = new SmackWrapper(this, this, userAppPreference);
+        smackWrapper = new SmackWrapper(this, userAppPreference);
     }
 
     @Inject
@@ -77,7 +68,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
             case SIGN_IN:
                 Log.i("RiaService", "SIGN_IN");
                 if (smackWrapper.isAuthenticated()) {
-                    postAuthEvent();
+                    RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
                 } else {
                     smackWrapper.connectAndSingIn();
                 }
@@ -86,7 +77,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
                 Log.i("RiaService", "SIGN_OUT");
                 stopSelf();
                 break;
-            case GET_ROSTER:
+            /*case GET_ROSTER:
                 if (!smackWrapper.isConnecting()) {
                     Roster roster = smackWrapper.getRoster();
                     if (roster != null) {
@@ -107,7 +98,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
                         }
                     }
                 }
-                break;
+                break;*/
         }
     }
 
@@ -136,7 +127,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
         mContext = this;
         xmppServiceComponent = DaggerXmppServiceComponent.builder()
                 .systemServicesModule(new SystemServicesModule(getApplication()))
-                .xmppModule(new XmppModule(this, this, userAppPreference))
+                .xmppModule(new XmppModule(this, userAppPreference))
                 .build();
     }
 
@@ -153,25 +144,22 @@ public class RiaXmppService extends Service implements ConnectionListener {
 
     /**
     If the service starts, it means that we don't have yet a connection, roster and so on..
-    The method cheks login and password. If login and password exist it starts connecting ,
+    The method checks login and password. If login and password exist it starts connecting ,
     if it is not - it sends auth event to client (probably we don't need it)
     */
     void onStartService() {
-        if (smackWrapper.connectAndSingIn()) {
-        } else {
-            //postAuthEvent();
-        }
+        smackWrapper.connectAndSingIn();
     }
 
-    void postAuthEvent() {
+    /*void postAuthEvent() {
         EventBus.getDefault().post(new AuthClientEvent(smackWrapper.isAuthenticated(), smackWrapper.isConnected()));
-    }
+    }*/
 
     @Override
     public void onDestroy() {
         Log.i("RiaService", "onDestroy");
         mContext = null;
-        userAppPreference.setRiaXmppServiceStartedFlag(false);
+       //userAppPreference.setRiaXmppServiceStartedFlag(false);
         EventBus.getDefault().unregister(this);
         getNotifyManager().cancel(NOTIFICATION_CONNECTION_STATUS);
 
@@ -193,60 +181,6 @@ public class RiaXmppService extends Service implements ConnectionListener {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    @Override
-    public void connected(XMPPConnection connection) {
-        Log.i("RiaService", "connected()");
-        postAuthEvent();
-    }
-
-    @Override
-    public void authenticated(XMPPConnection connection, boolean resumed) {
-        Log.i("RiaService", "authenticated()");
-        postAuthEvent();
-    }
-
-    //Listener interfaces
-    @Override
-    public void connectionClosed() {
-        Log.i("RiaService", "connectionClosed()");
-        postAuthEvent();
-    }
-
-    @Override
-    public void connectionClosedOnError(Exception arg0) {
-       /*
-        //TODO: strings here from strings.xml
-        //TODO: Intent to stop reconnection attempts does not exist
-        //or do anything yet
-        int icon = android.R.drawable.sym_action_chat;
-        CharSequence tickerText = "jmXMPP Connection Lost";
-        long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, tickerText, when);
-        notification.flags |= Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE | Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-        Intent i = new Intent();
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                RiaXmppService.this, 0, i, 0);
-        notification.setLatestEventInfo(getApplicationContext(),
-                "jmXMPP Reconnecting", "Click to cancel", contentIntent);
-        getNotifyManager().notify(NOTIFICATION_CONNECTION_STATUS, notification);*/
-    }
-
-    @Override
-    public void reconnectingIn(int arg0) {
-        Log.i("RiaService", "reconnectingIn arg0 =" + arg0);
-    }
-
-    @Override
-    public void reconnectionFailed(Exception arg0) {
-        Log.i("RiaService", "reconnectionFailed arg0 =" + arg0);
-    }
-
-    @Override
-    public void reconnectionSuccessful() {
-
-    }
-
 
     /*private void displayServiceNotification() {
         int icon = android.R.drawable.sym_action_chat;
@@ -354,7 +288,7 @@ public class RiaXmppService extends Service implements ConnectionListener {
                 } catch (Exception e) {
                     xmpptcpConnection.disconnect();
                     e.printStackTrace();
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, e.getExceptionMessage(), Toast.LENGTH_LONG).show();
                 }
                 return null;
             }

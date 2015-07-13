@@ -93,7 +93,11 @@ public class GroupsAdapter
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return mProvider.getChildItem(groupPosition, childPosition).getChildId();
+        AbstractExpandableDataProvider.ChildData childData = mProvider.getChildItem(groupPosition, childPosition);
+        if (childData != null)
+            return childData.getChildId();
+        else
+            return 0;
     }
 
     @Override
@@ -158,12 +162,12 @@ public class GroupsAdapter
     public void onBindChildViewHolder(MyChildViewHolder holder, int groupPosition, int childPosition, int viewType) {
         // group item
         final AbstractExpandableDataProvider.ChildData item = mProvider.getChildItem(groupPosition, childPosition);
-
-        // set text
-        holder.mTextView.setText(item.getText());
-
+        if(item != null) {
+            // set text
+            holder.mTextView.setText(item.getText());
+        }
         // set background resource (target view ID: container)
-       // holder.mContainer.setBackgroundResource(R.drawable.bg_item_normal_state);
+        // holder.mContainer.setBackgroundResource(R.drawable.bg_item_normal_state);
     }
 
     @Override

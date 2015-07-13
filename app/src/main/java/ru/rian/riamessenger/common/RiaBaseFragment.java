@@ -17,11 +17,7 @@ package ru.rian.riamessenger.common;
 
 import android.support.v4.app.Fragment;
 
-import org.jivesoftware.smack.roster.Roster;
-
 import butterknife.ButterKnife;
-import de.greenrobot.event.EventBus;
-import ru.rian.riamessenger.riaevents.client.RosterClientEvent;
 
 /**
  * Base fragment which performs injection using the activity object graph of its parent.

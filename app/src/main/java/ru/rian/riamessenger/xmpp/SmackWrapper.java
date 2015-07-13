@@ -1,46 +1,32 @@
 package ru.rian.riamessenger.xmpp;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.activeandroid.ActiveAndroid;
-
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.roster.RosterEntry;
-import org.jivesoftware.smack.roster.RosterGroup;
-import org.jivesoftware.smack.roster.RosterLoadedListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.impl.DomainpartJid;
+import org.jxmpp.jid.impl.JidCreate;
 
-import java.security.acl.Group;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
-
-import javax.inject.Inject;
 
 import bolts.Continuation;
 import bolts.Task;
 import de.greenrobot.event.EventBus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.model.RosterGroupModel;
-import ru.rian.riamessenger.riaevents.client.RosterClientEvent;
-import ru.rian.riamessenger.riaevents.service.ConnectionStatus;
 import ru.rian.riamessenger.common.RiaConstants;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 /**
  * Created by Roman on 7/8/2015.
@@ -50,8 +36,22 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 public class SmackWrapper {
 
     final Context context;
-    final ConnectionListener connectionListener;
     final UserAppPreference userAppPreference;
+    //final RosterConnectingTimer rosterConnectingTimer;
+
+    private Handler xmppConnectingHandler = new Handler();
+    private Runnable xmppConnectingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
+            if(!roster.isLoaded()) {
+                xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
+                rosterConnectingTryCounter++;
+                RiaEventBus.post("try to connect again" + rosterConnectingTryCounter);
+                connect();
+            }
+        }
+    };
 
     volatile AbstractXMPPConnection xmppConnection;
 
@@ -80,26 +80,23 @@ public class SmackWrapper {
         Log.i("RiaService", "authenticated = " + authenticated);
         return authenticated;
     }
-
-    final Timer rosterLoaderWaitingTimer = new Timer();
-
-    public boolean connectAndSingIn() {
-        //this is work around the smack exception
-/*        rosterLoaderWaitingTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-
-                Log.i("SmackWrapper", "try connect again, couse of roster exception");
-            }
-        }, 100, 6000);
-*/
-        boolean ret = false;
+    int rosterConnectingTryCounter = 0;
+    public void connectAndSingIn() {
         if (!TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey())) {
-            ret = true;
+            //connect();
+            xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
+            xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
             connect();
+            /*rosterConnectingTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    rosterConnectingTryCounter++;
+                    Log.i("SmackWrapper", "try to connect again, couse of roster exception");
+
+
+                }
+            });*/
         }
-        return ret;
-        //end work around
     }
 
     void connect() {
@@ -118,48 +115,6 @@ public class SmackWrapper {
         }, Task.UI_THREAD_EXECUTOR);
     }
 
-    public void saveRosterToDb(final Roster roster) {
-        Task.callInBackground(new Callable<Object>() {
-            @Override
-            public Object call() {
-                doSaveRosterToDb(roster);
-                return null;
-            }
-        }).continueWith(new Continuation<Object, Void>() {
-            public Void then(Task<Object> object) throws Exception {
-                EventBus.getDefault().postSticky(new RosterClientEvent(RosterClientEvent.RiaEvent.DB_UPDATED));
-                return null;
-            }
-        }, Task.UI_THREAD_EXECUTOR);
-    }
-
-    void doSaveRosterToDb(final Roster roster) {
-        Log.i("SmackWrapper", "doSaveRosterToDb b");
-        try {
-            ActiveAndroid.beginTransaction();
-            for (RosterGroup rosterGroup : roster.getGroups()) {
-                RosterGroupModel rosterGroupModel = new RosterGroupModel();
-                rosterGroupModel.name = rosterGroup.getName();
-                // rosterGroupModel.remoteId = rosterGroup.getName().hashCode();
-                rosterGroupModel.save();
-
-                for (RosterEntry rosterEntry : rosterGroup.getEntries()) {
-
-                    RosterEntryModel rosterEntryModel = new RosterEntryModel();
-
-                    rosterEntryModel.name = rosterEntry.getName();
-                    // rosterEntryModel.remoteId = rosterEntry.hashCode();
-                    rosterEntryModel.rosterGroupModel = rosterGroupModel;
-                    rosterEntryModel.save();
-                    //rosterGroupModel.items().add(rosterEntryModel);
-                }
-            }
-            ActiveAndroid.setTransactionSuccessful();
-        } finally {
-            ActiveAndroid.endTransaction();
-        }
-        Log.i("SmackWrapper", "doSaveRosterToDb e");
-    }
 
     @Getter
     boolean isConnecting = false;
@@ -173,29 +128,29 @@ public class SmackWrapper {
             // Create the configuration for this new connection
             XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
             configBuilder.setUsernameAndPassword(username, password);
-            configBuilder.setResource("mobile");
-            configBuilder.setServiceName("kis-jabber");
+            configBuilder.setResource(RiaConstants.XMPP_RESOURCE_NAME);
+
+            DomainBareJid serviceName = JidCreate.domainBareFrom(RiaConstants.XMPP_SERVICE_NAME);
+
+            configBuilder.setServiceName(serviceName);
             configBuilder.setPort(5222);
+            configBuilder.setDebuggerEnabled(true);
             configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
             configBuilder.setSendPresence(true);
+
             configBuilder.setHost(RiaConstants.XMPP_SERVER_ADDRESS);
 
             if (xmppConnection != null && xmppConnection.isConnected()) {
-                //xmppConnection.disconnect();
-                //xmppConnection.removeConnectionListener(connectionListener);
+                xmppConnection.disconnect();
             }
             xmppConnection = new XMPPTCPConnection(configBuilder.build());
-            xmppConnection.addConnectionListener(connectionListener);
 
+            xmppConnection.addConnectionListener(new SmackConnectionListener());
+            xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
             roster = Roster.getInstanceFor(xmppConnection);
-            roster.addRosterLoadedListener(new RosterLoadedListener() {
-                @Override
-                public void onRosterLoaded(Roster roster) {
-                    //if we've got roster we can cancel our connection timer
-                    // rosterLoaderWaitingTimer.cancel();
-                    saveRosterToDb(roster);
-                }
-            });
+            roster.addRosterLoadedListener(new SmackRosterLoadedListener());
+            roster.addRosterListener(new SmackRosterListener());
+
 
             // Connect to the server
             xmppConnection.connect();
@@ -212,20 +167,12 @@ public class SmackWrapper {
             // Send the packet (assume we have an XMPPConnection instance called "con").
             xmppConnection.sendStanza(presence);
             //QueryHelper.updateUser(ChatConstants.CURRENT_LOCAL_USER_ID, mLogin+"@"+mServer, mLogin);
-            sendOnConnectedMessage(ConnectionStatus.CONNECTION_STATUS_OK);
+
             //Log.d(TAG, "on connected");
-        } catch (SmackException.ConnectionException e) {
-            sendOnConnectedMessage(ConnectionStatus.CONNECTION_STATUS_ERROR_CONNECTION);
-        } catch (SmackException.NoResponseException e) {
-            sendOnConnectedMessage(ConnectionStatus.CONNECTION_STATUS_ERROR_NORESPONSE);
         } catch (Exception e) {
+            RiaEventBus.post(e.getMessage());
             e.printStackTrace();
-            sendOnConnectedMessage(ConnectionStatus.CONNECTION_STATUS_ERROR_UNKNOWN);
         }
-    }
-
-    private void sendOnConnectedMessage(int msg) {
-
     }
 
     public void sendMessage(int chatType, long chatId, String messageText) {

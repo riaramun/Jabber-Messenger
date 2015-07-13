@@ -28,13 +28,13 @@ public class UserAppPreference {
 
     }
 
-    public boolean getRiaXmppServiceStartedFlag() {
+    /*public boolean getRiaXmppServiceStartedFlag() {
         return sharedPreferences.getBoolean(RIA_XMPP_SERVICE_FLAG, false);
     }
 
     public void setRiaXmppServiceStartedFlag(boolean value) {
         mEditor.putBoolean(RIA_XMPP_SERVICE_FLAG, value).apply();
-    }
+    }*/
 
     public String getTokenStringKey() {
         return sharedPreferences.getString(TOKEN_STRING_KEY, "");

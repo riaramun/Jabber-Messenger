@@ -2,7 +2,7 @@ package ru.rian.riamessenger.di;
 
 
 import ru.rian.riamessenger.services.RiaXmppService;
-import ru.rian.riamessenger.xmpp.RiaRosterListener;
+import ru.rian.riamessenger.xmpp.SmackRosterListener;
 import ru.rian.riamessenger.xmpp.SendMsgBroadcastReceiver;
 
 /**
@@ -12,7 +12,7 @@ import ru.rian.riamessenger.xmpp.SendMsgBroadcastReceiver;
 public interface XmppServiceGraph {
 
 
-    void inject(RiaRosterListener listener);
+    void inject(SmackRosterListener listener);
 
     void inject(RiaXmppService xmppConnectionService);
 

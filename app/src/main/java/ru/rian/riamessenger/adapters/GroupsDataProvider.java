@@ -41,8 +41,12 @@ public class GroupsDataProvider extends AbstractExpandableDataProvider {
     @Override
     public ChildData getChildItem(int groupPosition, int childPosition) {
         RosterGroupModel rosterGroup = rosterGroupModels.get(groupPosition);
-        RosterEntryModel rosterEntry = rosterGroup.items().get(childPosition);
-        return new RosterItemChildData(rosterEntry);
+        RosterItemChildData rosterItemChildData = null;
+        if(rosterGroup.items() != null && rosterGroup.items().size() > childPosition) {
+            RosterEntryModel rosterEntry = rosterGroup.items().get(childPosition);
+            rosterItemChildData = new RosterItemChildData(rosterEntry);
+        }
+        return rosterItemChildData;
     }
 
     @Override

@@ -28,6 +28,8 @@ public class ContactsActivity extends RiaBaseActivity {
     static public final int GROUPS_FRAGMENT = 1;
     static public final int CONTACTS_FRAGMENT = 2;
     public static final String ARG_TAB_ID = "tabId";
+    public static final String ARG_IS_UPDATING = "isUpdating";
+
 
     static public final String ROBOTS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
     static public final String GROUPS_FRAGMENT_TAG = RecyclerListViewFragment.class.getSimpleName();
@@ -132,5 +134,24 @@ public class ContactsActivity extends RiaBaseActivity {
                 break;
         }
         return tag;
+    }
+
+    @Override
+    protected void authenticated() {
+        //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
+    }
+
+    @Override
+    protected void dbUpdated() {
+        restartBaseTabFragmentLoader(CONTACTS_FRAGMENT_TAG);
+        restartBaseTabFragmentLoader(GROUPS_FRAGMENT_TAG);
+        restartBaseTabFragmentLoader(CONTACTS_FRAGMENT_TAG);
+    }
+
+    void restartBaseTabFragmentLoader(String tag){
+        BaseTabFragment baseTabFragment = ((BaseTabFragment) getSupportFragmentManager().findFragmentByTag(tag));
+        if(baseTabFragment !=null) {
+            baseTabFragment.dbRestartLoader();
+        }
     }
 }

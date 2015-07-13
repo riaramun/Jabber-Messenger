@@ -9,7 +9,7 @@ import ru.rian.riamessenger.loaders.BaseRiaLoader;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.D2ECollectionUtils;
-import ru.rian.riamessenger.xmpp.RiaRosterListener;
+import ru.rian.riamessenger.xmpp.SmackRosterListener;
 
 public interface D2EGraph {
 
@@ -19,7 +19,7 @@ public interface D2EGraph {
     void inject(BaseTabFragment fragment);
 
     void inject(UserAppPreference userAppPreference);
-    void inject(RiaRosterListener listener);
+    void inject(SmackRosterListener listener);
 
     void inject(BaseRiaLoader loader);
     void inject(RiaXmppService riaXmppService);

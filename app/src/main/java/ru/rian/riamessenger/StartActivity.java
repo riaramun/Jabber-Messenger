@@ -8,10 +8,10 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.utils.SysUtils;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.client.AuthClientEvent;
-import ru.rian.riamessenger.riaevents.service.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.services.RiaXmppService;
 
 public class StartActivity extends RiaBaseActivity {
@@ -37,7 +37,7 @@ public class StartActivity extends RiaBaseActivity {
         final String password = userAppPreference.getPassStringKey();
 
         if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
-            EventBus.getDefault().post(new RiaServiceEvent(RiaServiceEvent.RiaEvent.SIGN_IN));
+            RiaEventBus.post(RiaServiceEvent.RiaEvent.SIGN_IN);
         } else {
             Intent intent = new Intent(this, RiaXmppService.class);
             startService(intent);
@@ -58,5 +58,14 @@ public class StartActivity extends RiaBaseActivity {
         }
         Intent intent = new Intent(StartActivity.this, cl);
         startActivity(intent);
+    }
+
+    @Override
+    protected void authenticated() {
+       //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
+    }
+
+    @Override
+    protected void dbUpdated() {
     }
 }

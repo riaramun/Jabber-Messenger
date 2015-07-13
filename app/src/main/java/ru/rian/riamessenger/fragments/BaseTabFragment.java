@@ -20,21 +20,18 @@ package ru.rian.riamessenger.fragments;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.jivesoftware.smack.roster.Roster;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.common.RiaBaseFragment;
-import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.loaders.ContactsLoader;
-import ru.rian.riamessenger.riaevents.client.RosterClientEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+
 
 public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<Object> {
 
@@ -65,7 +62,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RiaApplication.component().inject(this);
+        //RiaApplication.component().inject(this);
         tabId = getArguments().getInt(ContactsActivity.ARG_TAB_ID);
     }
 
@@ -82,6 +79,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     Bundle getBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(ContactsActivity.ARG_TAB_ID, tabId);
+        bundle.putBoolean(ContactsActivity.ARG_IS_UPDATING, isUpdating);
         return bundle;
     }
 
@@ -95,28 +93,34 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     public void onLoaderReset(Loader loader) {
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+             EventBus.getDefault().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        EventBus.getDefault().unregister(this);
+           EventBus.getDefault().unregister(this);
     }
 
-    public void onEvent(RosterClientEvent event) {
-        switch (event.getEventId())
-        {
-            case DB_UPDATED:
-                getLoaderManager().restartLoader(tabId, getBundle(), this);
+    public void dbRestartLoader() {
+        getLoaderManager().restartLoader(tabId, getBundle(), this);
+    }
+
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+
+        switch (xmppErrorEvent.state) {
+            case EDbUpdated:
+                isUpdating = false;
+                dbRestartLoader();
+                break;
+            case EDbUpdating:
+                isUpdating = true;
                 break;
         }
-
     }
-    protected Roster roster;
-
-
+    Boolean isUpdating = false;
 }
