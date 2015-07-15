@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.base;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import lombok.Getter;
 import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 
 /**
  * Created by Roman on 7/2/2015.
@@ -29,8 +30,8 @@ public abstract class BaseRiaRecyclerAdapter extends RecyclerView.Adapter<Recycl
     protected List<?> entries = null;
 
     @Getter
-    boolean isEmpty = false;
-    EmptyViewHolder emptyViewHolder;
+    protected boolean isEmpty = false;
+    protected EmptyViewHolder emptyViewHolder;
 
     public void updateEntries(List<?> entries) {
         if(entries != null) {
@@ -50,21 +51,7 @@ public abstract class BaseRiaRecyclerAdapter extends RecyclerView.Adapter<Recycl
         return count;
     }
 
-    public class EmptyViewHolder extends RecyclerView.ViewHolder {
 
-        @Getter
-        @Bind(R.id.progress_bar)
-        ProgressBar riaProgress;
-
-        @Getter
-        @Bind(R.id.empty_text)
-        TextView emptyText;
-
-        public EmptyViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(itemView);
-        }
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

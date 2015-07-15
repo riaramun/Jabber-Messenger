@@ -1,4 +1,6 @@
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.viewholders;
+
+import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 
 /**
  * Created by Roman on 7/6/2015.
@@ -33,6 +35,11 @@ public class EmptyGroupsDataProvider extends AbstractExpandableDataProvider {
             }
 
             @Override
+            public int getPresence() {
+                return 0;
+            }
+
+            @Override
             public String getText() {
                 return null;
             }
@@ -54,6 +61,11 @@ public class EmptyGroupsDataProvider extends AbstractExpandableDataProvider {
         return new ChildData() {
             @Override
             public int getSwipeReactionType() {
+                return 0;
+            }
+
+            @Override
+            public int getPresence() {
                 return 0;
             }
 

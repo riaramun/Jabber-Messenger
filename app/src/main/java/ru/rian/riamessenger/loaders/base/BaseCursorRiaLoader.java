@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package ru.rian.riamessenger.loaders;
+package ru.rian.riamessenger.loaders.base;
 
 
 import android.content.Context;

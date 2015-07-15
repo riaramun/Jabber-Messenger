@@ -17,23 +17,23 @@
 package ru.rian.riamessenger.fragments;
 
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
-import android.widget.Toast;
-
-import org.jivesoftware.smack.roster.Roster;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ContactsActivity;
-import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.common.RiaBaseFragment;
 import ru.rian.riamessenger.loaders.ContactsLoader;
+import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
+import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 
-public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<Object> {
+public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
     protected int tabId;
 
@@ -45,7 +45,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
                 tabFragment = new ContactsFragment();
                 break;
             case ContactsActivity.GROUPS_FRAGMENT:
-                tabFragment = new RecyclerListViewFragment();
+                tabFragment = new GroupsFragment();
                 break;
             case ContactsActivity.ROBOTS_FRAGMENT:
                 tabFragment = new RobotsFragment();
@@ -71,9 +71,10 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
         } else {
-        }
 
+        }
         getLoaderManager().initLoader(tabId, getBundle(), this);
+
     }
 
     Bundle getBundle() {
@@ -81,17 +82,6 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         bundle.putInt(ContactsActivity.ARG_TAB_ID, tabId);
         bundle.putBoolean(ContactsActivity.ARG_IS_UPDATING, isUpdating);
         return bundle;
-    }
-
-    @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        return new ContactsLoader(getActivity(), args);
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-
     }
 
     @Override
@@ -106,16 +96,15 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
            EventBus.getDefault().unregister(this);
     }
 
-    public void dbRestartLoader() {
+    /*public void dbRestartLoader() {
         getLoaderManager().restartLoader(tabId, getBundle(), this);
-    }
+    }*/
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
 
         switch (xmppErrorEvent.state) {
             case EDbUpdated:
                 isUpdating = false;
-                dbRestartLoader();
                 break;
             case EDbUpdating:
                 isUpdating = true;
@@ -123,4 +112,15 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         }
     }
     Boolean isUpdating = false;
+
+
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return new ContactsLoader(getActivity(), args);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
+
+    }
 }

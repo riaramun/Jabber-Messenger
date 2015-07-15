@@ -14,13 +14,12 @@
  *    limitations under the License.
  */
 
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.list;
 
-import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
@@ -29,23 +28,24 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemVie
 import com.wnafee.vector.MorphButton;
 
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.common.utils.ViewUtils;
+import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
+import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.compat.MorphButtonCompat;
 
 public class GroupsAdapter
-        extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, GroupsAdapter.MyChildViewHolder> {
+        extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder> {
     private static final String TAG = "GroupsAdapter";
 
     private AbstractExpandableDataProvider mProvider;
 
     public static abstract class MyBaseViewHolder extends AbstractExpandableItemViewHolder {
-        public FrameLayout mContainer;
+        public RelativeLayout mContainer;
         public TextView mTextView;
 
         public MyBaseViewHolder(View v) {
             super(v);
-            mContainer = (FrameLayout) v.findViewById(R.id.container);
-            mTextView = (TextView) v.findViewById(R.id.text);
+            mContainer = (RelativeLayout) v.findViewById(R.id.container);
+            mTextView = (TextView) v.findViewById(R.id.contact_name);
         }
     }
 
@@ -58,11 +58,11 @@ public class GroupsAdapter
         }
     }
 
-    public static class MyChildViewHolder extends MyBaseViewHolder {
-        public MyChildViewHolder(View v) {
+    /*public static class ContactViewHolder extends MyBaseViewHolder {
+        public ContactViewHolder(View v) {
             super(v);
         }
-    }
+    }*/
 
     public GroupsAdapter(AbstractExpandableDataProvider dataProvider) {
         mProvider = dataProvider;
@@ -118,10 +118,10 @@ public class GroupsAdapter
     }
 
     @Override
-    public MyChildViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
+    public ContactViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View v = inflater.inflate(R.layout.list_item, parent, false);
-        return new MyChildViewHolder(v);
+        return new ContactViewHolder(v);
     }
 
     @Override
@@ -159,12 +159,13 @@ public class GroupsAdapter
     }
 
     @Override
-    public void onBindChildViewHolder(MyChildViewHolder holder, int groupPosition, int childPosition, int viewType) {
+    public void onBindChildViewHolder(ContactViewHolder holder, int groupPosition, int childPosition, int viewType) {
         // group item
         final AbstractExpandableDataProvider.ChildData item = mProvider.getChildItem(groupPosition, childPosition);
         if(item != null) {
             // set text
-            holder.mTextView.setText(item.getText());
+            holder.contactName.setText(item.getText());
+            holder.setOnlineStatus(item.getPresence());
         }
         // set background resource (target view ID: container)
         // holder.mContainer.setBackgroundResource(R.drawable.bg_item_normal_state);

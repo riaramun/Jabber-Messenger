@@ -17,6 +17,7 @@
 package ru.rian.riamessenger.fragments;
 
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,7 +33,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.RobotsAdapter;
+import ru.rian.riamessenger.adapters.list.RobotsAdapter;
+import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RobotsFragment extends BaseTabFragment {
     protected LinearLayoutManager linearLayoutManager;
@@ -43,11 +45,11 @@ public class RobotsFragment extends BaseTabFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater,  container,  savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, rootView);
 
-        robotsAdapter = new RobotsAdapter();
+        robotsAdapter = new RobotsAdapter(getActivity(), null);
         recyclerView.setAdapter(robotsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -58,8 +60,10 @@ public class RobotsFragment extends BaseTabFragment {
 
         return rootView;
     }
+
+
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        robotsAdapter.updateEntries((List<?>) data);
+    public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
+        robotsAdapter.changeCursor(data.result);
     }
 }

@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.loaders;
+package ru.rian.riamessenger.loaders.base;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
@@ -28,7 +28,6 @@ public abstract class BaseRiaLoader extends AsyncTaskLoader<List<?>> {
         // The superclass constructor will store a reference to the Application
         // Context instead, and can be retrieved with a call to getContext().
         super(ctx);
-        RiaApplication.component().inject(this);
     }
 
 

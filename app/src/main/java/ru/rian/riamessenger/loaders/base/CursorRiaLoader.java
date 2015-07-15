@@ -3,11 +3,13 @@
  * All rights reserved.
  */
 
-package ru.rian.riamessenger.loaders;
+package ru.rian.riamessenger.loaders.base;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+
+import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 
 /**
  * Created by Vladimir Molodkin on 03/12/14.

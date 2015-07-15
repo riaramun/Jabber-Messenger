@@ -1,9 +1,7 @@
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.list;
 
 import android.content.Context;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +9,11 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LinearSLM;
 
-import org.jivesoftware.smack.roster.RosterEntry;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.val;
+import lombok.AllArgsConstructor;
 import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
+import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
+import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 
 /**
  *
@@ -32,7 +28,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
 
     public ContactsAdapter(Context context, int headerMode) {
         mContext = context;
-          mHeaderDisplay = headerMode;
+        mHeaderDisplay = headerMode;
     }
 
     public boolean isItemHeader(int position) {
@@ -51,15 +47,17 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
             case VIEW_TYPE_HEADER:
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.header_item, parent, false);
-                viewHolder = new ContactViewHolder(view);;
+                viewHolder = new ContactViewHolder(view);
+                ;
                 break;
             case VIEW_TYPE_CONTENT:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.text_line_item, parent, false);
-                viewHolder = new ContactViewHolder(view);;
+                        .inflate(R.layout.list_item, parent, false);
+                viewHolder = new ContactViewHolder(view);
+                ;
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
-                viewHolder = super.onCreateViewHolder(parent,viewType);
+                viewHolder = super.onCreateViewHolder(parent, viewType);
                 break;
         }
         return viewHolder;
@@ -83,8 +81,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
             case VIEW_TYPE_HEADER:
                 ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
                 final LineItem item = (LineItem) entries.get(position);
-                contactViewHolder.getContactName().setText(item.text);
-
+                contactViewHolder.contactName.setText(item.text);
                 // Overrides xml attrs, could use different layouts too.
                 if (item.isHeader) {
                     lp.headerDisplay = mHeaderDisplay;
@@ -96,6 +93,8 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
 
                     lp.headerEndMarginIsAuto = !mMarginsFixed;
                     lp.headerStartMarginIsAuto = !mMarginsFixed;
+                } else {
+                    contactViewHolder.setOnlineStatus(item.presence);
                 }
                 lp.setSlm(LinearSLM.ID);
                 lp.setColumnWidth(mContext.getResources().getDimensionPixelSize(R.dimen.grid_column_width));
@@ -126,7 +125,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
     }
 
     private void notifyHeaderChanges() {
-        if(entries != null) {
+        if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
                 LineItem item = (LineItem) entries.get(i);
                 if (item.isHeader) {
@@ -136,23 +135,18 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter {
         }
     }
 
+    @AllArgsConstructor
     public static class LineItem {
+
+        public String text;
+
+        public boolean isHeader;
 
         public int sectionManager;
 
         public int sectionFirstPosition;
 
-        public boolean isHeader;
-
-        public String text;
-
-        public LineItem(String text, boolean isHeader, int sectionManager,
-                        int sectionFirstPosition) {
-            this.isHeader = isHeader;
-            this.text = text;
-            this.sectionManager = sectionManager;
-            this.sectionFirstPosition = sectionFirstPosition;
-        }
+        public int presence;
     }
 
 

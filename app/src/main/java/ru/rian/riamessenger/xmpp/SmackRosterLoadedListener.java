@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
 
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
@@ -63,6 +64,7 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
                 for (RosterEntry rosterEntry : rosterGroup.getEntries()) {
                     RosterEntryModel rosterEntryModel = new RosterEntryModel();
                     rosterEntryModel.name = rosterEntry.getName();
+                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getUser()));
                     rosterEntryModel.rosterGroupModel = rosterGroupModel;
                     rosterEntryModel.save();
                 }

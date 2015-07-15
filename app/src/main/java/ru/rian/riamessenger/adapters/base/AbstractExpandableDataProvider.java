@@ -14,12 +14,14 @@
  *    limitations under the License.
  */
 
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.base;
 
 public abstract class AbstractExpandableDataProvider {
     public static abstract class BaseData {
 
         public abstract int getSwipeReactionType();
+
+        public abstract int getPresence();
 
         public abstract String getText();
 

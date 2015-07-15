@@ -1,6 +1,8 @@
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.expandable;
 
 
+import lombok.val;
+import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 import ru.rian.riamessenger.model.RosterGroupModel;
 
 /**
@@ -21,7 +23,10 @@ public class RosterItemGroupData extends AbstractExpandableDataProvider.GroupDat
 
     @Override
     public long getGroupId() {
-        return rosterGroup.hashCode();
+        long id = 0;
+        if (rosterGroup != null)
+            id = rosterGroup.hashCode();
+        return id;
     }
 
     @Override
@@ -30,8 +35,17 @@ public class RosterItemGroupData extends AbstractExpandableDataProvider.GroupDat
     }
 
     @Override
+    public int getPresence() {
+        return 0;
+    }
+
+    @Override
     public String getText() {
-        return rosterGroup.name;
+        String name = "";
+        if (rosterGroup != null) {
+            name = rosterGroup.name;
+        }
+        return name;
     }
 
     @Override

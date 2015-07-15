@@ -1,22 +1,29 @@
 package ru.rian.riamessenger.fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.activeandroid.util.SQLiteUtils;
 import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LayoutManager;
 import com.tonicartos.superslim.SectionLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.ContactsAdapter;
+import ru.rian.riamessenger.adapters.list.ContactsAdapter;
+import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.RosterEntryModel;
 
 /**
  * Fragment that displays a list of country names.
@@ -39,9 +46,9 @@ public class ContactsFragment extends BaseTabFragment {
 
     private Toast mToast = null;
 
-    private GridSLM mGridSLM;
+    // private GridSLM mGridSLM;
 
-    private SectionLayoutManager mLinearSectionLayoutManager;
+    // private SectionLayoutManager mLinearSectionLayoutManager;
 
     public boolean areHeadersOverlaid() {
         return (mHeaderDisplay & LayoutManager.LayoutParams.HEADER_OVERLAY) != 0;
@@ -67,7 +74,7 @@ public class ContactsFragment extends BaseTabFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
@@ -89,7 +96,7 @@ public class ContactsFragment extends BaseTabFragment {
 
         mViews = new ViewHolder(view);
         mViews.initViews(new LayoutManager(getActivity()));
-        mAdapter = new ContactsAdapter(getActivity(),mHeaderDisplay);
+        mAdapter = new ContactsAdapter(getActivity(), mHeaderDisplay);
         mAdapter.setMarginsFixed(mAreMarginsFixed);
         mAdapter.setHeaderDisplay(mHeaderDisplay);
         mViews.setAdapter(mAdapter);
@@ -176,8 +183,33 @@ public class ContactsFragment extends BaseTabFragment {
             mRecyclerView.smoothScrollToPosition(position);
         }
     }
+
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        mAdapter.updateEntries((List<?>) data);
+    public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
+        List<RosterEntryModel> usersNames = SQLiteUtils.processCursor(RosterEntryModel.class, data.result);
+        val objectArrayList = getContactsList(usersNames);
+        mAdapter.updateEntries(objectArrayList);
+    }
+
+    ArrayList<ContactsAdapter.LineItem> getContactsList(List<RosterEntryModel> usersNames) {
+        val objectArrayList = new ArrayList<ContactsAdapter.LineItem>();
+        //Insert headers into list of items.
+        String lastHeader = "";
+        int sectionManager = -1;
+        int headerCount = 0;
+        int sectionFirstPosition = 0;
+        for (int i = 0; i < usersNames.size(); i++) {
+            RosterEntryModel rosterEntryModel = usersNames.get(i);
+            String header = rosterEntryModel.name.substring(0, 1);
+            if (!TextUtils.equals(lastHeader, header)) {
+                sectionManager = (sectionManager + 1) % 2;
+                sectionFirstPosition = i + headerCount;
+                lastHeader = header;
+                headerCount += 1;
+                objectArrayList.add(new ContactsAdapter.LineItem(header, true, sectionManager, sectionFirstPosition, -1));
+            }
+            objectArrayList.add(new ContactsAdapter.LineItem(rosterEntryModel.name, false, sectionManager, sectionFirstPosition, rosterEntryModel.presence));
+        }
+        return objectArrayList;
     }
 }

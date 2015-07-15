@@ -36,6 +36,7 @@
         <activity
             android:name=".ContactsActivity"
             android:label="@string/new_chat"
+            android:configChanges="orientation"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden"></activity>
         <activity
@@ -45,7 +46,9 @@
             android:windowSoftInputMode="adjustResize|stateHidden"></activity>
 
 
-        <service android:name=".services.RiaXmppService" android:enabled="true">
+        <service
+            android:name=".services.RiaXmppService"
+            android:enabled="true">
             <!--<intent-filter>
                 <action android:name="ru.rian.riamessenger.services.RiaXmppService" />
             </intent-filter>-->
@@ -55,9 +58,17 @@
             </intent-filter>
         </service>
 
-        <meta-data android:name="AA_DB_NAME" android:value="riamessenger.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="riamessenger.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
 
+        <provider
+            android:name="com.activeandroid.content.ContentProvider"
+            android:authorities="com.example"
+            android:exported="false" />
     </application>
 
 </manifest>

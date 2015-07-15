@@ -14,11 +14,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaBaseActivity;
-import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ContactsFragment;
 import ru.rian.riamessenger.fragments.GroupsFragment;
-import ru.rian.riamessenger.fragments.RecyclerListViewFragment;
 import ru.rian.riamessenger.fragments.RobotsFragment;
 
 
@@ -32,7 +30,7 @@ public class ContactsActivity extends RiaBaseActivity {
 
 
     static public final String ROBOTS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
-    static public final String GROUPS_FRAGMENT_TAG = RecyclerListViewFragment.class.getSimpleName();
+    static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
     static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
 
 
@@ -139,19 +137,5 @@ public class ContactsActivity extends RiaBaseActivity {
     @Override
     protected void authenticated() {
         //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
-    }
-
-    @Override
-    protected void dbUpdated() {
-        restartBaseTabFragmentLoader(CONTACTS_FRAGMENT_TAG);
-        restartBaseTabFragmentLoader(GROUPS_FRAGMENT_TAG);
-        restartBaseTabFragmentLoader(CONTACTS_FRAGMENT_TAG);
-    }
-
-    void restartBaseTabFragmentLoader(String tag){
-        BaseTabFragment baseTabFragment = ((BaseTabFragment) getSupportFragmentManager().findFragmentByTag(tag));
-        if(baseTabFragment !=null) {
-            baseTabFragment.dbRestartLoader();
-        }
     }
 }

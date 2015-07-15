@@ -43,9 +43,7 @@ public class SmackWrapper {
     private Runnable xmppConnectingRunnable = new Runnable() {
         @Override
         public void run() {
-            xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
-            if(!roster.isLoaded()) {
-                xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
+            if (roster == null || !roster.isLoaded()) {
                 rosterConnectingTryCounter++;
                 RiaEventBus.post("try to connect again" + rosterConnectingTryCounter);
                 connect();
@@ -53,6 +51,9 @@ public class SmackWrapper {
         }
     };
 
+    SmackRosterListener smackRosterListener = new SmackRosterListener();
+    SmackRosterLoadedListener smackRosterLoadedListener = new SmackRosterLoadedListener();
+    SmackConnectionListener smackConnectionListener = new SmackConnectionListener();
     volatile AbstractXMPPConnection xmppConnection;
 
     @Getter
@@ -80,12 +81,12 @@ public class SmackWrapper {
         Log.i("RiaService", "authenticated = " + authenticated);
         return authenticated;
     }
+
     int rosterConnectingTryCounter = 0;
+
     public void connectAndSingIn() {
         if (!TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey())) {
             //connect();
-            xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
-            xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
             connect();
             /*rosterConnectingTimer.schedule(new TimerTask() {
                 @Override
@@ -110,9 +111,12 @@ public class SmackWrapper {
         }).continueWith(new Continuation<Object, Void>() {
             public Void then(Task<Object> object) throws Exception {
                 isConnecting = false;
+                xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
+                xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
                 return null;
             }
         }, Task.UI_THREAD_EXECUTOR);
+
     }
 
 
@@ -121,6 +125,7 @@ public class SmackWrapper {
 
     private void doConnect() {
         try {
+
             final String username = userAppPreference.getLoginStringKey();
             final String password = userAppPreference.getPassStringKey();
 
@@ -140,32 +145,51 @@ public class SmackWrapper {
 
             configBuilder.setHost(RiaConstants.XMPP_SERVER_ADDRESS);
 
-            if (xmppConnection != null && xmppConnection.isConnected()) {
-                xmppConnection.disconnect();
+            //if(roster == null || !roster.isLoaded())
+            {
+
+                /*if (xmppConnection != null && xmppConnection.isConnected()) {
+                    xmppConnection.disconnect();
+                    xmppConnection.removeConnectionListener(smackConnectionListener);
+                }
+                if(roster != null) {
+                    roster.removeRosterLoadedListener(smackRosterLoadedListener);
+                    roster.removeRosterListener(smackRosterListener);
+                    roster.reload();
+                }*/
+                if (xmppConnection == null || !xmppConnection.isConnected()) {
+                    xmppConnection = new XMPPTCPConnection(configBuilder.build());
+                    xmppConnection.addConnectionListener(smackConnectionListener);
+
+                    roster = Roster.getInstanceFor(xmppConnection);
+                    roster.addRosterLoadedListener(smackRosterLoadedListener);
+                    roster.addRosterListener(smackRosterListener);
+
+                    // Connect to the server
+                    xmppConnection.connect();
+                    xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
+                }
+
+                if (!xmppConnection.isAuthenticated()) {
+                    xmppConnection.login();
+                }
+                else {
+                    if(!roster.isLoaded()) {
+                        roster.reload();
+                    }
+                }
+
+
+                //mRosterManager 	= new XmppRosterManager(context, xmppConnection);
+                //mMessageManager	= new XmppMessageManager(context, xmppConnection);
+                //mMucManager		= new XmppMucManager(context, xmppConnection);
+
+                // Create a new presence. Pass in false to indicate we're unavailable._
+                Presence presence = new Presence(Presence.Type.available);
+                presence.setStatus("Working");
+                // Send the packet (assume we have an XMPPConnection instance called "con").
+                xmppConnection.sendStanza(presence);
             }
-            xmppConnection = new XMPPTCPConnection(configBuilder.build());
-
-            xmppConnection.addConnectionListener(new SmackConnectionListener());
-            xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
-            roster = Roster.getInstanceFor(xmppConnection);
-            roster.addRosterLoadedListener(new SmackRosterLoadedListener());
-            roster.addRosterListener(new SmackRosterListener());
-
-
-            // Connect to the server
-            xmppConnection.connect();
-            // Log into the server
-            xmppConnection.login();
-
-            //mRosterManager 	= new XmppRosterManager(context, xmppConnection);
-            //mMessageManager	= new XmppMessageManager(context, xmppConnection);
-            //mMucManager		= new XmppMucManager(context, xmppConnection);
-
-            // Create a new presence. Pass in false to indicate we're unavailable._
-            Presence presence = new Presence(Presence.Type.available);
-            presence.setStatus("Working");
-            // Send the packet (assume we have an XMPPConnection instance called "con").
-            xmppConnection.sendStanza(presence);
             //QueryHelper.updateUser(ChatConstants.CURRENT_LOCAL_USER_ID, mLogin+"@"+mServer, mLogin);
 
             //Log.d(TAG, "on connected");

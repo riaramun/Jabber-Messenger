@@ -53,8 +53,6 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
 
     protected abstract void authenticated();
 
-    protected abstract void dbUpdated();
-
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         this.runOnUiThread(new Runnable() {
             @Override

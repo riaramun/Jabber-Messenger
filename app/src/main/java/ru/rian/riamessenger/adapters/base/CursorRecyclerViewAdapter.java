@@ -15,7 +15,7 @@
  *
  */
 
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.base;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -28,6 +28,10 @@ import android.support.v7.widget.RecyclerView;
  */
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+
+    protected static final int VIEW_TYPE_EMPTY_ITEM = 0x01;
+    protected static final int VIEW_TYPE_HEADER = 0x02;
+    protected static final int VIEW_TYPE_CONTENT = 0x03;
 
     private Context mContext;
 
@@ -80,11 +84,11 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(VH viewHolder, int position) {
         if (!mDataValid) {
-//            throw new IllegalStateException("this should only be called when the cursor is valid");
+            throw new IllegalStateException("this should only be called when the cursor is valid");
         }
-        if (mCursor == null || mCursor.isClosed() || !mCursor.moveToPosition(position)) {
-            //throw new IllegalStateException("couldn't move cursor to position " + position);
-        } else
+        if (!mCursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
         onBindViewHolder(viewHolder, mCursor);
     }
 
@@ -92,18 +96,19 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
      * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
      * closed.
      */
-    /*public void changeCursor(Cursor cursor) {
+    public void changeCursor(Cursor cursor) {
         Cursor old = swapCursor(cursor);
         if (old != null) {
             old.close();
         }
-    }*/
+    }
 
     /**
      * Swap in a new Cursor, returning the old Cursor.  Unlike
+     * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
      * closed.
      */
-    public Cursor swapCursor(Cursor newCursor, int aPosStart, int aItemCount, final RecyclerView aRecyclerView) {
+    public Cursor swapCursor(Cursor newCursor) {
         if (newCursor == mCursor) {
             return null;
         }
@@ -118,35 +123,13 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             }
             mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
             mDataValid = true;
+            notifyDataSetChanged();
         } else {
             mRowIdColumn = -1;
             mDataValid = false;
+            notifyDataSetChanged();
             //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
         }
-        Handler handler = new Handler();
-        final int updateTimeOut = 500;
-        if(aItemCount != 0) {
-            final int maxItemsToInsertWithAnimation = 4;
-            if(aItemCount > maxItemsToInsertWithAnimation) {
-                aItemCount = maxItemsToInsertWithAnimation;
-            }
-            for(int i = 0; i < aItemCount; i ++) {
-                final int itemIndex = i;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        notifyItemInserted(itemIndex);
-                        aRecyclerView.smoothScrollToPosition(0);
-                    }
-                }, (itemIndex + 1) * updateTimeOut);
-            }
-        }
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        }, aItemCount * updateTimeOut);
         return oldCursor;
     }
 

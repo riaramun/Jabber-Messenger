@@ -90,11 +90,6 @@ public class LoginActivity extends RiaBaseActivity {
     }
 
     @Override
-    protected void dbUpdated() {
-    }
-
-
-    @Override
     public void onStart() {
         super.onStart();
 

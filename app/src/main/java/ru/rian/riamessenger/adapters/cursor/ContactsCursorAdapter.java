@@ -1,9 +1,11 @@
-package ru.rian.riamessenger.adapters;
+package ru.rian.riamessenger.adapters.cursor;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
 
 /**
  * Created by Roman on 7/9/2015.
