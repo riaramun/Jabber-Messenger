@@ -3,8 +3,8 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 'android-MNC'
+    buildToolsVersion '23.0.0 rc2'
 
     defaultConfig {
         applicationId "ru.rian.riamessenger"
@@ -40,33 +40,25 @@ dependencies {
     //compile 'com.jakewharton.timber:timber:2.7.1'
     compile 'com.michaelpardo:activeandroid:+'
     //testCompile ('com.squareup.assertj:assertj-android:1.0.0'){
-      //  exclude group: 'com.android.support', module: 'support-annotations'
+    //  exclude group: 'com.android.support', module: 'support-annotations'
     //}
-   // testCompile 'junit:junit:4.12'
+    // testCompile 'junit:junit:4.12'
     //testCompile 'org.mockito:mockito-core:2.0.5-beta'
-
     apt "org.projectlombok:lombok:1.16.2"
     apt "com.google.dagger:dagger-compiler:2.0"
-
-   // provided 'javax.annotation:jsr250-api:1.0'
-    provided "org.projectlombok:lombok:1.16.2"
-
-    compile "org.igniterealtime.smack:smack-android:4.2.0-alpha1"
-    compile "org.igniterealtime.smack:smack-tcp:4.2.0-alpha1"
+    // provided 'javax.annotation:jsr250-api:1.0'
+    provided 'org.projectlombok:lombok:1.16.2'
+    compile 'org.igniterealtime.smack:smack-android:4.2.0-alpha1'
+    compile 'org.igniterealtime.smack:smack-tcp:4.2.0-alpha1'
     compile 'com.parse.bolts:bolts-android:1.1.4'
-   // compile 'com.squareup.retrofit:retrofit:1.9.0'
-
+    // compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.4.0'
-
     compile 'io.karim:materialtabs:2.0.2'
-
     compile 'com.android.support:recyclerview-v7:22.1.1'
-
     compile 'com.tonicartos:superslim:0.4.13'
-
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.2'
     compile 'com.wnafee:vector-compat:+'
-
     compile 'de.greenrobot:eventbus:2.4.0'
-
+    compile 'com.github.johnkil.android-appmsg:appmsg:1.2.0'
+    compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
 }

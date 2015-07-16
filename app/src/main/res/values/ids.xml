@@ -2,4 +2,6 @@
 <resources>
     <item name="progress_bar" type="id"/>
     <item name="contact_name" type="id"/>
+    <item name="app_message_view" type="id"/>
+
 </resources>

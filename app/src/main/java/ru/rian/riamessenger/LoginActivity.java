@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.devspark.appmsg.AppMsg;
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
@@ -40,7 +43,7 @@ public class LoginActivity extends RiaBaseActivity {
     EditText passwordEditText;
 
     @Bind(R.id.progress_bar)
-    ProgressBar progressBar;
+    ProgressBarCircularIndeterminate progressBar;
 
     @OnTextChanged({R.id.login_edit_text, R.id.password_edit_text})
     void onTextChanged(CharSequence text) {
@@ -84,9 +87,15 @@ public class LoginActivity extends RiaBaseActivity {
     }
 
     @Override
-    protected void authenticated() {
-        Intent intent = new Intent(this, ContactsActivity.class);
-        startActivity(intent);
+    protected void authenticated(boolean isAuthenticated) {
+        if(isAuthenticated) {
+            Intent intent = new Intent(this, ContactsActivity.class);
+            startActivity(intent);
+        }
+        else {
+            progressBar.setVisibility(View.INVISIBLE);
+
+        }
     }
 
     @Override

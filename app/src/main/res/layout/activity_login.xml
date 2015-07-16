@@ -52,10 +52,12 @@
 
     </LinearLayout>
 
-    <ProgressBar
+
+    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
         style="@style/RiaProgressBar"
         android:layout_below="@+id/buttons_layout_container"
         android:layout_marginTop="2dp" />
 
+    <RelativeLayout style="@style/AppMessageView" />
 
 </RelativeLayout>

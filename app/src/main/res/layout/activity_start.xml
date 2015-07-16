@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
+    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
         style="@style/RiaProgressBar"
         android:layout_below="@+id/buttons_layout_container"
         android:layout_centerInParent="true" />

@@ -61,7 +61,7 @@ public class StartActivity extends RiaBaseActivity {
     }
 
     @Override
-    protected void authenticated() {
+    protected void authenticated(boolean isAuthenticated) {
        //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
     }
 }

@@ -7,6 +7,8 @@ import android.util.Log;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -14,7 +16,9 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.impl.DomainpartJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.IOException;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
@@ -26,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 /**
@@ -51,9 +56,11 @@ public class SmackWrapper {
         }
     };
 
+    /*
     SmackRosterListener smackRosterListener;
     SmackRosterLoadedListener smackRosterLoadedListener;
     SmackConnectionListener smackConnectionListener;
+    */
     volatile AbstractXMPPConnection xmppConnection;
 
     @Getter
@@ -85,7 +92,7 @@ public class SmackWrapper {
     int rosterConnectingTryCounter = 0;
 
     public void connectAndSingIn() {
-        if (!TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey())) {
+        if (DoLoginAndPassExist()) {
             //connect();
             connect();
             /*rosterConnectingTimer.schedule(new TimerTask() {
@@ -112,13 +119,21 @@ public class SmackWrapper {
             public Void then(Task<Object> object) throws Exception {
                 isConnecting = false;
                 xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
-                xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
+                if(DoLoginAndPassExist()) {
+                    xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
+                }
                 return null;
             }
         }, Task.UI_THREAD_EXECUTOR);
 
     }
 
+    boolean DoLoginAndPassExist() {
+        if (!TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey())) {
+            return true;
+        }
+        return false;
+    }
 
     @Getter
     boolean isConnecting = false;
@@ -159,29 +174,28 @@ public class SmackWrapper {
                 }*/
                 //if (xmppConnection == null || !xmppConnection.isConnected())
                 {
-                    smackRosterListener = new SmackRosterListener();
-                    smackRosterLoadedListener = new SmackRosterLoadedListener();
-                    smackConnectionListener = new SmackConnectionListener();
 
                     xmppConnection = new XMPPTCPConnection(configBuilder.build());
-                    xmppConnection.addConnectionListener(smackConnectionListener);
+                    xmppConnection.addConnectionListener(new SmackConnectionListener());
 
                     roster = Roster.getInstanceFor(xmppConnection);
-                    roster.addRosterLoadedListener(smackRosterLoadedListener);
-                    roster.addRosterListener(smackRosterListener);
+                    roster.addRosterLoadedListener(new SmackRosterLoadedListener());
+                    roster.addRosterListener(new SmackRosterListener());
 
                     // Connect to the server
                     xmppConnection.connect();
                     xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
                 }
 
+                xmppConnection.login();
+                /*
                 if (!xmppConnection.isAuthenticated()) {
                     xmppConnection.login();
                 } else {
                     if (!roster.isLoaded()) {
                         roster.reload();
                     }
-                }
+                } */
 
 
                 //mRosterManager 	= new XmppRosterManager(context, xmppConnection);
@@ -190,16 +204,27 @@ public class SmackWrapper {
 
                 // Create a new presence. Pass in false to indicate we're unavailable._
                 Presence presence = new Presence(Presence.Type.available);
-                presence.setStatus("Working");
+                // presence.setStatus("Working");
                 // Send the packet (assume we have an XMPPConnection instance called "con").
                 xmppConnection.sendStanza(presence);
             }
             //QueryHelper.updateUser(ChatConstants.CURRENT_LOCAL_USER_ID, mLogin+"@"+mServer, mLogin);
 
             //Log.d(TAG, "on connected");
-        } catch (Exception e) {
-            RiaEventBus.post(e.getMessage());
+        } catch (SmackException e) {
+            RiaEventBus.post("doConnect!:" + e.getMessage());
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XMPPException e) {
+            e.printStackTrace();
+            userAppPreference.setLoginStringKey("");
+            userAppPreference.setPassStringKey("");
+            RiaEventBus.post(XmppErrorEvent.State.EAuthenticationFailed);
         }
     }
 

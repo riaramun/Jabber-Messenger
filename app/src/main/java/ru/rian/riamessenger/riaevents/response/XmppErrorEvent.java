@@ -29,6 +29,7 @@ public class XmppErrorEvent {
         EReconnectionFailed,
         EConnectionClosed,
         EAuthenticated,
+        EAuthenticationFailed,
         EDbUpdating,
         EDbUpdated
     }

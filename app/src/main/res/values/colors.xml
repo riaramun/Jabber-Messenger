@@ -43,4 +43,6 @@
 
     <color name="snackbar_action_color_done">#ffccccff</color>
 
+    <color name="app_msg_bg">#323232</color>
+
 </resources>
