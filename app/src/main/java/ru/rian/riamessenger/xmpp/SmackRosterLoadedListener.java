@@ -63,9 +63,10 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
 
                 for (RosterEntry rosterEntry : rosterGroup.getEntries()) {
                     RosterEntryModel rosterEntryModel = new RosterEntryModel();
+                    rosterEntryModel.bareJid = rosterEntry.getUser().asBareJidIfPossible().toString();
                     rosterEntryModel.name = rosterEntry.getName();
-                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getUser()));
                     rosterEntryModel.rosterGroupModel = rosterGroupModel;
+                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getUser()));
                     rosterEntryModel.save();
                 }
             }

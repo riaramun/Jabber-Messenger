@@ -12,6 +12,7 @@ import com.activeandroid.query.Select;
  */
 public class CursorUtils {
 
+
     public static <T extends Model> T getModelByPos(int position, Cursor cursor, Class<T> cl) {
         cursor.moveToPosition(position);
         return getModelByCursor(cursor, cl);

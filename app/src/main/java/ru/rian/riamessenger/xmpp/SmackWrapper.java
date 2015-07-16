@@ -51,9 +51,9 @@ public class SmackWrapper {
         }
     };
 
-    SmackRosterListener smackRosterListener = new SmackRosterListener();
-    SmackRosterLoadedListener smackRosterLoadedListener = new SmackRosterLoadedListener();
-    SmackConnectionListener smackConnectionListener = new SmackConnectionListener();
+    SmackRosterListener smackRosterListener;
+    SmackRosterLoadedListener smackRosterLoadedListener;
+    SmackConnectionListener smackConnectionListener;
     volatile AbstractXMPPConnection xmppConnection;
 
     @Getter
@@ -157,7 +157,12 @@ public class SmackWrapper {
                     roster.removeRosterListener(smackRosterListener);
                     roster.reload();
                 }*/
-                if (xmppConnection == null || !xmppConnection.isConnected()) {
+                //if (xmppConnection == null || !xmppConnection.isConnected())
+                {
+                    smackRosterListener = new SmackRosterListener();
+                    smackRosterLoadedListener = new SmackRosterLoadedListener();
+                    smackConnectionListener = new SmackConnectionListener();
+
                     xmppConnection = new XMPPTCPConnection(configBuilder.build());
                     xmppConnection.addConnectionListener(smackConnectionListener);
 
@@ -172,9 +177,8 @@ public class SmackWrapper {
 
                 if (!xmppConnection.isAuthenticated()) {
                     xmppConnection.login();
-                }
-                else {
-                    if(!roster.isLoaded()) {
+                } else {
+                    if (!roster.isLoaded()) {
                         roster.reload();
                     }
                 }

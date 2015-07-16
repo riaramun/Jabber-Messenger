@@ -20,10 +20,13 @@ public class RosterEntryModel extends Model {
     //public long remoteId;
     // This is a regular field
 
+    @Column(name = "BareJid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    public String bareJid;
+
     @Column(name = "Presence")
     public Integer presence;
 
-    @Column(name = "Name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    @Column(name = "Name")
     public String name;
     // This is an association to another activeandroid model
     @Column(name = "RosterGroupModel", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)

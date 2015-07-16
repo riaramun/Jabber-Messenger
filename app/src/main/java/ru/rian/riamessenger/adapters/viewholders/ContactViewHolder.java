@@ -33,8 +33,6 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setOnlineStatus(int presence) {
-        // itemView.getContext().getDrawable()
-        // Drawable d = getResources().getDrawable(android.R.drawable.ic_dialog_email);
         int resId = -1;
         RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[presence];
         switch (mode) {
@@ -48,6 +46,6 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
                 resId = R.drawable.status_offline;
                 break;
         }
-        onlineStatus.setBackground(ContextCompat.getDrawable(itemView.getContext(), resId));
+        onlineStatus.setBackgroundResource(resId);
     }
 }
