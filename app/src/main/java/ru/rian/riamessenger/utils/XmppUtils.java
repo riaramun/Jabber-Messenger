@@ -1,9 +1,9 @@
-package ru.rian.riamessenger.xmpp;
+package ru.rian.riamessenger.utils;
 
 /**
  * Created by grigoriy on 26.06.15.
  */
-public class Utils {
+public class XmppUtils {
 	public static String extractJid(String recepient){
 		int pos = recepient.indexOf("/");
 		if(pos >= 0){

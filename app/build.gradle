@@ -3,8 +3,8 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 'android-MNC'
-    buildToolsVersion '23.0.0 rc2'
+    compileSdkVersion 21
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "ru.rian.riamessenger"
@@ -61,4 +61,5 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.johnkil.android-appmsg:appmsg:1.2.0'
     compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
+    compile 'com.malinskiy:materialicons:1.0.2'
 }

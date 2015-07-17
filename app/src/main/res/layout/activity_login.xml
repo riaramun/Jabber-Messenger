@@ -1,62 +1,141 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity$LoginFragment">
 
-    <LinearLayout
-        android:id="@+id/buttons_layout_container"
+    <RelativeLayout
+        android:id="@+id/russia_logo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="112dp"
         android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:background="@color/dark_blue"
+        android:elevation="4dp">
 
-        <RelativeLayout
-            android:elevation="4dp"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/logo_russia" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/russia_logo"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="16dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/edit_container"
             android:layout_width="match_parent"
-            android:layout_height="112dp"
-            android:background="@color/dark_blue" >
-            <ImageView
-                android:src="@drawable/logo_russia"
-                android:layout_centerInParent="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </RelativeLayout>
-        <EditText
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_marginTop="64dp"
-            android:id="@+id/login_edit_text"
-            style="@style/CredentialsEditText"
-            android:hint="@string/enter">
-            <requestFocus />
-        </EditText>
-
-        <EditText
-            android:id="@+id/password_edit_text"
-            style="@style/CredentialsEditText"
-            android:hint="@string/password"
-            android:imeActionLabel="@string/enter"
-            android:inputType="textPassword" />
-
-        <com.devspark.robototextview.widget.RobotoButton
-            android:id="@+id/enter_button"
-            android:layout_width="@dimen/enter_button_width"
-            android:layout_height="@dimen/enter_button_height"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/btn_bg_selector"
             android:gravity="center"
-            android:text="@string/enter"
-            android:textColor="@color/white"
-            android:textSize="@dimen/top_bar_button_text_size" />
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.malinskiy.materialicons.widget.IconTextView
+                    style="@style/IconImageStyle"
+                    android:text="{zmdi-face}" />
+
+                <EditText
+                    android:id="@+id/name_edit_text"
+                    style="@style/CredentialsEditText"
+                    android:hint="@string/fio">
+
+                    <requestFocus />
+                </EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.malinskiy.materialicons.widget.IconTextView
+                    style="@style/IconImageStyle"
+                    android:text="{zmdi-account-circle}" />
+
+                <EditText
+                    android:id="@+id/login_edit_text"
+                    style="@style/CredentialsEditText"
+                    android:hint="@string/enter">
+
+                    <requestFocus />
+                </EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.malinskiy.materialicons.widget.IconTextView
+                    style="@style/IconImageStyle"
+                    android:text="{zmdi-lock}" />
+
+                <EditText
+                    android:id="@+id/password_edit_text"
+                    style="@style/CredentialsEditText"
+                    android:hint="@string/password"
+                    android:imeActionLabel="@string/enter"
+                    android:inputType="textPassword" />
+
+            </LinearLayout>
+
+            <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+                style="@style/RiaProgressBar"
+                android:layout_marginTop="20dp" />
+
+            <LinearLayout
+                android:id="@+id/short_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="58dp"
+                android:orientation="horizontal">
+
+                <com.malinskiy.materialicons.widget.IconTextView
+                    style="@style/IconImageStyle"
+                    android:text="{zmdi-shield-check}" />
+
+                <com.devspark.robototextview.widget.RobotoTextView
+                    style="@style/CredentialsText"
+                    android:text="@string/short_description" />
+            </LinearLayout>
+
+            <com.devspark.robototextview.widget.RobotoButton
+                android:id="@+id/enter_button"
+                android:layout_width="@dimen/enter_button_width"
+                android:layout_height="@dimen/enter_button_height"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_bg_selector"
+                android:gravity="center"
+                android:text="@string/enter"
+                android:textColor="@color/white"
+                android:textSize="@dimen/top_bar_button_text_size" />
+
+        </LinearLayout>
 
 
-    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
-        style="@style/RiaProgressBar"
-        android:layout_below="@+id/buttons_layout_container"
-        android:layout_marginTop="2dp" />
+    </ScrollView>
+
+
+
 
     <RelativeLayout style="@style/AppMessageView" />
 

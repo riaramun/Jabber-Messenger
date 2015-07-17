@@ -29,6 +29,7 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.ScreenUtils;
 
 public class LoginActivity extends RiaBaseActivity {
 
@@ -72,7 +73,7 @@ public class LoginActivity extends RiaBaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        progressBar.setVisibility(View.GONE);
+
         passwordEditText.setImeActionLabel(getString(R.string.enter), EditorInfo.IME_ACTION_DONE);
 
         String login = userAppPreference.getLoginStringKey();
@@ -113,6 +114,7 @@ public class LoginActivity extends RiaBaseActivity {
     }
 
     private void requestLogin() {
+        ScreenUtils.hideKeyboard(this);
         if (progressBar.getVisibility() != View.VISIBLE) {
             progressBar.setVisibility(View.VISIBLE);
 

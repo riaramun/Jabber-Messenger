@@ -1,5 +1,6 @@
 package ru.rian.riamessenger;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,14 +11,18 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.di.DaggerD2EComponent;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ContactsFragment;
 import ru.rian.riamessenger.fragments.GroupsFragment;
 import ru.rian.riamessenger.fragments.RobotsFragment;
+import ru.rian.riamessenger.prefs.UserAppPreference;
 
 
 public class ContactsActivity extends RiaBaseActivity {
@@ -33,6 +38,8 @@ public class ContactsActivity extends RiaBaseActivity {
     static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
     static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
 
+    @Inject
+    UserAppPreference userAppPreference;
 
     @Bind(R.id.material_tabs)
     MaterialTabs contactsMaterialTabs;
@@ -43,7 +50,7 @@ public class ContactsActivity extends RiaBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        RiaBaseApplication.component().inject(this);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,7 +71,18 @@ public class ContactsActivity extends RiaBaseActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
+    private void logout(boolean clean) {
+        if (clean) {
+            userAppPreference.setLoginStringKey("");
+            userAppPreference.setPassStringKey("");
+        }
+        /*
+        Intent intent = new Intent(this, EnterActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);*/
+        finish();
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -73,7 +91,8 @@ public class ContactsActivity extends RiaBaseActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_exit) {
+            logout(true);
             return true;
         }
 

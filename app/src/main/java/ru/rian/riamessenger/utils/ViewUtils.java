@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package ru.rian.riamessenger.common.utils;
+package ru.rian.riamessenger.utils;
 
 import android.support.v4.view.ViewCompat;
 import android.view.View;

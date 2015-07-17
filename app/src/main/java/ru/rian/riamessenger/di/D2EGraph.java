@@ -1,6 +1,7 @@
 package ru.rian.riamessenger.di;
 
 
+import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.LoginActivity;
 import ru.rian.riamessenger.StartActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
@@ -16,6 +17,7 @@ public interface D2EGraph {
     void inject(RiaApplication app);
     void inject(LoginActivity loginActivity);
     void inject(StartActivity startActivity);
+    void inject(ContactsActivity contactsActivity);
     void inject(BaseTabFragment fragment);
 
     void inject(UserAppPreference userAppPreference);

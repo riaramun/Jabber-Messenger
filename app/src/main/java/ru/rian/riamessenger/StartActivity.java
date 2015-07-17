@@ -6,10 +6,9 @@ import android.text.TextUtils;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
-import ru.rian.riamessenger.common.utils.SysUtils;
+import ru.rian.riamessenger.utils.SysUtils;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.services.RiaXmppService;

@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.common.utils;
+package ru.rian.riamessenger.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
