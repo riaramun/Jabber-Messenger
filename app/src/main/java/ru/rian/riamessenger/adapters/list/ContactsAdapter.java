@@ -18,13 +18,19 @@ import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 /**
  *
  */
-public class ContactsAdapter extends BaseRiaRecyclerAdapter {
+public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTextGetter {
 
     private int mHeaderDisplay;
 
     private boolean mMarginsFixed;
 
     private final Context mContext;
+
+    @Override
+    public String getTextToShowInBubble(final int pos)
+    {
+        return Character.toString(((LineItem)entries.get(pos)).text.charAt(0));
+    }
 
     public ContactsAdapter(Context context, int headerMode) {
         mContext = context;

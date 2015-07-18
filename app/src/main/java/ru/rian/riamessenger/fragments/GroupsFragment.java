@@ -33,14 +33,11 @@ import com.h6ah4i.android.widget.advrecyclerview.animator.RefactoredDefaultItemA
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 
-import java.util.ArrayList;
-
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.viewholders.EmptyGroupsDataProvider;
 import ru.rian.riamessenger.adapters.list.GroupsAdapter;
 import ru.rian.riamessenger.adapters.expandable.GroupsDataProvider;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
-import ru.rian.riamessenger.model.RosterGroupModel;
 
 public class GroupsFragment extends BaseTabFragment {
     private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
@@ -57,7 +54,7 @@ public class GroupsFragment extends BaseTabFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        return inflater.inflate(R.layout.recycler_view_slow, container, false);
     }
 
     @Override

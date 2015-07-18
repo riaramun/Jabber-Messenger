@@ -1,8 +1,10 @@
 package ru.rian.riamessenger.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,9 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.util.SQLiteUtils;
-import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LayoutManager;
-import com.tonicartos.superslim.SectionLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,10 @@ import java.util.Random;
 import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.list.ContactsAdapter;
+import ru.rian.riamessenger.adapters.list.FastScroller;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 /**
  * Fragment that displays a list of country names.
@@ -75,7 +77,7 @@ public class ContactsFragment extends BaseTabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        return inflater.inflate(R.layout.recycler_view_fast, container, false);
     }
 
     @Override
@@ -162,9 +164,12 @@ public class ContactsFragment extends BaseTabFragment {
 
         private final RecyclerView mRecyclerView;
 
+        VerticalRecyclerViewFastScroller fastScroller;
 
         public ViewHolder(View view) {
             mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+            FastScroller fastScroller=(FastScroller) view.findViewById(R.id.fastscroller);
+            fastScroller.setRecyclerView(mRecyclerView);
         }
 
         public void initViews(LayoutManager lm) {
@@ -177,6 +182,8 @@ public class ContactsFragment extends BaseTabFragment {
 
         public void setAdapter(RecyclerView.Adapter<?> adapter) {
             mRecyclerView.setAdapter(adapter);
+
+
         }
 
         public void smoothScrollToPosition(int position) {

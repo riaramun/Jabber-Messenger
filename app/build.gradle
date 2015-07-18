@@ -54,7 +54,8 @@ dependencies {
     // compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.4.0'
     compile 'io.karim:materialtabs:2.0.2'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
+    compile "com.android.support:recyclerview-v7:+"
+    compile "com.android.support:support-v4:22.0.0"
     compile 'com.tonicartos:superslim:0.4.13'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.2'
     compile 'com.wnafee:vector-compat:+'
@@ -62,4 +63,5 @@ dependencies {
     compile 'com.github.johnkil.android-appmsg:appmsg:1.2.0'
     compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
     compile 'com.malinskiy:materialicons:1.0.2'
+    compile 'xyz.danoz:recyclerviewfastscroller:+'
 }
