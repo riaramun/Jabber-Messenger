@@ -16,6 +16,7 @@ import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.CursorUtils;
+import ru.rian.riamessenger.utils.RiaTextUtils;
 
 /**
  * Created by Roman on 6/30/2015.

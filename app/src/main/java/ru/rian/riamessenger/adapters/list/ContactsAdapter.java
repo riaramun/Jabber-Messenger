@@ -14,6 +14,7 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
+import ru.rian.riamessenger.utils.RiaTextUtils;
 
 /**
  *
@@ -87,9 +88,10 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
             case VIEW_TYPE_HEADER:
                 ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
                 final LineItem item = (LineItem) entries.get(position);
-                contactViewHolder.contactName.setText(item.text);
+
                 // Overrides xml attrs, could use different layouts too.
                 if (item.isHeader) {
+                    contactViewHolder.contactName.setText(item.text);
                     lp.headerDisplay = mHeaderDisplay;
                     if (lp.isHeaderInline() || (mMarginsFixed && !lp.isHeaderOverlay())) {
                         lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -100,6 +102,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
                     lp.headerEndMarginIsAuto = !mMarginsFixed;
                     lp.headerStartMarginIsAuto = !mMarginsFixed;
                 } else {
+                    contactViewHolder.contactName.setText(RiaTextUtils.capFirst(item.text));
                     contactViewHolder.setOnlineStatus(item.presence);
                 }
                 lp.setSlm(LinearSLM.ID);

@@ -36,7 +36,7 @@ public class ContactsActivity extends RiaBaseActivity {
     static public final int GROUPS_FRAGMENT = 1;
     static public final int CONTACTS_FRAGMENT = 2;
     public static final String ARG_TAB_ID = "tabId";
-    public static final String ARG_IS_UPDATING = "isUpdating";
+    public static final String ARG_TITLE_FILTER = "title_filter";
 
 
     static public final String ROBOTS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
@@ -69,74 +69,12 @@ public class ContactsActivity extends RiaBaseActivity {
         contactsMaterialTabs.setViewPager(viewPager);
     }
 
-    SearchView  searchView;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem searchMenuItem = menu.findItem(R.id.search_news);
-        // mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
 
-        // mSearchView = new SearchView(getActivity());
-        /*actionBar.setCustomView(mSearchView, new ActionBar.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER_VERTICAL | Gravity.LEFT));*/
-        searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
-        //mSearchView.setBackgroundColor(Color.BLACK);
-        searchView.setQuery("", true);
-        searchView.setQueryHint(getString(R.string.search_hint));
-        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-        View searchPlate = searchView.findViewById(searchPlateId);
-        if (searchPlate != null) {
-            int searchTextId = searchPlate.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-            TextView searchText = (TextView) searchPlate.findViewById(searchTextId);
-            if (searchText != null) {
-                searchText.setTextColor(Color.WHITE);
-            }
-            searchPlate.setBackgroundResource(R.drawable.search_view_bg);
-        }
-
-///        int crossId = mSearchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);            // Getting the 'search_plate' LinearLayout.
-        //     ImageView image = (ImageView) mSearchView.findViewById(crossId);
-        //   image.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-
-        /*int searchButtonId = mSearchView.getContext().getResources().getIdentifier("android:id/search_mag_icon", null, null);
-        ImageView searchButton = (ImageView) mSearchView.findViewById(searchButtonId);
-        searchButton.setImageResource(R.drawable.abc_textfield_search_default_mtrl_alpha);
-        */
-        //int searchImgId = getResources().getIdentifier("android:id/search_mag_icon", null, null);
-        //ImageView v = (ImageView) mSearchView.findViewById(searchImgId);
-        //v.setImageResource(R.drawable.ic_search);
-
-
-
-        //ImageView searchIcon = (ImageView)mSearchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
-        //searchIcon.setImageResource(R.drawable.abc_ic_search_api_mtrl_alpha);
-
-        searchView.setIconified(true);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                ScreenUtils.hideKeyboard(ContactsActivity.this);
-                //Toast.makeText(getActivity(), "Search : " + query, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Toast.makeText(getActivity(), "Search : " + newText, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-        /*searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                ScreenUtils.hideKeyboard(ContactsActivity.this);
-                return true;
-            }
-        });*/
         return true;
     }
     private void logout(boolean clean) {

@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/action_exit"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/search_news"
+        android:title=""
+        app:actionLayout="@layout/search_layout"
+        app:showAsAction="ifRoom" />
 </menu>

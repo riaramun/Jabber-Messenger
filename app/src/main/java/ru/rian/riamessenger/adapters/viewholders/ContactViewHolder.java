@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 
 import org.jivesoftware.smack.packet.Presence;
 
@@ -22,13 +21,13 @@ import ru.rian.riamessenger.model.RosterEntryModel;
 public class ContactViewHolder extends RecyclerView.ViewHolder {
 
     // @Bind(R.id.contact_name)
-    public RobotoTextView contactName;
-    public RobotoTextView onlineStatus;
+    public TextView contactName;
+    public TextView onlineStatus;
 
     public ContactViewHolder(View itemView) {
         super(itemView);
-        contactName = (RobotoTextView) itemView.findViewById(R.id.contact_name);
-        onlineStatus = (RobotoTextView) itemView.findViewById(R.id.user_online_status);
+        contactName = (TextView) itemView.findViewById(R.id.contact_name);
+        onlineStatus = (TextView) itemView.findViewById(R.id.user_online_status);
         //   ButterKnife.bind(itemView);
     }
 

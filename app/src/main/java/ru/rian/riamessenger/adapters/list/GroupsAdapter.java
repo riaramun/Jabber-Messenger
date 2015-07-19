@@ -31,6 +31,7 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.compat.MorphButtonCompat;
+import ru.rian.riamessenger.utils.RiaTextUtils;
 
 public class GroupsAdapter
         extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder> {
@@ -164,7 +165,7 @@ public class GroupsAdapter
         final AbstractExpandableDataProvider.ChildData item = mProvider.getChildItem(groupPosition, childPosition);
         if(item != null) {
             // set text
-            holder.contactName.setText(item.getText());
+            holder.contactName.setText(RiaTextUtils.capFirst(item.getText()));
             holder.setOnlineStatus(item.getPresence());
         }
         // set background resource (target view ID: container)

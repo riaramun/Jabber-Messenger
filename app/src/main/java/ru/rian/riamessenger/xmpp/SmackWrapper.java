@@ -179,7 +179,7 @@ public class SmackWrapper {
                     xmppConnection.addConnectionListener(new SmackConnectionListener());
 
                     roster = Roster.getInstanceFor(xmppConnection);
-                    roster.addRosterLoadedListener(new SmackRosterLoadedListener());
+                    roster.addRosterLoadedListener(new SmackRosterLoadedListener(context));
                     roster.addRosterListener(new SmackRosterListener());
 
                     // Connect to the server

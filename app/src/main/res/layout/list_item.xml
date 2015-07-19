@@ -25,6 +25,7 @@
 
     <com.devspark.robototextview.widget.RobotoTextView
         style="@style/ListItemTextViewStyle"
+        android:capitalize="words"
         android:layout_toLeftOf="@+id/user_online_status"
         app:fontFamily="roboto"
         app:textWeight="light" />

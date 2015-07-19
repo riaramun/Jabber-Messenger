@@ -77,23 +77,22 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     }
 
-    Bundle getBundle() {
+    protected Bundle getBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(ContactsActivity.ARG_TAB_ID, tabId);
-        bundle.putBoolean(ContactsActivity.ARG_IS_UPDATING, isUpdating);
         return bundle;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-             EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-           EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     /*public void dbRestartLoader() {
@@ -111,6 +110,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
                 break;
         }
     }
+
     Boolean isUpdating = false;
 
 

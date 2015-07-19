@@ -10,6 +10,7 @@ import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.content.ContentProvider;
+import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
@@ -19,6 +20,7 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import lombok.val;
 import ru.rian.riamessenger.ContactsActivity;
@@ -38,12 +40,12 @@ import ru.rian.riamessenger.model.RosterGroupModel;
 public class ContactsLoader extends CursorRiaLoader {
 
     int tabIdloader = -1;
-    Boolean isUpdating = false;
+    String title_to_search = null;
 
     public ContactsLoader(Context ctx, Bundle args) {
         super(ctx);
         tabIdloader = args.getInt(ContactsActivity.ARG_TAB_ID);
-        isUpdating = args.getBoolean(ContactsActivity.ARG_IS_UPDATING);
+        title_to_search = args.getString(ContactsActivity.ARG_TITLE_FILTER);
 
         switch (tabIdloader) {
             case ContactsActivity.CONTACTS_FRAGMENT:
@@ -59,7 +61,6 @@ public class ContactsLoader extends CursorRiaLoader {
     }
 
 
-
     Cursor retrieveDataFromRoster() {
 
         String resultRecords;
@@ -67,11 +68,39 @@ public class ContactsLoader extends CursorRiaLoader {
 
         switch (tabIdloader) {
             case ContactsActivity.CONTACTS_FRAGMENT: {
-                val queryResults = new Select().from(RosterEntryModel.class)
-                        .orderBy("name ASC").toSql();
+
+                String groupToExcludeRequest = new Select().from(RosterGroupModel.class).where("name ='" + getContext().getString(R.string.robots) + "'").toSql();
+                Cursor groupCursor = Cache.openDatabase().rawQuery(groupToExcludeRequest, null);
+                List<RosterGroupModel> groupModelList = SQLiteUtils.processCursor(RosterGroupModel.class, groupCursor);
+                groupCursor.close();
+                long groupToExcludeId = 0;
+                if(groupModelList != null && groupModelList.size() > 0) {
+                    groupToExcludeId = groupModelList.get(0).getId();
+                }
+                From from = new Select().from(RosterEntryModel.class);
+
+                String sqlReqText = "";
+                if(groupToExcludeId != 0) {
+                    sqlReqText += " RosterGroupModel != " + groupToExcludeId;
+                }
+
+                if (!TextUtils.isEmpty(title_to_search)) {
+                    if(!TextUtils.isEmpty(sqlReqText)) {
+                        sqlReqText += " and ";
+                    }
+                    sqlReqText += "Name LIKE '%" + title_to_search.toLowerCase(Locale.getDefault()) + "%'";
+                }
+
+                if(!TextUtils.isEmpty(sqlReqText)) {
+                    from.where(sqlReqText);
+                }
+
+
+                String queryResults = from.orderBy("Name ASC").toSql();
                 resultCursor = Cache.openDatabase().rawQuery(queryResults, null);
+
                 //listCursor = getContactsList(queryResults);
-               //listCursor = fetchResultCursor(RosterEntryModel.class);
+                //listCursor = fetchResultCursor(RosterEntryModel.class);
                 //SQLiteUtils.processCursor(RosterEntryModel.class, listCursor);
             }
             break;
@@ -84,10 +113,10 @@ public class ContactsLoader extends CursorRiaLoader {
                     listCursor = rosterGroupModel.items();
                 }*/
                 String groupTableName = Cache.getTableInfo(RosterGroupModel.class).getTableName();
-                resultRecords = new Select().from(RosterEntryModel.class).where("RosterEntryModels.RosterGroupModel IN (SELECT _id" + " FROM " + groupTableName + " WHERE name ='" + getContext().getString(R.string.robots) + "')" ).orderBy("name ASC").toSql();
+                resultRecords = new Select().from(RosterEntryModel.class).where("RosterEntryModels.RosterGroupModel IN (SELECT _id" + " FROM " + groupTableName + " WHERE name ='" + getContext().getString(R.string.robots) + "')").orderBy("name ASC").toSql();
 
-              //  tableName = Cache.getTableInfo(RosterGroupModel.class).getTableName();
-              //  resultRecords = new Select().from(RosterGroupModel.class).where("name = ?", getContext().getString(R.string.robots)).toSql();
+                //  tableName = Cache.getTableInfo(RosterGroupModel.class).getTableName();
+                //  resultRecords = new Select().from(RosterGroupModel.class).where("name = ?", getContext().getString(R.string.robots)).toSql();
                 resultCursor = Cache.openDatabase().rawQuery(resultRecords, null);
             }
             break;
