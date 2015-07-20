@@ -34,7 +34,7 @@ import ru.rian.riamessenger.utils.ScreenUtils;
 public class ContactsActivity extends TabsRiaBaseActivity {
 
 
-    int[] fragmentsIds = {BaseTabFragment.ROBOTS_FRAGMENT, BaseTabFragment.GROUPS_FRAGMENT, BaseTabFragment.CONTACTS_FRAGMENT};
+    BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.ROBOTS_FRAGMENT, BaseTabFragment.FragIds.GROUPS_FRAGMENT, BaseTabFragment.FragIds.CONTACTS_FRAGMENT};
     String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
 
     @Inject
@@ -71,6 +71,7 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
         return true;
     }
+
     private void logout(boolean clean) {
         if (clean) {
             userAppPreference.setLoginStringKey("");
@@ -83,19 +84,21 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         startActivity(intent);*/
         finish();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_exit) {
-            logout(true);
-            return true;
+        switch (id) {
+            case R.id.action_exit:
+                logout(true);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -124,13 +127,13 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         }
 
         @Override
-        public Fragment getItem(int tabId) {
-            String tag = getTagByTabIndex(tabId);
+        public Fragment getItem(int tabIndex) {
+            String tag = getTagByTabIndex(tabIndex);
             Fragment fragment = null;
             if (tag != null) {
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null /*|| !fragment.isVisible()*/) {
-                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabId));
+                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabIndex));
                 }
             }
             return fragment;
@@ -139,7 +142,7 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
     @Override
     public int getIdByTabIndex(int tabIndex) {
-        return fragmentsIds[tabIndex];
+        return fragmentsIds[tabIndex].ordinal();
     }
 
     @Override

@@ -80,7 +80,7 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
                     case EDbUpdated:
                         //preocessed in fragment
                         //dbUpdated();
-                        msg = "Roster data base updated";
+                        msg = "Roster updated";
                         break;
                     case Empty:
                         msg = xmppErrorEvent.exceptionMessage;

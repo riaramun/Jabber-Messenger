@@ -3,12 +3,9 @@ package ru.rian.riamessenger.loaders;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import com.activeandroid.Cache;
-import com.activeandroid.Model;
-import com.activeandroid.TableInfo;
 import com.activeandroid.content.ContentProvider;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
@@ -17,18 +14,13 @@ import com.activeandroid.util.SQLiteUtils;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import lombok.val;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.list.ContactsAdapter;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
-import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
-import ru.rian.riamessenger.loaders.base.BaseRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
@@ -48,14 +40,16 @@ public class ContactsLoader extends CursorRiaLoader {
         tabIdloader = args.getInt(BaseTabFragment.ARG_TAB_ID);
         title_to_search = args.getString(BaseTabFragment.ARG_TITLE_FILTER);
 
-        switch (tabIdloader) {
-            case BaseTabFragment.CONTACTS_FRAGMENT:
+        BaseTabFragment.FragIds fragIds = BaseTabFragment.FragIds.values()[tabIdloader];
+
+        switch (fragIds) {
+            case CONTACTS_FRAGMENT:
                 setSubscription(ContentProvider.createUri(RosterEntryModel.class, null));
                 break;
-            case BaseTabFragment.ROBOTS_FRAGMENT:
+            case ROBOTS_FRAGMENT:
                 setSubscription(ContentProvider.createUri(RosterGroupModel.class, null));
                 break;
-            case BaseTabFragment.GROUPS_FRAGMENT:
+            case GROUPS_FRAGMENT:
                 setSubscription(ContentProvider.createUri(RosterGroupModel.class, null));
                 break;
         }
@@ -67,8 +61,10 @@ public class ContactsLoader extends CursorRiaLoader {
         String resultRecords;
         Cursor resultCursor = null;
 
-        switch (tabIdloader) {
-            case BaseTabFragment.CONTACTS_FRAGMENT: {
+        BaseTabFragment.FragIds fragIds = BaseTabFragment.FragIds.values()[tabIdloader];
+
+        switch (fragIds) {
+            case CONTACTS_FRAGMENT: {
 
                 String groupToExcludeRequest = new Select().from(RosterGroupModel.class).where("name ='" + getContext().getString(R.string.robots) + "'").toSql();
                 Cursor groupCursor = Cache.openDatabase().rawQuery(groupToExcludeRequest, null);
@@ -105,7 +101,7 @@ public class ContactsLoader extends CursorRiaLoader {
                 //SQLiteUtils.processCursor(RosterEntryModel.class, listCursor);
             }
             break;
-            case BaseTabFragment.ROBOTS_FRAGMENT: {
+            case ROBOTS_FRAGMENT: {
                 //  List<RosterEntry> rosterEntries =
                 /*RosterGroupModel rosterGroupModel = new Select().from(RosterGroupModel.class)//.where("name = ?", getContext().getString(R.string.robots))
                         .orderBy("name ASC")
@@ -121,7 +117,7 @@ public class ContactsLoader extends CursorRiaLoader {
                 resultCursor = Cache.openDatabase().rawQuery(resultRecords, null);
             }
             break;
-            case BaseTabFragment.GROUPS_FRAGMENT: {
+            case GROUPS_FRAGMENT: {
                 /*List<RosterGroupModel> queryResults = new Select().from(RosterGroupModel.class)
                         .orderBy("name ASC").execute();
 

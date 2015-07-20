@@ -3,5 +3,5 @@
     style="@style/Widget.AppCompat.SearchView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:maxWidth="10000dp"
      />
-<!--android:maxWidth="10000dp"-->

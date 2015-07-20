@@ -80,7 +80,6 @@ public class RoomsFragment extends BaseTabFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        /** Create an option menu from res/menu/items.xml */
         inflater.inflate(R.menu.menu_rooms, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
         setSearchViewListenersAndStyle(searchView);

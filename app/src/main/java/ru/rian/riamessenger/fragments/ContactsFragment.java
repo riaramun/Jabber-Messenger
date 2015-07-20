@@ -1,7 +1,6 @@
 package ru.rian.riamessenger.fragments;
 
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +9,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.util.SQLiteUtils;
@@ -30,7 +27,6 @@ import ru.rian.riamessenger.adapters.list.ContactsAdapter;
 import ru.rian.riamessenger.adapters.list.FastScroller;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.utils.ScreenUtils;
 import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 /**

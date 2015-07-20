@@ -19,18 +19,14 @@ package ru.rian.riamessenger.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.SearchView;
 
 
 import de.greenrobot.event.EventBus;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.common.RiaBaseFragment;
 import ru.rian.riamessenger.loaders.ContactsLoader;
-import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.ScreenUtils;
@@ -47,18 +43,22 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     protected int tabId;
 
-    static public final int ROBOTS_FRAGMENT = 0;
-    static public final int GROUPS_FRAGMENT = 1;
-    static public final int CONTACTS_FRAGMENT = 2;
-    static public final int CHATS_FRAGMENT = 3;
-    static public final int ROOMS_FRAGMENT = 4;
+    static public enum FragIds {
+         ROBOTS_FRAGMENT,
+         GROUPS_FRAGMENT,
+         CONTACTS_FRAGMENT,
+         CHATS_FRAGMENT,
+         ROOMS_FRAGMENT
+    }
+
 
     public static final String ARG_TAB_ID = "tabId";
     public static final String ARG_TITLE_FILTER = "title_filter";
 
     public static BaseTabFragment newInstance(int tabId) {
+
         BaseTabFragment tabFragment = null;
-        switch (tabId) {
+        switch (FragIds.values()[tabId]) {
             case CONTACTS_FRAGMENT:
                 tabFragment = new ContactsFragment();
                 break;

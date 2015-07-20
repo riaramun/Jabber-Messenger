@@ -19,7 +19,7 @@
     <application
         android:name=".RiaApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/status_online"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
@@ -48,7 +48,7 @@
             android:name=".LoginActivity"
             android:noHistory="true"
             android:theme="@style/AppFullScreenTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
 
 
         <service
