@@ -45,7 +45,7 @@
                 android:orientation="horizontal">
 
                 <com.malinskiy.materialicons.widget.IconTextView
-                    style="@style/IconImageStyle"
+                    style="@style/LoginViewIconImage"
                     android:text="{zmdi-face}" />
 
                 <EditText
@@ -65,7 +65,7 @@
                 android:orientation="horizontal">
 
                 <com.malinskiy.materialicons.widget.IconTextView
-                    style="@style/IconImageStyle"
+                    style="@style/LoginViewIconImage"
                     android:text="{zmdi-account-circle}" />
 
                 <EditText
@@ -85,7 +85,7 @@
                 android:orientation="horizontal">
 
                 <com.malinskiy.materialicons.widget.IconTextView
-                    style="@style/IconImageStyle"
+                    style="@style/LoginViewIconImage"
                     android:text="{zmdi-lock}" />
 
                 <EditText
@@ -109,7 +109,7 @@
                 android:orientation="horizontal">
 
                 <com.malinskiy.materialicons.widget.IconTextView
-                    style="@style/IconImageStyle"
+                    style="@style/LoginViewIconImage"
                     android:text="{zmdi-shield-check}" />
 
                 <com.devspark.robototextview.widget.RobotoTextView

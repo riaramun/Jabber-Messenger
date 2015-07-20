@@ -56,7 +56,7 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    protected abstract void authenticated(boolean isAuthenticated);
+
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         this.runOnUiThread(new Runnable() {
@@ -113,4 +113,5 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         appMsg.show();
     }
 
+    protected abstract void authenticated(boolean isAuthenticated);
 }

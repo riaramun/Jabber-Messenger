@@ -32,13 +32,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ChatsActivity"
+            android:label=""
+            android:configChanges="orientation"
+            android:theme="@style/CustomActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity
             android:name=".ContactsActivity"
             android:label="@string/new_chat"
             android:configChanges="orientation"
             android:theme="@style/CustomActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity
             android:name=".LoginActivity"
             android:noHistory="true"

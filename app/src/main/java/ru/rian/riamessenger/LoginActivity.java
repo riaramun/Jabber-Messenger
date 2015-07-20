@@ -90,7 +90,7 @@ public class LoginActivity extends RiaBaseActivity {
     @Override
     protected void authenticated(boolean isAuthenticated) {
         if(isAuthenticated) {
-            Intent intent = new Intent(this, ContactsActivity.class);
+            Intent intent = new Intent(this, ChatsActivity.class);
             startActivity(intent);
         }
         else {

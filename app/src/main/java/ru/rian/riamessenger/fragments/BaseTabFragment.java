@@ -23,6 +23,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.SearchView;
+
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ContactsActivity;
@@ -31,29 +33,51 @@ import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.ScreenUtils;
 
 
 public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
+
+    static public final String CHATS_FRAGMENT_TAG = ChatsFragment.class.getSimpleName();
+    static public final String ROOMS_FRAGMENT_TAG = RoomsFragment.class.getSimpleName();
+    static public final String ROBOTS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
+    static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
+    static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
+
     protected int tabId;
 
+    static public final int ROBOTS_FRAGMENT = 0;
+    static public final int GROUPS_FRAGMENT = 1;
+    static public final int CONTACTS_FRAGMENT = 2;
+    static public final int CHATS_FRAGMENT = 3;
+    static public final int ROOMS_FRAGMENT = 4;
+
+    public static final String ARG_TAB_ID = "tabId";
+    public static final String ARG_TITLE_FILTER = "title_filter";
 
     public static BaseTabFragment newInstance(int tabId) {
         BaseTabFragment tabFragment = null;
         switch (tabId) {
-            case ContactsActivity.CONTACTS_FRAGMENT:
+            case CONTACTS_FRAGMENT:
                 tabFragment = new ContactsFragment();
                 break;
-            case ContactsActivity.GROUPS_FRAGMENT:
+            case GROUPS_FRAGMENT:
                 tabFragment = new GroupsFragment();
                 break;
-            case ContactsActivity.ROBOTS_FRAGMENT:
+            case ROBOTS_FRAGMENT:
                 tabFragment = new RobotsFragment();
+                break;
+            case CHATS_FRAGMENT:
+                tabFragment = new ChatsFragment();
+                break;
+            case ROOMS_FRAGMENT:
+                tabFragment = new RoomsFragment();
                 break;
         }
         if (tabFragment != null) {
             Bundle b = new Bundle();
-            b.putInt(ContactsActivity.ARG_TAB_ID, tabId);
+            b.putInt(ARG_TAB_ID, tabId);
             tabFragment.setArguments(b);
         }
         return tabFragment;
@@ -63,7 +87,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //RiaApplication.component().inject(this);
-        tabId = getArguments().getInt(ContactsActivity.ARG_TAB_ID);
+        tabId = getArguments().getInt(ARG_TAB_ID);
     }
 
     @Override
@@ -79,7 +103,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     protected Bundle getBundle() {
         Bundle bundle = new Bundle();
-        bundle.putInt(ContactsActivity.ARG_TAB_ID, tabId);
+        bundle.putInt(ARG_TAB_ID, tabId);
         return bundle;
     }
 
@@ -113,6 +137,30 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     Boolean isUpdating = false;
 
+    protected String title_to_search = null;
+
+    protected void setSearchViewListenersAndStyle(SearchView searchView) {
+
+        ScreenUtils.styleSearchView(searchView, title_to_search, getActivity());
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                ScreenUtils.hideKeyboard(getActivity());
+                title_to_search = query;
+                getLoaderManager().restartLoader(tabId, getBundle(), BaseTabFragment.this);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                title_to_search = newText;
+                getLoaderManager().restartLoader(tabId, getBundle(), BaseTabFragment.this);
+                return false;
+            }
+        });
+    }
 
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {

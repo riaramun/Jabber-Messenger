@@ -53,11 +53,30 @@
         <!--<item name="android:layout_marginTop">?android:attr/actionBarSize</item>-->
         <item name="android:layout_alignParentBottom">true</item>
     </style>
-    <style name="IconImageStyle">
+    <style name="LoginViewIconImage">
         <item name="android:layout_width">@dimen/icon_img_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/icon_img_text_size</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_alignParentBottom">true</item>
     </style>
+    <style name="ButtonFloatNewChat">
+        <item name="android:id">@id/buttonFloat</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">24dp</item>
+        <item name="android:layout_marginBottom">24dp</item>
+        <item name="android:background">@color/floating_buton_color</item>
+    </style>
+    <style name="RecyclerViewCommon">
+        <item name="android:id">@id/recycler_view</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
 </resources>

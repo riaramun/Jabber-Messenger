@@ -10,13 +10,11 @@ import android.view.ViewGroup;
 
 import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.utils.CursorUtils;
-import ru.rian.riamessenger.utils.RiaTextUtils;
+import ru.rian.riamessenger.utils.DbHelper;
 
 /**
  * Created by Roman on 6/30/2015.
@@ -37,7 +35,7 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
                 emptyViewHolder = (EmptyViewHolder) viewHolder;
                 break;
             case VIEW_TYPE_CONTENT:
-                val rosterEntry = (RosterEntryModel) CursorUtils.getModelByCursor(cursor, RosterEntryModel.class);
+                val rosterEntry = (RosterEntryModel) DbHelper.getModelByCursor(cursor, RosterEntryModel.class);
                 if(rosterEntry != null) {
                     val contactViewHolder = (ContactViewHolder) viewHolder;
                     contactViewHolder.contactName.setText(rosterEntry.name);

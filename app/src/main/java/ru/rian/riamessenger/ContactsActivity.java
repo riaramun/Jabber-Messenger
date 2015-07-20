@@ -21,6 +21,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.di.DaggerD2EComponent;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ContactsFragment;
@@ -30,18 +31,11 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.utils.ScreenUtils;
 
 
-public class ContactsActivity extends RiaBaseActivity {
-
-    static public final int ROBOTS_FRAGMENT = 0;
-    static public final int GROUPS_FRAGMENT = 1;
-    static public final int CONTACTS_FRAGMENT = 2;
-    public static final String ARG_TAB_ID = "tabId";
-    public static final String ARG_TITLE_FILTER = "title_filter";
+public class ContactsActivity extends TabsRiaBaseActivity {
 
 
-    static public final String ROBOTS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
-    static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
-    static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
+    int[] fragmentsIds = {BaseTabFragment.ROBOTS_FRAGMENT, BaseTabFragment.GROUPS_FRAGMENT, BaseTabFragment.CONTACTS_FRAGMENT};
+    String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
 
     @Inject
     UserAppPreference userAppPreference;
@@ -63,7 +57,7 @@ public class ContactsActivity extends RiaBaseActivity {
         setContentView(R.layout.activity_contacts);
         ButterKnife.bind(this);
 
-        final int numberOfTabs = 3;
+        final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
         viewPager.setAdapter(adapter);
         contactsMaterialTabs.setViewPager(viewPager);
@@ -131,33 +125,28 @@ public class ContactsActivity extends RiaBaseActivity {
 
         @Override
         public Fragment getItem(int tabId) {
-            String tag = getTagByTabId(tabId);
+            String tag = getTagByTabIndex(tabId);
             Fragment fragment = null;
             if (tag != null) {
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null /*|| !fragment.isVisible()*/) {
-                    fragment = BaseTabFragment.newInstance(tabId);
+                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabId));
                 }
             }
             return fragment;
         }
     }
 
-    static String getTagByTabId(int tabId) {
-        String tag = null;
-        switch (tabId) {
-            case ContactsActivity.CONTACTS_FRAGMENT:
-                tag = CONTACTS_FRAGMENT_TAG;
-                break;
-            case ContactsActivity.ROBOTS_FRAGMENT:
-                tag = ROBOTS_FRAGMENT_TAG;
-                break;
-            case ContactsActivity.GROUPS_FRAGMENT:
-                tag = GROUPS_FRAGMENT_TAG;
-                break;
-        }
-        return tag;
+    @Override
+    public int getIdByTabIndex(int tabIndex) {
+        return fragmentsIds[tabIndex];
     }
+
+    @Override
+    public String getTagByTabIndex(int tabIndex) {
+        return fragmentsTags[tabIndex];
+    }
+
 
     @Override
     protected void authenticated(boolean isAuthenticated) {

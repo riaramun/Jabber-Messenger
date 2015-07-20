@@ -1,18 +1,11 @@
 package ru.rian.riamessenger.adapters.expandable;
 
 import android.database.Cursor;
-import android.provider.BaseColumns;
-
-import com.activeandroid.Cache;
-import com.activeandroid.query.Select;
-import com.activeandroid.util.SQLiteUtils;
-
-import java.lang.reflect.Type;
 
 import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
-import ru.rian.riamessenger.utils.CursorUtils;
+import ru.rian.riamessenger.utils.DbHelper;
 
 /**
  * Created by Roman on 7/6/2015.
@@ -36,7 +29,7 @@ public class GroupsDataProvider extends AbstractExpandableDataProvider {
 
     @Override
     public int getChildCount(int groupPosition) {
-        RosterGroupModel rosterGroupModel = CursorUtils.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
+        RosterGroupModel rosterGroupModel = DbHelper.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
         int count = 0;
         if (rosterGroupModel != null && rosterGroupModel.items() != null && rosterGroupModel.items().size() > 0) {
             count = rosterGroupModel.items().size();
@@ -46,7 +39,7 @@ public class GroupsDataProvider extends AbstractExpandableDataProvider {
 
     @Override
     public GroupData getGroupItem(int groupPosition) {
-        RosterGroupModel rosterGroupModel = CursorUtils.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
+        RosterGroupModel rosterGroupModel = DbHelper.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
         return new RosterItemGroupData(rosterGroupModel);
     }
 /*
@@ -65,7 +58,7 @@ public class GroupsDataProvider extends AbstractExpandableDataProvider {
 
     @Override
     public ChildData getChildItem(int groupPosition, int childPosition) {
-        RosterGroupModel rosterGroupModel = CursorUtils.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
+        RosterGroupModel rosterGroupModel = DbHelper.getModelByPos(groupPosition, rosterGroupModelsCursor, RosterGroupModel.class);
         RosterItemChildData rosterItemChildData = null;
         if (rosterGroupModel.items() != null && rosterGroupModel.items().size() > childPosition) {
             RosterEntryModel rosterEntry = rosterGroupModel.items().get(childPosition);

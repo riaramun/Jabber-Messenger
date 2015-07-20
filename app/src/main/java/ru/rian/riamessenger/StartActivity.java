@@ -51,7 +51,7 @@ public class StartActivity extends RiaBaseActivity {
     void launchNextActivity(boolean isAuth) {
         Class<?> cl = null;
         if (isAuth) {
-            cl = ContactsActivity.class;
+            cl = ChatsActivity.class;
         } else {
             cl = LoginActivity.class;
         }

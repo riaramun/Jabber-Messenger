@@ -61,7 +61,7 @@ dependencies {
     compile 'com.wnafee:vector-compat:+'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.johnkil.android-appmsg:appmsg:1.2.0'
-    compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
+    compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
     compile 'com.malinskiy:materialicons:1.0.2'
     compile 'xyz.danoz:recyclerviewfastscroller:+'
 }

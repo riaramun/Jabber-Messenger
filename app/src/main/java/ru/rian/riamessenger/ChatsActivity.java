@@ -16,23 +16,20 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
+import ru.rian.riamessenger.fragments.ChatsFragment;
 import ru.rian.riamessenger.fragments.ContactsFragment;
 import ru.rian.riamessenger.fragments.GroupsFragment;
 import ru.rian.riamessenger.fragments.RobotsFragment;
+import ru.rian.riamessenger.fragments.RoomsFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 
 
-public class ChatsActivity extends RiaBaseActivity {
+public class ChatsActivity extends TabsRiaBaseActivity {
 
-    static public final int CHATS_FRAGMENT = 0;
-    static public final int ROOMS_FRAGMENT = 1;
-    public static final String ARG_TAB_ID = "tabId";
-
-
-    static public final String CHATS_FRAGMENT_TAG = RobotsFragment.class.getSimpleName();
-    static public final String ROOMS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
-    static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
+    int[] fragmentsIds = {BaseTabFragment.CHATS_FRAGMENT, BaseTabFragment.ROOMS_FRAGMENT};
+    String[] fragmentsTags = {BaseTabFragment.CHATS_FRAGMENT_TAG, BaseTabFragment.ROOMS_FRAGMENT_TAG};
 
     @Inject
     UserAppPreference userAppPreference;
@@ -54,7 +51,7 @@ public class ChatsActivity extends RiaBaseActivity {
         setContentView(R.layout.activity_chats);
         ButterKnife.bind(this);
 
-        final int numberOfTabs = 2;
+        final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
         viewPager.setAdapter(adapter);
         contactsMaterialTabs.setViewPager(viewPager);
@@ -68,6 +65,7 @@ public class ChatsActivity extends RiaBaseActivity {
 
         return true;
     }
+
     private void logout(boolean clean) {
         if (clean) {
             userAppPreference.setLoginStringKey("");
@@ -80,6 +78,7 @@ public class ChatsActivity extends RiaBaseActivity {
         startActivity(intent);*/
         finish();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -98,7 +97,7 @@ public class ChatsActivity extends RiaBaseActivity {
 
     public class SamplePagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {getString(R.string.robots), getString(R.string.groups), getString(R.string.contacts)};
+        private final String[] TITLES = {getString(R.string.chats), getString(R.string.rooms)};
 
         private final ArrayList<String> mTitles;
 
@@ -122,29 +121,27 @@ public class ChatsActivity extends RiaBaseActivity {
 
         @Override
         public Fragment getItem(int tabId) {
-            String tag = getTagByTabId(tabId);
+            String tag = getTagByTabIndex(tabId);
             Fragment fragment = null;
             if (tag != null) {
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null /*|| !fragment.isVisible()*/) {
-                    fragment = BaseTabFragment.newInstance(tabId);
+                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabId));
                 }
             }
             return fragment;
         }
     }
 
-    static String getTagByTabId(int tabId) {
-        String tag = null;
-        switch (tabId) {
-            case ChatsActivity.CHATS_FRAGMENT:
-                tag = CHATS_FRAGMENT_TAG;
-                break;
-            case ChatsActivity.ROOMS_FRAGMENT:
-                tag = ROOMS_FRAGMENT_TAG;
-                break;
-        }
-        return tag;
+
+    @Override
+    public int getIdByTabIndex(int tabIndex) {
+        return fragmentsIds[tabIndex];
+    }
+
+    @Override
+    public String getTagByTabIndex(int tabIndex) {
+        return fragmentsTags[tabIndex];
     }
 
     @Override

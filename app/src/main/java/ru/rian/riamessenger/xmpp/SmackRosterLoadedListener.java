@@ -38,7 +38,6 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
     final Context context;
     @Override
     public void onRosterLoaded(Roster roster) {
-
         saveRosterToDb(roster);
     }
 

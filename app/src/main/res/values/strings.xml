@@ -10,6 +10,8 @@
     <string name="password">Пароль</string>
     <string name="action_logout">Выйти</string>
     <string name="robots">!Загрузка!</string>
+    <string name="chats">Чаты</string>
+    <string name="rooms">Комнаты</string>
     <string name="groups">Группы</string>
     <string name="contacts">Контакты</string>
     <string name="new_chat">Новый чат</string>

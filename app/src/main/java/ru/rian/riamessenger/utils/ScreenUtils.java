@@ -2,11 +2,14 @@ package ru.rian.riamessenger.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.SearchView;
 import android.widget.TextView;
+import ru.rian.riamessenger.R;
 
 
 /**
@@ -22,26 +25,26 @@ public class ScreenUtils {
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
-    public static void styleSearchView(@NonNull SearchView searchView, @NonNull Context context) {
+
+    public static void styleSearchView(@NonNull SearchView searchView, String title_to_search, @NonNull Context context) {
+        searchView.setQuery("", true);
+        searchView.setQueryHint(context.getString(R.string.search_hint));
         int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
         View searchPlate = searchView.findViewById(searchPlateId);
         if (searchPlate != null) {
-            //searchPlate.setBackground(context.getResources().getDrawable(R.drawable.search_view_bg));
-            // Set the search plate color to white
-            int linlayId = context.getResources().getIdentifier("android:id/search_plate", null, null);
-            View view = searchView.findViewById(linlayId);
-           // view.setBackgroundResource(R.drawable.search_view_bg);
-
             int searchTextId = searchPlate.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
             TextView searchText = (TextView) searchPlate.findViewById(searchTextId);
             if (searchText != null) {
-                // searchText.setTextColor(Color.WHITE);
-                // searchText.setHintTextColor(Color.WHITE);
-                //searchText.setHint(context.getResources().getString(R.string.discovery_search_hint));
+                searchText.setTextColor(Color.WHITE);
             }
+            searchPlate.setBackgroundResource(R.drawable.search_view_bg);
         }
-        searchView.setFocusable(true);
-        searchView.setIconifiedByDefault(true);
-        //searchView.onActionViewExpanded();
+
+        if (TextUtils.isEmpty(title_to_search)) {
+            searchView.setIconified(true);
+        } else {
+            searchView.setIconified(false);
+            searchView.setQuery(title_to_search, true);
+        }
     }
 }
