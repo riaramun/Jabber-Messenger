@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/action_bar_title"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_toLeftOf="@+id/user_online_status"
+        app:fontFamily="roboto"
+        app:textWeight="normal" />
+
+    <ImageView
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/user_online_status"
+        android:layout_width="@dimen/action_bar_status_img_width"
+        android:layout_height="@dimen/action_bar_status_img_height" />
+</RelativeLayout>

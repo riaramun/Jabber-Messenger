@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ChatsFragment;
@@ -28,6 +29,7 @@ import ru.rian.riamessenger.fragments.GroupsFragment;
 import ru.rian.riamessenger.fragments.RobotsFragment;
 import ru.rian.riamessenger.fragments.RoomsFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 
 
 public class ChatsActivity extends TabsRiaBaseActivity {
@@ -51,6 +53,8 @@ public class ChatsActivity extends TabsRiaBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RiaBaseApplication.component().inject(this);
+        setContentView(R.layout.activity_chats);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -59,19 +63,12 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         int resId = -1;
-        String title = "";
         if (connectivityManager.getActiveNetworkInfo().isConnected()) {
-            title = "Connected";
             resId = R.drawable.action_bar_status_online;
         } else {
-            title = "Disconnected";
             resId = R.drawable.action_bar_status_offline;
         }
-        getSupportActionBar().setTitle(title);
         getSupportActionBar().setHomeAsUpIndicator(resId);
-
-        setContentView(R.layout.activity_chats);
-        ButterKnife.bind(this);
 
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
@@ -100,6 +97,12 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);*/
         finish();
+    }
+
+    @Override
+    protected void onStart() {
+       // RiaEventBus.post(RiaServiceEvent.RiaEvent.GET_ROSTER);
+        super.onStart();
     }
 
     @Override

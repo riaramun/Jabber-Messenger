@@ -1,19 +1,17 @@
 package ru.rian.riamessenger.utils;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
-import com.activeandroid.util.SQLiteUtils;
 
-import java.util.Arrays;
-import java.util.List;
-
-import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.model.RosterGroupModel;
 
 /**
  * Created by Roman on 7/14/2015.
@@ -35,18 +33,31 @@ public class DbHelper {
             model = new Select().from(cl).where(BaseColumns._ID + "=?", id).executeSingle();
         }
         return model;
+}
+
+    static public Cursor getMessagesByUserId(RosterEntryModel rosterEntryModel) {
+//        String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
+        String resultRecords = new Select().
+                from(MessageContainer.class).toSql();
+        SQLiteDatabase db = ActiveAndroid.getDatabase();
+
+        Cursor resultCursor = db.rawQuery(resultRecords, null);
+        return resultCursor;
+
+      // List<MessageContainer>  messageContainers = new Select().from(MessageContainer.class).execute();
+        //String select = new Select().from(MessageContainer.class).where(DbColumns.FromJidCol + "='" + rosterEntryModel.fromJid + "'").toSql();
+      //  String select = new Select().from(MessageContainer.class).toSql();
+       // Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
+      //  return msgCursor;
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
-        String rosterEntryToSelect = new Select().from(RosterEntryModel.class).where("BareJid ='" + bareJid + "'").toSql();
-        Cursor rosterEntryCursor = Cache.openDatabase().rawQuery(rosterEntryToSelect, null);
-        List<RosterEntryModel> rosterEntryModels = SQLiteUtils.processCursor(RosterEntryModel.class, rosterEntryCursor);
-        rosterEntryCursor.close();
-        RosterEntryModel rosterEntryModel = null;
-        if (rosterEntryModels != null && rosterEntryModels.size() > 0) {
-            rosterEntryModel = rosterEntryModels.get(0);
-        }
+        RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
         return rosterEntryModel;
     }
 
+    static public RosterEntryModel getRosterEntryById(long id) {
+        RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(BaseColumns._ID + "=" + id).executeSingle();
+        return rosterEntryModel;
+    }
 }

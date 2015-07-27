@@ -17,15 +17,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
-    style="@style/commonListItemStyle"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
-    android:background="@drawable/list_item_bg_selector"
-    android:clickable="true">
+    android:background="@drawable/list_item_bg_selector">
 
     <com.devspark.robototextview.widget.RobotoTextView
         style="@style/ListItemTextViewStyle"
-        android:capitalize="words"
         android:layout_toLeftOf="@+id/user_online_status"
         app:fontFamily="roboto"
         app:textWeight="light" />

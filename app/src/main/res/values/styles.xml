@@ -31,21 +31,23 @@
         <item name="android:background">#1161BE</item>
     </style>
     <style name="commonListItemStyle">
-        <item name="android:translationZ">@dimen/list_item_translation_z</item>
+        <!--<item name="android:translationZ">@dimen/list_item_translation_z</item>-->
     </style>
+
     <style name="ListItemTextViewStyle">
         <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
         <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
         <item name="android:id">@id/contact_name</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:gravity">left|center_vertical</item>
         <item name="android:text">""</item>
         <item name="android:textColor">@color/list_Item_title_color_black</item>
         <item name="android:textSize">@dimen/list_item_title_text_size</item>
     </style>
+
     <style name="AppMessageView">
         <item name="android:id">@id/app_message_view</item>
         <item name="android:layout_width">match_parent</item>

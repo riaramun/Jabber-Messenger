@@ -14,12 +14,16 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
+import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.listeners.ContactsListClickListener;
+import ru.rian.riamessenger.model.RosterEntryModel;
+import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 
 /**
  *
  */
-public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTextGetter {
+public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEntryIdGetter, BubbleTextGetter {
 
     private int mHeaderDisplay;
 
@@ -27,20 +31,27 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
 
     private final Context mContext;
 
+    final ContactsListClickListener contactsListClickListener;
+
     @Override
-    public String getTextToShowInBubble(final int pos)
-    {
-        return Character.toString(((LineItem)entries.get(pos)).text.charAt(0));
+    public String getTextToShowInBubble(final int pos) {
+        String retStr = "";
+        if (entries != null && entries.size() > 0) {
+            retStr = Character.toString(entries.get(pos).text.charAt(0));
+        }
+        return retStr;
     }
 
-    public ContactsAdapter(Context context, int headerMode) {
+    public ContactsAdapter(Context context, int headerMode, ContactsListClickListener contactsListClickListener) {
         mContext = context;
         mHeaderDisplay = headerMode;
+        this.contactsListClickListener = contactsListClickListener;
     }
 
     public boolean isItemHeader(int position) {
         return ((LineItem) entries.get(position)).isHeader;
     }
+
 
     public String itemToString(int position) {
         return ((LineItem) entries.get(position)).text;
@@ -55,11 +66,17 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.header_item, parent, false);
                 viewHolder = new ContactViewHolder(view);
-                ;
+
                 break;
             case VIEW_TYPE_CONTENT:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.list_item, parent, false);
+                        .inflate(R.layout.list_item_contact, parent, false);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contactsListClickListener.onClick(ContactsAdapter.this, v);
+                    }
+                });
                 viewHolder = new ContactViewHolder(view);
                 ;
                 break;
@@ -144,6 +161,19 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
         }
     }
 
+    @Override
+    public String getJid(int index) {
+        String jid = null;
+        if (entries != null && entries.size() > index) {
+            long id = entries.get(index).modelId;
+            RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryById(id);
+            if(rosterEntryModel != null) {
+                jid = rosterEntryModel.bareJid;
+            }
+        }
+        return jid;
+    }
+
     @AllArgsConstructor
     public static class LineItem {
 
@@ -156,6 +186,8 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements BubbleTex
         public int sectionFirstPosition;
 
         public int presence;
+
+        public Long modelId;
     }
 
 

@@ -4,17 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import org.jivesoftware.smack.roster.RosterEntry;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import lombok.Getter;
 import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.adapters.list.ContactsAdapter;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 
 /**
@@ -27,13 +22,13 @@ public abstract class BaseRiaRecyclerAdapter extends RecyclerView.Adapter<Recycl
     protected static final int VIEW_TYPE_CONTENT = 0x03;
 
 
-    protected List<?> entries = null;
+    protected List<ContactsAdapter.LineItem> entries = null;
 
     @Getter
     protected boolean isEmpty = false;
     protected EmptyViewHolder emptyViewHolder;
 
-    public void updateEntries(List<?> entries) {
+    public void updateEntries(List<ContactsAdapter.LineItem> entries) {
         if(entries != null) {
             this.entries = entries;
             notifyDataSetChanged();
@@ -57,7 +52,7 @@ public abstract class BaseRiaRecyclerAdapter extends RecyclerView.Adapter<Recycl
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = null;
         RecyclerView.ViewHolder vh = null;
-        itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+        itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_empty, parent, false);
        // itemView.setLayoutParams(new RecyclerView.LayoutParams(parent.getWidth(), parent.getHeight()));
         vh = new EmptyViewHolder(itemView);
         emptyViewHolder = (EmptyViewHolder) vh;

@@ -10,16 +10,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import lombok.AllArgsConstructor;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 
 @Module
-public class SystemServicesModule {
+@AllArgsConstructor
+public class AppSystemModule {
 
     private final Application application;
-
-    public SystemServicesModule(Application application) {
-        this.application = application;
-    }
 
     @Provides
     Context provideContext(){

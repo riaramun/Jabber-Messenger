@@ -1,17 +1,13 @@
 package ru.rian.riamessenger;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -20,25 +16,14 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
-import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
-import ru.rian.riamessenger.di.DaggerD2EComponent;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
-import ru.rian.riamessenger.fragments.ContactsFragment;
-import ru.rian.riamessenger.fragments.GroupsFragment;
-import ru.rian.riamessenger.fragments.RobotsFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.utils.ScreenUtils;
 
 
 public class ContactsActivity extends TabsRiaBaseActivity {
 
-    View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
+    //public static final String ARG_USER_ID = "userId";
 
     BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.ROBOTS_FRAGMENT, BaseTabFragment.FragIds.GROUPS_FRAGMENT, BaseTabFragment.FragIds.CONTACTS_FRAGMENT};
     String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
@@ -100,9 +85,6 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         switch (id) {
             case R.id.action_exit:
                 logout(true);
-                return true;
-            case android.R.id.home:
-                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);

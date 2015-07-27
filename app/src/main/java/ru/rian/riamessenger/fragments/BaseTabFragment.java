@@ -24,8 +24,12 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.SearchView;
 
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
+import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.common.RiaBaseFragment;
+import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
@@ -34,6 +38,8 @@ import ru.rian.riamessenger.utils.ScreenUtils;
 
 public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
+    @Inject
+    ContactsListClickListener contactsListClickListener;
 
     static public final String CHATS_FRAGMENT_TAG = ChatsFragment.class.getSimpleName();
     static public final String ROOMS_FRAGMENT_TAG = RoomsFragment.class.getSimpleName();
@@ -86,7 +92,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //RiaApplication.component().inject(this);
+        RiaApplication.component().inject(this);
         tabId = getArguments().getInt(ARG_TAB_ID);
     }
 

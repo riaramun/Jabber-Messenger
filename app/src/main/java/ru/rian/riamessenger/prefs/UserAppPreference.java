@@ -9,7 +9,7 @@ import ru.rian.riamessenger.RiaApplication;
 
 
 public class UserAppPreference {
-    private static final String RIA_XMPP_SERVICE_FLAG = "RIA_XMPP_SERVICE_FLAG";
+   // private static final String RIA_XMPP_SERVICE_FLAG = "RIA_XMPP_SERVICE_FLAG";
     private static final String PASS_STRING_KEY = "PASS_STRING_KEY";
     private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
     private static final String TOKEN_STRING_KEY = "TOKEN_STRING_KEY";

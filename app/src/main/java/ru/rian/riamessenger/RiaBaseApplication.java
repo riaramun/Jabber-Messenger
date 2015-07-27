@@ -5,16 +5,15 @@ import android.content.Context;
 
 import com.activeandroid.ActiveAndroid;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import ru.rian.riamessenger.di.D2EComponent;
-import ru.rian.riamessenger.di.DaggerD2EComponent;
-import ru.rian.riamessenger.di.SystemServicesModule;
+import ru.rian.riamessenger.di.AppComponent;
+//import ru.rian.riamessenger.di.DaggerAppComponent;
+import ru.rian.riamessenger.di.AppSystemModule;
+import ru.rian.riamessenger.di.DaggerAppComponent;
 
 
 public abstract class RiaBaseApplication extends Application {
 
-    private D2EComponent d2EComponent;
+    private AppComponent appComponent;
 
     private static Context mContext = null;
 
@@ -23,14 +22,14 @@ public abstract class RiaBaseApplication extends Application {
         super.onCreate();
         ActiveAndroid.initialize(this);
         mContext = getApplicationContext();
-        d2EComponent = DaggerD2EComponent.builder()
-                .systemServicesModule(new SystemServicesModule(this))
+        appComponent = DaggerAppComponent.builder()
+                .appSystemModule(new AppSystemModule(this))
                 .build();
     }
 
 
-    public static D2EComponent component() {
-        return ((RiaBaseApplication) mContext).d2EComponent;
+    public static AppComponent component() {
+        return ((RiaBaseApplication) mContext).appComponent;
     }
 
 }

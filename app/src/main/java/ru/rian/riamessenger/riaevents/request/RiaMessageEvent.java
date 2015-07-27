@@ -9,14 +9,11 @@ import lombok.RequiredArgsConstructor;
  */
 
 @AllArgsConstructor
-public class RiaServiceEvent {
+public class RiaMessageEvent {
 
     @Getter
-    RiaEvent eventId;
+    final String jid;
 
-    public enum RiaEvent {
-        SIGN_IN,
-        SIGN_OUT,
-        GET_ROSTER
-    }
+    @Getter
+    final String message;
 }

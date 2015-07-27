@@ -1,6 +1,5 @@
 package ru.rian.riamessenger.xmpp;
 
-import android.content.Intent;
 import android.text.TextUtils;
 
 import com.activeandroid.query.Select;
@@ -13,8 +12,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import lombok.val;
-import ru.rian.riamessenger.RiaApplication;
+import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.model.RosterEntryModel;
 
 /**
@@ -45,10 +43,10 @@ public class SmackRosterListener implements RosterListener {
 
     @Override
     public void presenceChanged(Presence presence) {
-        String bareJid = presence.getFrom().asBareJidIfPossible().toString();
-        if(!TextUtils.isEmpty(bareJid)) {
+        String bareJid = presence.getFrom().toString();
+        if (!TextUtils.isEmpty(bareJid)) {
 
-            RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where("BareJid='" + bareJid + "'" ).executeSingle();
+            RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
             if (rosterEntryModel != null) {
                 rosterEntryModel.setPresence(presence);
                 rosterEntryModel.save();

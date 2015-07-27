@@ -20,10 +20,12 @@ import java.util.Locale;
 
 import lombok.val;
 import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
+import ru.rian.riamessenger.utils.DbHelper;
 
 /**
  * Created by Roman Lebedenko.
@@ -66,7 +68,7 @@ public class ContactsLoader extends CursorRiaLoader {
         switch (fragIds) {
             case CONTACTS_FRAGMENT: {
 
-                String groupToExcludeRequest = new Select().from(RosterGroupModel.class).where("name ='" + getContext().getString(R.string.robots) + "'").toSql();
+                String groupToExcludeRequest = new Select().from(RosterGroupModel.class).where(DbColumns.NameCol + "='" + getContext().getString(R.string.robots) + "'").toSql();
                 Cursor groupCursor = Cache.openDatabase().rawQuery(groupToExcludeRequest, null);
                 List<RosterGroupModel> groupModelList = SQLiteUtils.processCursor(RosterGroupModel.class, groupCursor);
                 groupCursor.close();

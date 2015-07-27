@@ -31,13 +31,23 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.compat.MorphButtonCompat;
+import ru.rian.riamessenger.listeners.ContactsListClickListener;
+import ru.rian.riamessenger.model.RosterEntryModel;
+import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 
 public class GroupsAdapter
-        extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder> {
+        extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder>
+        implements RosterEntryIdGetter {
     private static final String TAG = "GroupsAdapter";
 
     private AbstractExpandableDataProvider mProvider;
+    final ContactsListClickListener contactsListClickListener;
+
+    @Override
+    public String getJid(int index) {
+        return null;
+    }
 
     public static abstract class MyBaseViewHolder extends AbstractExpandableItemViewHolder {
         public RelativeLayout mContainer;
@@ -65,9 +75,9 @@ public class GroupsAdapter
         }
     }*/
 
-    public GroupsAdapter(AbstractExpandableDataProvider dataProvider) {
+    public GroupsAdapter(AbstractExpandableDataProvider dataProvider,ContactsListClickListener contactsListClickListener) {
         mProvider = dataProvider;
-
+        this.contactsListClickListener = contactsListClickListener;
         // ExpandableItemAdapter requires stable ID, and also
         // have to implement the getGroupItemId()/getChildItemId() methods appropriately.
         setHasStableIds(true);
@@ -114,16 +124,17 @@ public class GroupsAdapter
     @Override
     public MyGroupViewHolder onCreateGroupViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View v = inflater.inflate(R.layout.list_group_item, parent, false);
+        final View v = inflater.inflate(R.layout.list_item_group, parent, false);
         return new MyGroupViewHolder(v);
     }
 
     @Override
     public ContactViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View v = inflater.inflate(R.layout.list_item, parent, false);
-        return new ContactViewHolder(v);
+        final View view = inflater.inflate(R.layout.list_item_contact, parent, false);
+        return new ContactViewHolder(view);
     }
+
 
     @Override
     public void onBindGroupViewHolder(MyGroupViewHolder holder, int groupPosition, int viewType) {
@@ -160,13 +171,21 @@ public class GroupsAdapter
     }
 
     @Override
-    public void onBindChildViewHolder(ContactViewHolder holder, int groupPosition, int childPosition, int viewType) {
+    public void onBindChildViewHolder(final ContactViewHolder holder, int groupPosition, int childPosition, int viewType) {
         // group item
         final AbstractExpandableDataProvider.ChildData item = mProvider.getChildItem(groupPosition, childPosition);
-        if(item != null) {
+        if (item != null) {
             // set text
             holder.contactName.setText(RiaTextUtils.capFirst(item.getText()));
             holder.setOnlineStatus(item.getPresence());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryById(item.getChildId());
+                    String jid = rosterEntryModel.bareJid;
+                    contactsListClickListener.onClick(jid, holder.itemView.getContext());
+                }
+            });
         }
         // set background resource (target view ID: container)
         // holder.mContainer.setBackgroundResource(R.drawable.bg_item_normal_state);

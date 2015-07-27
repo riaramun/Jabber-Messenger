@@ -36,6 +36,7 @@ import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RobotsFragment extends BaseTabFragment {
     protected LinearLayoutManager linearLayoutManager;
+
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
@@ -47,7 +48,7 @@ public class RobotsFragment extends BaseTabFragment {
         View rootView = inflater.inflate(R.layout.fragment_groups, container, false);
         ButterKnife.bind(this, rootView);
 
-        robotsAdapter = new RobotsAdapter(getActivity(), null);
+        robotsAdapter = new RobotsAdapter(getActivity(), null, contactsListClickListener);
         recyclerView.setAdapter(robotsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

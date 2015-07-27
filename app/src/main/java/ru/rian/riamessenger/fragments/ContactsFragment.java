@@ -100,7 +100,7 @@ public class ContactsFragment extends BaseTabFragment {
 
         mViews = new ViewHolder(view);
         mViews.initViews(new LayoutManager(getActivity()));
-        mAdapter = new ContactsAdapter(getActivity(), mHeaderDisplay);
+        mAdapter = new ContactsAdapter(getActivity(), mHeaderDisplay, contactsListClickListener);
         mAdapter.setMarginsFixed(mAreMarginsFixed);
         mAdapter.setHeaderDisplay(mHeaderDisplay);
         mViews.setAdapter(mAdapter);
@@ -215,9 +215,9 @@ public class ContactsFragment extends BaseTabFragment {
                 sectionFirstPosition = i + headerCount;
                 lastHeader = header;
                 headerCount += 1;
-                objectArrayList.add(new ContactsAdapter.LineItem(header, true, sectionManager, sectionFirstPosition, -1));
+                objectArrayList.add(new ContactsAdapter.LineItem(header, true, sectionManager, sectionFirstPosition, -1, null));
             }
-            objectArrayList.add(new ContactsAdapter.LineItem(rosterEntryModel.name, false, sectionManager, sectionFirstPosition, rosterEntryModel.presence));
+            objectArrayList.add(new ContactsAdapter.LineItem(rosterEntryModel.name, false, sectionManager, sectionFirstPosition, rosterEntryModel.presence, rosterEntryModel.getId()));
         }
         return objectArrayList;
     }

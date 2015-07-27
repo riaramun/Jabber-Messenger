@@ -17,7 +17,7 @@ public class RosterItemChildData extends AbstractExpandableDataProvider.ChildDat
 
     @Override
     public long getChildId() {
-        return rosterEntry.hashCode();
+        return rosterEntry.getId();
     }
 
     @Override

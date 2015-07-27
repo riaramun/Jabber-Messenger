@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.roster.Roster;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -22,14 +25,14 @@ import de.greenrobot.event.EventBus;
 import lombok.Getter;
 import ru.rian.riamessenger.RiaBaseApplication;
 import ru.rian.riamessenger.common.RiaEventBus;
+import ru.rian.riamessenger.di.AppSystemModule;
 import ru.rian.riamessenger.di.DaggerXmppServiceComponent;
-import ru.rian.riamessenger.di.SystemServicesModule;
 import ru.rian.riamessenger.di.XmppModule;
 import ru.rian.riamessenger.di.XmppServiceComponent;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
-import ru.rian.riamessenger.xmpp.RosterConnectingTimer;
 import ru.rian.riamessenger.xmpp.SmackWrapper;
 
 
@@ -61,6 +64,9 @@ public class RiaXmppService extends Service {
 
     final SmackWrapper smackWrapper;
 
+    public void onEvent(RiaMessageEvent event) {
+        smackWrapper.sendMessage(event.getJid(), event.getMessage());
+    }
 
     public void onEvent(RiaServiceEvent event) {
 
@@ -77,24 +83,14 @@ public class RiaXmppService extends Service {
                 Log.i("RiaService", "SIGN_OUT");
                 stopSelf();
                 break;
-            /*case GET_ROSTER:
+           /* case GET_ROSTER:
                 if (!smackWrapper.isConnecting()) {
                     Roster roster = smackWrapper.getRoster();
                     if (roster != null) {
                         if (roster.isLoaded()) {
-                            EventBus.getDefault().postSticky(new RosterClientEvent(RosterClientEvent.RiaEvent.DB_UPDATED));
+                            RiaEventBus.post(XmppErrorEvent.State.EDbUpdated);
                         } else {
-                            if (smackWrapper.isAuthenticated()) {
-                                try {
-                                    roster.reload();
-                                } catch (SmackException.NotLoggedInException e) {
-                                    e.printStackTrace();
-                                } catch (SmackException.NotConnectedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                onStartService();
-                            }
+                            smackWrapper.loadRosterSync();
                         }
                     }
                 }
@@ -109,7 +105,7 @@ public class RiaXmppService extends Service {
 
 
     private static final int NOTIFICATION_CONNECTION_STATUS = 1;
-    private int mClientCount = 0;
+  //  private int mClientCount = 0;
 
 
     public NotificationManager getNotifyManager() {
@@ -126,7 +122,7 @@ public class RiaXmppService extends Service {
         EventBus.getDefault().register(this);
         mContext = this;
         xmppServiceComponent = DaggerXmppServiceComponent.builder()
-                .systemServicesModule(new SystemServicesModule(getApplication()))
+                .appSystemModule(new AppSystemModule(getApplication()))
                 .xmppModule(new XmppModule(this, userAppPreference))
                 .build();
     }
@@ -143,10 +139,10 @@ public class RiaXmppService extends Service {
     }
 
     /**
-    If the service starts, it means that we don't have yet a connection, roster and so on..
-    The method checks login and password. If login and password exist it starts connecting ,
-    if it is not - it sends auth event to client (probably we don't need it)
-    */
+     * If the service starts, it means that we don't have yet a connection, roster and so on..
+     * The method checks login and password. If login and password exist it starts connecting ,
+     * if it is not - it sends auth event to client (probably we don't need it)
+     */
     void onStartService() {
         smackWrapper.connectAndSingIn();
     }
@@ -159,7 +155,7 @@ public class RiaXmppService extends Service {
     public void onDestroy() {
         Log.i("RiaService", "onDestroy");
         mContext = null;
-       //userAppPreference.setRiaXmppServiceStartedFlag(false);
+        //userAppPreference.setRiaXmppServiceStartedFlag(false);
         EventBus.getDefault().unregister(this);
         getNotifyManager().cancel(NOTIFICATION_CONNECTION_STATUS);
 

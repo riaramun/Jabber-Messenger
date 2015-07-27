@@ -45,6 +45,7 @@ import ru.rian.riamessenger.adapters.list.RobotsAdapter;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class ChatsFragment extends BaseTabFragment {
+
     protected LinearLayoutManager linearLayoutManager;
 
     @Bind(R.id.recycler_view)
@@ -68,7 +69,7 @@ public class ChatsFragment extends BaseTabFragment {
         ButterKnife.bind(this, rootView);
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
         buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
-        robotsAdapter = new RobotsAdapter(getActivity(), null);
+        robotsAdapter = new RobotsAdapter(getActivity(), null, contactsListClickListener);
         recyclerView.setAdapter(robotsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

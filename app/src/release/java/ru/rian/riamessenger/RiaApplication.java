@@ -20,11 +20,11 @@ import android.content.Context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.rian.riamessenger.di.D2EComponent;
-import ru.rian.riamessenger.di.SystemServicesModule;
+import ru.rian.riamessenger.di.AppComponent;
+import ru.rian.riamessenger.di.AppSystemModule;
 
 public class RiaApplication extends Application {
-  private D2EComponent component;
+  private AppComponent component;
 
   @Override
   public void onCreate() {
@@ -36,16 +36,16 @@ public class RiaApplication extends Application {
     component = DaggerComponentInitializer.init(this);
   }
 
-  public static D2EComponent component(Context context) {
+  public static AppComponent component(Context context) {
     return ((RiaBaseApplication) context.getApplicationContext()).component;
   }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   public final static class DaggerComponentInitializer {
 
-    public static D2EComponent init(RiaBaseApplication app) {
+    public static AppComponent init(RiaBaseApplication app) {
       return DaggerD2EComponent.builder()
-              .systemServicesModule(new SystemServicesModule(app))
+              .systemServicesModule(new AppSystemModule(app))
               .build();
     }
 

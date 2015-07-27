@@ -24,21 +24,13 @@ public class XmppModule {
 
     private final Context context;
     final UserAppPreference userAppPreference;
-/*
-    @Provides
-    @Singleton
-    RiaXMPPConnection provideRiaXMPPConnection() {
-        return new RiaXMPPConnection();
-    }
-*/
+
 
     @Provides
     @Singleton
     SendMsgBroadcastReceiver provideSendMsgBroadcastReceiver() {
         return new SendMsgBroadcastReceiver();
     }
-
-
 
     @Provides
     @Singleton

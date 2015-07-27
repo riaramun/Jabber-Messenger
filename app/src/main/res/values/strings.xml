@@ -24,4 +24,5 @@
         Внутренний специализированный мессенджер с доступом только для сотрудников МИА Россия Сегодня
     </string>
     <string name="message_hint">Сообщение..</string>
+    <string name="mia_chat">МИА Чат</string>
 </resources>

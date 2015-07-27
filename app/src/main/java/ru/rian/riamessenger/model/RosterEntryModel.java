@@ -1,6 +1,5 @@
 package ru.rian.riamessenger.model;
 
-import android.preference.Preference;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -8,6 +7,8 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 import org.jivesoftware.smack.packet.Presence;
+
+import ru.rian.riamessenger.common.DbColumns;
 
 /**
  * Created by Roman on 7/9/2015.
@@ -20,17 +21,24 @@ public class RosterEntryModel extends Model {
     //public long remoteId;
     // This is a regular field
 
-    @Column(name = "BareJid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+
+
+    @Column(name = DbColumns.FromJidCol, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String bareJid;
 
     @Column(name = "Presence")
     public Integer presence;
 
-    @Column(name = "Name")
+    @Column(name = DbColumns.NameCol)
     public String name;
-    // This is an association to another activeandroid model
-    @Column(name = "RosterGroupModel", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+
+    @Column(name = DbColumns.RosterGroupModelCol, onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     public RosterGroupModel rosterGroupModel;
+
+    // Used to return items from another table based on the foreign key
+   /* public List<MessageContainer> items() {
+        return getMany(MessageContainer.class, "RosterEntryModel");
+    }*/
 
     // Make sure to have a default constructor for every ActiveAndroid model
     public RosterEntryModel() {
@@ -39,7 +47,7 @@ public class RosterEntryModel extends Model {
 
     public void setPresence(Presence presence) {
 
-        if(presence.isAvailable())
+        if (presence.isAvailable())
             this.presence = UserStatus.USER_STATUS_AVAILIBLE.ordinal();
         else if (presence.isAway())
             this.presence = UserStatus.USER_STATUS_AWAY.ordinal();

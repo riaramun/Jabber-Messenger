@@ -70,7 +70,7 @@ public class GroupsFragment extends BaseTabFragment {
 
         //adapter
 
-        groupsAdapter = new GroupsAdapter(new EmptyGroupsDataProvider());;
+        groupsAdapter = new GroupsAdapter(new EmptyGroupsDataProvider(),contactsListClickListener);;
 
         mWrappedAdapter = mRecyclerViewExpandableItemManager.createWrappedAdapter(groupsAdapter);       // wrap for expanding
 

@@ -59,7 +59,7 @@ public class RoomsFragment extends BaseTabFragment {
 
         buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
-        robotsAdapter = new RobotsAdapter(getActivity(), null);
+        robotsAdapter = new RobotsAdapter(getActivity(), null, contactsListClickListener);
         recyclerView.setAdapter(robotsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

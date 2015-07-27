@@ -32,9 +32,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ConversationActivity"
+            android:label=""
+            android:configChanges="orientation"
+            android:theme="@style/CustomActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
         <activity
             android:name=".ChatsActivity"
-            android:label=""
+            android:label="@string/mia_chat"
             android:configChanges="orientation"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
