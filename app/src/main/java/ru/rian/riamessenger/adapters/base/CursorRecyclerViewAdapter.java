@@ -33,7 +33,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     protected static final int VIEW_TYPE_HEADER = 0x02;
     protected static final int VIEW_TYPE_CONTENT = 0x03;
 
-    private Context mContext;
+    protected Context mContext;
 
     private Cursor mCursor;
 

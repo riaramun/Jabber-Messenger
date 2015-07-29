@@ -12,14 +12,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.malinskiy.materialicons.widget.IconTextView;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import de.greenrobot.event.EventBus;
 import lombok.val;
-import ru.rian.riamessenger.adapters.list.MessagesAdapter;
+import ru.rian.riamessenger.adapters.cursor.MessagesAdapter;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.loaders.MessagesLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -28,6 +31,7 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
+import ru.rian.riamessenger.utils.ScreenUtils;
 
 /**
  * Created by Roman on 7/21/2015.
@@ -37,18 +41,29 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     @Inject
     UserAppPreference userAppPreference;
 
+    @Bind(R.id.send_icon_text_view)
+    IconTextView sendIconTextView;
+
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
     @Bind(R.id.message_edit_text)
     EditText messageEditText;
 
-    @OnClick(R.id.send_icon_text_view)
-    public void onClick() {
-        EventBus.getDefault().post(new RiaMessageEvent(getJid(), messageEditText.getText().toString()));
+    @OnTextChanged(R.id.message_edit_text)
+    void onTextChanged(CharSequence text)  {
+        sendIconTextView.setEnabled(!messageEditText.getText().toString().isEmpty());
     }
 
-    public static final String ARG_ENTRY_MODEL_ID = "entry_model_id";
+    @OnClick(R.id.send_icon_text_view)
+    void onClick() {
+        EventBus.getDefault().post(new RiaMessageEvent(getToJid(), messageEditText.getText().toString()));
+        ScreenUtils.hideKeyboard(ConversationActivity.this);
+        messageEditText.setText("");
+    }
+
+    public static final String ARG_FROM_JID = "from_jid";
+    public static final String ARG_TO_JID = "to_jid";
     MessagesAdapter messagesAdapter;
     LinearLayoutManager linearLayoutManager;
 
@@ -70,9 +85,9 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.action_bar_title_layout);
 
-        String jid = getJid();
-        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
+        String jid_to = getToJid();
 
+        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
         if (rosterEntryModel != null) {
             String titleToSet;
             if (rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
@@ -91,16 +106,22 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         val itemAnimator = new DefaultItemAnimator();
         recyclerView.setItemAnimator(itemAnimator);
 
-        //messagesAdapter = new MessagesAdapter(this, null);
+        messagesAdapter = new MessagesAdapter(this, null, userAppPreference.getLoginStringKey());
         recyclerView.setAdapter(messagesAdapter);
 
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_ENTRY_MODEL_ID, jid);
+        bundle.putString(ARG_TO_JID, jid_to);
+        bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
+
         getSupportLoaderManager().initLoader(0, bundle, this);
     }
 
-    String getJid() {
-        return getIntent().getStringExtra(ARG_ENTRY_MODEL_ID);
+    String getFromJid() {
+        return getIntent().getStringExtra(ARG_FROM_JID);
+    }
+
+    String getToJid() {
+        return getIntent().getStringExtra(ARG_TO_JID);
     }
 
     public int getIconIdByPresence(int presence) {
@@ -132,11 +153,9 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-        if (messagesAdapter == null || messagesAdapter.getCursor() == null) {
-            messagesAdapter = new MessagesAdapter(this, data.result, userAppPreference.getLoginStringKey());
-            recyclerView.setAdapter(messagesAdapter);
-        } else {
-            messagesAdapter.changeCursor(data.result);
+        messagesAdapter.changeCursor(data.result);
+        if (messagesAdapter.getItemCount() > 0) {
+            linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
         }
     }
 

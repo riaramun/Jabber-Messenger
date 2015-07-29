@@ -7,7 +7,9 @@
 
     <android.support.v7.widget.RecyclerView
         style="@style/RecyclerViewCommon"
+        android:background="#eef5fe"
         android:layout_above="@+id/send_msg_control"
+        android:paddingBottom="@dimen/list_item_message_margin"
         android:scrollbars="none" />
 
 
@@ -30,8 +32,9 @@
         </EditText>
 
         <com.malinskiy.materialicons.widget.IconTextView
+            android:enabled="false"
             android:id="@+id/send_icon_text_view"
-            android:textColor="#1364BF"
+            android:textColor="@drawable/icon_text_view_send_icon_color_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

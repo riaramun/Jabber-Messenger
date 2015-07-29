@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.adapters.list;
+package ru.rian.riamessenger.adapters.cursor;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -16,6 +16,7 @@ import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.ViewUtils;
 
 /**
  * Created by Roman on 6/30/2015.
@@ -41,7 +42,7 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
                 if (rosterEntry != null) {
                     final val contactViewHolder = (ContactViewHolder) viewHolder;
                     contactViewHolder.contactName.setText(rosterEntry.name);
-                    contactViewHolder.setOnlineStatus(rosterEntry.presence);
+                    ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntry.presence);
                     contactViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

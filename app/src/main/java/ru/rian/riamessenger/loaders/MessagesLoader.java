@@ -3,30 +3,15 @@ package ru.rian.riamessenger.loaders;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.activeandroid.Cache;
 import com.activeandroid.content.ContentProvider;
-import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
-import com.activeandroid.util.SQLiteUtils;
 
-import org.jivesoftware.smack.roster.RosterEntry;
-import org.jivesoftware.smack.roster.RosterGroup;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-
-import lombok.val;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.ConversationActivity;
-import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.fragments.BaseTabFragment;
+import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.MessageContainer;
-import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.model.RosterGroupModel;
 import ru.rian.riamessenger.utils.DbHelper;
 
 /**
@@ -36,27 +21,37 @@ import ru.rian.riamessenger.utils.DbHelper;
 
 public class MessagesLoader extends CursorRiaLoader {
 
-    String jid = null;
+    String jid_to = null;
+    String jid_from = null;
 
     public MessagesLoader(Context ctx, Bundle args) {
         super(ctx);
-        jid = args.getString(ConversationActivity.ARG_ENTRY_MODEL_ID);
+        jid_to = args.getString(ConversationActivity.ARG_TO_JID);
+        jid_from = args.getString(ConversationActivity.ARG_FROM_JID);
+
         setSubscription(ContentProvider.createUri(MessageContainer.class, null));
     }
 
 
     @Override
     protected Cursor loadCursor() throws Exception {
-
         Cursor resultCursor;
-       // String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
-        String resultRecords = new Select().from(MessageContainer.class).toSql();
+        // String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
+ /*       String resultRecords = new Select().from(MessageContainer.class).toSql();
         resultCursor = Cache.openDatabase().rawQuery(resultRecords, null);
         boolean isMoved = resultCursor.moveToPosition(0);
         int count = resultCursor.getCount();
+*/
+        //  resultCursor = DbHelper.getMessagesByJid(jid_to);
 
-        //RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
-        return resultCursor;//DbHelper.getMessagesByUserId(rosterEntryModel);
+        String select = new Select().from(MessageContainer.class)
+                .where(DbColumns.FromJidCol + "='" + jid_from + "' and " + DbColumns.ToJidCol + "='" + jid_to + "'" + " OR " +
+                                DbColumns.FromJidCol + "='" + jid_to + "' and " + DbColumns.ToJidCol + "='" + jid_from + "'"
+                ).toSql();
+        //  String select = new Select().from(MessageContainer.class).toSql();
+        Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
+
+        return msgCursor;//DbHelper.getMessagesByUserId(rosterEntryModel);
     }
 
 }

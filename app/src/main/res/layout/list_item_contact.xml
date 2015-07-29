@@ -28,15 +28,10 @@
         app:textWeight="light" />
 
     <com.devspark.robototextview.widget.RobotoTextView
-        android:id="@+id/user_online_status"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginRight="16dp"
+        style="@style/UserOnlineStatusStyle"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/status_offline"
         app:fontFamily="roboto"
-        app:textWeight="light" />
-
+        app:textWeight="light"/>
 
 </RelativeLayout>

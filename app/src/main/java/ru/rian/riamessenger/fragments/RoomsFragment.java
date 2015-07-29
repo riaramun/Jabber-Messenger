@@ -37,7 +37,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.list.RobotsAdapter;
+import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
+import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RoomsFragment extends BaseTabFragment {
@@ -83,6 +84,11 @@ public class RoomsFragment extends BaseTabFragment {
         inflater.inflate(R.menu.menu_rooms, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
         setSearchViewListenersAndStyle(searchView);
+    }
+
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return null;
     }
 
     @Override

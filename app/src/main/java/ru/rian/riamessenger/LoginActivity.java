@@ -8,10 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import javax.inject.Inject;
@@ -21,14 +19,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
-import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
-import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.ScreenUtils;
 
 public class LoginActivity extends RiaBaseActivity {
@@ -103,7 +99,7 @@ public class LoginActivity extends RiaBaseActivity {
     public void onStart() {
         super.onStart();
 
-        String token = userAppPreference.getTokenStringKey();
+        String token = userAppPreference.getJidStringKey();
         String login = userAppPreference.getLoginStringKey();
         String pass = userAppPreference.getPassStringKey();
         if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(login) && !TextUtils.isEmpty(pass)) {

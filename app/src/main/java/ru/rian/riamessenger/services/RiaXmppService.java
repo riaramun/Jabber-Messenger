@@ -40,9 +40,9 @@ public class RiaXmppService extends Service {
 
     private static RiaXmppService instance = null;
 
-    public static boolean isInstanceCreated() {
+    /*public static boolean isInstanceCreated() {
         return instance != null;
-    }
+    }*/
 
     private XmppServiceComponent xmppServiceComponent;
     private static Context mContext = null;

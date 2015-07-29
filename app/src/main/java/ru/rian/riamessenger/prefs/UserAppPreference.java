@@ -12,7 +12,7 @@ public class UserAppPreference {
    // private static final String RIA_XMPP_SERVICE_FLAG = "RIA_XMPP_SERVICE_FLAG";
     private static final String PASS_STRING_KEY = "PASS_STRING_KEY";
     private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
-    private static final String TOKEN_STRING_KEY = "TOKEN_STRING_KEY";
+    private static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
     private static final String SAMPLE_LONG_KEY = "SAMPLE_LONG_KEY";
     private static final String SAMPLE_INT_KEY = "SAMPLE_INT_KEY";
     
@@ -36,12 +36,12 @@ public class UserAppPreference {
         mEditor.putBoolean(RIA_XMPP_SERVICE_FLAG, value).apply();
     }*/
 
-    public String getTokenStringKey() {
-        return sharedPreferences.getString(TOKEN_STRING_KEY, "");
+    public String getJidStringKey() {
+        return sharedPreferences.getString(CURRENT_JID_STRING_KEY, "");
     }
 
-    public void setTokenStringKey(String value) {
-        mEditor.putString(TOKEN_STRING_KEY, value).apply();
+    public void setJidStringKey(String value) {
+        mEditor.putString(CURRENT_JID_STRING_KEY, value).apply();
     }
 
     public String getPassStringKey() {

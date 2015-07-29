@@ -10,15 +10,19 @@ import ru.rian.riamessenger.R;
  * Created by Roman on 7/2/2015.
  */
 
-public class MessageViewHolder extends RecyclerView.ViewHolder {
+public class ChatViewHolder extends RecyclerView.ViewHolder {
 
     public TextView messageTextView;
     public TextView dateTextView;
+    public TextView contactName;
+    public TextView onlineStatus;
 
-    public MessageViewHolder(View itemView) {
+    public ChatViewHolder(View itemView) {
         super(itemView);
         messageTextView = (TextView) itemView.findViewById(R.id.message_text);
         dateTextView = (TextView) itemView.findViewById(R.id.message_created_date);
+        contactName = (TextView) itemView.findViewById(R.id.message_from);
+        onlineStatus = (TextView) itemView.findViewById(R.id.user_online_status);
     }
 
 }

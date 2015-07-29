@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.adapters.list;
+package ru.rian.riamessenger.adapters.cursor;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import lombok.val;
 import ru.rian.riamessenger.R;
@@ -44,11 +47,12 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                 if (messageContainer != null) {
                     final val contactViewHolder = (MessageViewHolder) viewHolder;
                     contactViewHolder.messageTextView.setText(messageContainer.body);
+                    contactViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
                 }
                 break;
         }
     }
-
+    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @Override
     public int getItemViewType(int position) {
@@ -58,13 +62,11 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         } else {
             if (getCursor().moveToPosition(position)) {
                 final val messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
-                if (TextUtils.isEmpty(messageContainer.fromJid) || messageContainer.fromJid.contains(currentJid)) {
+                if (messageContainer.fromJid.contains(currentJid)) {
                     resType = VIEW_TYPE_CONTENT_OUTCOME_MSG;
                 } else {
                     resType = VIEW_TYPE_CONTENT_INCOME_MSG;
                 }
-
-
             }
         }
         return resType;

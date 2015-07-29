@@ -32,11 +32,15 @@ import ru.rian.riamessenger.common.RiaBaseFragment;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.ScreenUtils;
 
 
 public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
+
+    @Inject
+    UserAppPreference userAppPreference;
 
     @Inject
     ContactsListClickListener contactsListClickListener;
@@ -166,11 +170,6 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
                 return false;
             }
         });
-    }
-
-    @Override
-    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
-        return new ContactsLoader(getActivity(), args);
     }
 
     @Override

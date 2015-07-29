@@ -20,7 +20,6 @@ import ru.rian.riamessenger.model.RosterEntryModel;
 
 public class ContactViewHolder extends RecyclerView.ViewHolder {
 
-    // @Bind(R.id.contact_name)
     public TextView contactName;
     public TextView onlineStatus;
 
@@ -28,23 +27,5 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         contactName = (TextView) itemView.findViewById(R.id.contact_name);
         onlineStatus = (TextView) itemView.findViewById(R.id.user_online_status);
-        //   ButterKnife.bind(itemView);
-    }
-
-    public void setOnlineStatus(int presence) {
-        int resId = -1;
-        RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[presence];
-        switch (mode) {
-            case USER_STATUS_AVAILIBLE:
-                resId = R.drawable.status_online;
-                break;
-            case USER_STATUS_AWAY:
-                resId = R.drawable.status_away;
-                break;
-            case USER_STATUS_UNAVAILIBLE:
-                resId = R.drawable.status_offline;
-                break;
-        }
-        onlineStatus.setBackgroundResource(resId);
     }
 }

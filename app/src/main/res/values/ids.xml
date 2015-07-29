@@ -5,4 +5,8 @@
     <item name="contact_name" type="id" />
     <item name="app_message_view" type="id" />
     <item name="recycler_view" type="id" />
+    <item name="message_created_date" type="id" />
+    <item name="user_online_status" type="id" />
+
+
 </resources>

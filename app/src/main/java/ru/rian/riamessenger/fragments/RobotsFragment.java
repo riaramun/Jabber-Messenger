@@ -31,7 +31,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.list.RobotsAdapter;
+import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
+import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RobotsFragment extends BaseTabFragment {
@@ -60,6 +61,10 @@ public class RobotsFragment extends BaseTabFragment {
         return rootView;
     }
 
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return new ContactsLoader(getActivity(), args);
+    }
 
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {

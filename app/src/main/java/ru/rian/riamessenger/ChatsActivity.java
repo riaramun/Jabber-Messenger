@@ -63,7 +63,8 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         int resId = -1;
-        if (connectivityManager.getActiveNetworkInfo().isConnected()) {
+        if (connectivityManager.getActiveNetworkInfo() != null &&
+                connectivityManager.getActiveNetworkInfo().isConnected()) {
             resId = R.drawable.action_bar_status_online;
         } else {
             resId = R.drawable.action_bar_status_offline;

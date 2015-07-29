@@ -16,19 +16,27 @@
 
 package ru.rian.riamessenger.utils;
 
-import android.support.v4.view.ViewCompat;
-import android.view.View;
+import android.widget.TextView;
+
+import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.model.RosterEntryModel;
 
 public class ViewUtils {
-    public static boolean hitTest(View v, int x, int y) {
-        final int tx = (int) (ViewCompat.getTranslationX(v) + 0.5f);
-        final int ty = (int) (ViewCompat.getTranslationY(v) + 0.5f);
-        final int left = v.getLeft() + tx;
-        final int right = v.getRight() + tx;
-        final int top = v.getTop() + ty;
-        final int bottom = v.getBottom() + ty;
 
-        return (x >= left) && (x <= right) && (y >= top) && (y <= bottom);
+    public static void setOnlineStatus(TextView onlineStatus, int presence) {
+        int resId = -1;
+        RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[presence];
+        switch (mode) {
+            case USER_STATUS_AVAILIBLE:
+                resId = R.drawable.status_online;
+                break;
+            case USER_STATUS_AWAY:
+                resId = R.drawable.status_away;
+                break;
+            case USER_STATUS_UNAVAILIBLE:
+                resId = R.drawable.status_offline;
+                break;
+        }
+        onlineStatus.setBackgroundResource(resId);
     }
-
 }

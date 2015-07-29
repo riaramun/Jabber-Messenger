@@ -12,7 +12,7 @@
     <color name="show_articles_btn_bg">#dddbdf</color>
     <color name="show_articles_btn_pressed_bg">#d0ccd2</color>
     <color name="list_item_btn_pressed_bg">#E0E0E0</color>
-    <color name="inserted_text">#f99600</color>
+    <color name="inserted_text">#1B52A5</color>
 
     <color name="sign_up_text_color_normal">#7a7a7a</color>
     <color name="sign_up_text_color_pressed">#473354</color>

@@ -6,14 +6,19 @@ import org.jivesoftware.smack.XMPPConnection;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import lombok.AllArgsConstructor;
 import ru.rian.riamessenger.common.RiaEventBus;
+import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 /**
  * Created by Roman on 7/12/2015.
  */
+@AllArgsConstructor
 public class SmackConnectionListener implements ConnectionListener {
 
+
+    final UserAppPreference userAppPreference;
 
     @Override
     public void connected(XMPPConnection connection) {
@@ -23,6 +28,7 @@ public class SmackConnectionListener implements ConnectionListener {
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
         RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
+        userAppPreference.setJidStringKey(connection.getUser().asBareJidString());
     }
 
     @Override

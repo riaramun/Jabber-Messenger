@@ -5,9 +5,12 @@ package ru.rian.riamessenger.common;
  */
 public class DbColumns {
 
+    final public static String MsgBodyCol = "body";
     final public static String ToJidCol = "ToJid";
     final public static String FromJidCol = "FromJid";
+    final public static String ThreadIdCol = "ThreadID";
     final public static String NameCol = "Name";
+    final public static String CreatedCol = "created";
     final public static String RosterGroupModelCol = "RosterGroupModel";
     final public static String RosterEntryModelCol = "RosterEntryModel";
 }

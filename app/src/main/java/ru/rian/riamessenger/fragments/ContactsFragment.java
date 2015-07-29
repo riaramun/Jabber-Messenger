@@ -25,6 +25,7 @@ import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.list.ContactsAdapter;
 import ru.rian.riamessenger.adapters.list.FastScroller;
+import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
@@ -237,5 +238,9 @@ public class ContactsFragment extends BaseTabFragment {
         bundle.putInt(BaseTabFragment.ARG_TAB_ID, tabId);
         bundle.putString(BaseTabFragment.ARG_TITLE_FILTER, title_to_search);
         return bundle;
+    }
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return new ContactsLoader(getActivity(), args);
     }
 }

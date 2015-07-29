@@ -35,20 +35,20 @@ public class DbHelper {
         return model;
 }
 
-    static public Cursor getMessagesByUserId(RosterEntryModel rosterEntryModel) {
+    static public Cursor getMessagesByJid(String jid) {
 //        String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
-        String resultRecords = new Select().
+        /*String resultRecords = new Select().
                 from(MessageContainer.class).toSql();
         SQLiteDatabase db = ActiveAndroid.getDatabase();
 
-        Cursor resultCursor = db.rawQuery(resultRecords, null);
-        return resultCursor;
+        Cursor resultCursor = db.rawQuery(resultRecords, null);*/
+        //return resultCursor;
 
       // List<MessageContainer>  messageContainers = new Select().from(MessageContainer.class).execute();
-        //String select = new Select().from(MessageContainer.class).where(DbColumns.FromJidCol + "='" + rosterEntryModel.fromJid + "'").toSql();
+        String select = new Select().from(MessageContainer.class).where(DbColumns.FromJidCol + "='" + jid + "'").toSql();
       //  String select = new Select().from(MessageContainer.class).toSql();
-       // Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
-      //  return msgCursor;
+        Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
+        return msgCursor;
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {

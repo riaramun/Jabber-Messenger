@@ -37,7 +37,6 @@ public class XmppMessageManager implements MessageListener
 
     public XmppMessageManager(AbstractXMPPConnection connection) {
         mConnection = connection;
-
         // setup chat manager
         mChatManager = ChatManager.getInstanceFor(mConnection);
         if (mChatManager != null) {
@@ -87,8 +86,9 @@ public class XmppMessageManager implements MessageListener
         // store message to DB
         MessageContainer messageContainer = new MessageContainer();
         messageContainer.body = message.getBody();
-        messageContainer.toJid = message.getTo().toString();
-        messageContainer.fromJid = message.getFrom().toString();
+        messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
+        messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
+        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();;
         messageContainer.created = new Date();
         messageContainer.save();
     }
@@ -106,6 +106,7 @@ public class XmppMessageManager implements MessageListener
 
         if (mConnection.isAuthenticated()) {
             Chat currentChat = mPrivateChats.get(jid);
+
             if (currentChat == null) {
                 try {
                     EntityJid entityJid = JidCreate.bareFrom(jid);
@@ -118,13 +119,19 @@ public class XmppMessageManager implements MessageListener
             try {
                 //TODO remove it after debug
                 if(jid.contains("lebedenko") || jid.contains("skurzhansky")) {
+
                     currentChat.sendMessage(messageText);
-                    RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
+
+                    //RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
+
                     MessageContainer messageContainer = new MessageContainer();
                     messageContainer.body = messageText;
-                    messageContainer.toJid = rosterEntryModel.bareJid;
+                    messageContainer.fromJid = mConnection.getUser().asBareJidString();
+                    messageContainer.toJid = jid;
                     messageContainer.created = new Date();
+                    messageContainer.threadID = jid;
                     messageContainer.save();
+
                 }
             } catch (SmackException.NotConnectedException e) {
                 e.printStackTrace();

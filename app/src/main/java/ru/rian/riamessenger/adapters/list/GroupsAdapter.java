@@ -35,6 +35,7 @@ import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
+import ru.rian.riamessenger.utils.ViewUtils;
 
 public class GroupsAdapter
         extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder>
@@ -177,7 +178,7 @@ public class GroupsAdapter
         if (item != null) {
             // set text
             holder.contactName.setText(RiaTextUtils.capFirst(item.getText()));
-            holder.setOnlineStatus(item.getPresence());
+            ViewUtils.setOnlineStatus(holder.onlineStatus, item.getPresence());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

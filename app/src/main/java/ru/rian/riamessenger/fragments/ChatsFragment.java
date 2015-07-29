@@ -32,8 +32,9 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gc.materialdesign.views.ButtonFlat;
 import com.gc.materialdesign.views.ButtonFloat;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,8 +42,12 @@ import butterknife.OnClick;
 import lombok.val;
 import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.list.RobotsAdapter;
+import ru.rian.riamessenger.RiaApplication;
+import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
+import ru.rian.riamessenger.loaders.ChatsLoader;
+import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.prefs.UserAppPreference;
 
 public class ChatsFragment extends BaseTabFragment {
 
@@ -60,17 +65,19 @@ public class ChatsFragment extends BaseTabFragment {
         getActivity().startActivity(intent);
     }
 
-    RobotsAdapter robotsAdapter;
+    ChatsAdapter chatsAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_chats, container, false);
         ButterKnife.bind(this, rootView);
+        RiaApplication.component().inject(this);
+
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
         buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
-        robotsAdapter = new RobotsAdapter(getActivity(), null, contactsListClickListener);
-        recyclerView.setAdapter(robotsAdapter);
+        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(),contactsListClickListener);
+        recyclerView.setAdapter(chatsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -94,7 +101,20 @@ public class ChatsFragment extends BaseTabFragment {
     }
 
     @Override
-    public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-       // robotsAdapter.changeCursor(data.result);
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return new ChatsLoader(getActivity(), args);
     }
+
+    @Override
+    public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
+       chatsAdapter.changeCursor(data.result);
+    }
+
+    protected Bundle getBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_TAB_ID, tabId);
+        bundle.putString(ARG_JID_TO_EXCLUDE, userAppPreference.getJidStringKey());
+        return bundle;
+    }
+    public static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
 }

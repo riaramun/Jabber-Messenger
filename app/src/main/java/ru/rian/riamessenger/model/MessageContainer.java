@@ -23,13 +23,16 @@ public class MessageContainer extends Model {
     @Column(name = DbColumns.FromJidCol)
     public String fromJid;
 
-    @Column(name = "created")
+    @Column(name = DbColumns.ThreadIdCol)
+    public String threadID;
+
+    @Column(name = DbColumns.CreatedCol)
     public Date created;
     /*
     @Column(name = "readed")
     public boolean readed;
     @Column(name = "sended")
     public boolean sended;*/
-    @Column(name = "body")
+    @Column(name = DbColumns.MsgBodyCol)
     public String body;
 }

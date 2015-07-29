@@ -37,6 +37,7 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.viewholders.EmptyGroupsDataProvider;
 import ru.rian.riamessenger.adapters.list.GroupsAdapter;
 import ru.rian.riamessenger.adapters.expandable.GroupsDataProvider;
+import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class GroupsFragment extends BaseTabFragment {
@@ -143,6 +144,9 @@ public class GroupsFragment extends BaseTabFragment {
             groupsAdapter.notifyDataSetChanged();
         }
     }
-
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        return new ContactsLoader(getActivity(), args);
+    }
     GroupsAdapter groupsAdapter;
 }

@@ -25,4 +25,5 @@
     </string>
     <string name="message_hint">Сообщение..</string>
     <string name="mia_chat">МИА Чат</string>
+    <string name="you">Вы:\t</string>
 </resources>

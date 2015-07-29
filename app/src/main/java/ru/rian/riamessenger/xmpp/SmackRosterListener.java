@@ -43,9 +43,8 @@ public class SmackRosterListener implements RosterListener {
 
     @Override
     public void presenceChanged(Presence presence) {
-        String bareJid = presence.getFrom().toString();
+        String bareJid = presence.getFrom().asEntityBareJidIfPossible().toString();
         if (!TextUtils.isEmpty(bareJid)) {
-
             RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
             if (rosterEntryModel != null) {
                 rosterEntryModel.setPresence(presence);
