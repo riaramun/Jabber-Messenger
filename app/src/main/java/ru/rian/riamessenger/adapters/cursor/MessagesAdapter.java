@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,14 +78,17 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = null;
         RecyclerView.ViewHolder vh = null;
+        final DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
         switch (viewType) {
             case VIEW_TYPE_CONTENT_OUTCOME_MSG:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_outcome, parent, false);
                 vh = new MessageViewHolder(itemView);
+                ((MessageViewHolder)vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
                 break;
             case VIEW_TYPE_CONTENT_INCOME_MSG:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_income, parent, false);
                 vh = new MessageViewHolder(itemView);
+                ((MessageViewHolder)vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_empty, parent, false);

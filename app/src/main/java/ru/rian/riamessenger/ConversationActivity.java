@@ -24,7 +24,9 @@ import de.greenrobot.event.EventBus;
 import lombok.val;
 import ru.rian.riamessenger.adapters.cursor.MessagesAdapter;
 import ru.rian.riamessenger.common.RiaBaseActivity;
+import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.MessagesLoader;
+import ru.rian.riamessenger.loaders.UserOnlineStatusLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -37,6 +39,9 @@ import ru.rian.riamessenger.utils.ScreenUtils;
  * Created by Roman on 7/21/2015.
  */
 public class ConversationActivity extends RiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
+
+    final int MESSAGES_LOADER_ID = 1;
+    final int USER_STATUS_LOADER_ID = 2;
 
     @Inject
     UserAppPreference userAppPreference;
@@ -51,7 +56,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     EditText messageEditText;
 
     @OnTextChanged(R.id.message_edit_text)
-    void onTextChanged(CharSequence text)  {
+    void onTextChanged(CharSequence text) {
         sendIconTextView.setEnabled(!messageEditText.getText().toString().isEmpty());
     }
 
@@ -113,12 +118,13 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         bundle.putString(ARG_TO_JID, jid_to);
         bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
 
-        getSupportLoaderManager().initLoader(0, bundle, this);
+        getSupportLoaderManager().initLoader(MESSAGES_LOADER_ID, bundle, this);
+        getSupportLoaderManager().initLoader(USER_STATUS_LOADER_ID, bundle, this);
     }
 
-    String getFromJid() {
+    /*String getFromJid() {
         return getIntent().getStringExtra(ARG_FROM_JID);
-    }
+    }*/
 
     String getToJid() {
         return getIntent().getStringExtra(ARG_TO_JID);
@@ -148,15 +154,37 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
-        return new MessagesLoader(this, args);
+        switch (id) {
+            case MESSAGES_LOADER_ID:
+                return new MessagesLoader(this, args);
+            case USER_STATUS_LOADER_ID:
+                return new UserOnlineStatusLoader(this, args);
+        }
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-        messagesAdapter.changeCursor(data.result);
-        if (messagesAdapter.getItemCount() > 0) {
-            linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
+
+        switch (loader.getId()) {
+            case MESSAGES_LOADER_ID: {
+                messagesAdapter.changeCursor(data.result);
+                if (messagesAdapter.getItemCount() > 0) {
+                    linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
+                }
+                break;
+            }
+            case USER_STATUS_LOADER_ID: {
+                if (data.result != null) {
+                    RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
+                    int resId = getIconIdByPresence(rosterEntryModel.presence);
+                    ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
+                }
+            }
+            break;
         }
+
+
     }
 
     @Override

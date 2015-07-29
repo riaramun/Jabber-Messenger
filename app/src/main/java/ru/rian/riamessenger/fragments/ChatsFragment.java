@@ -34,8 +34,6 @@ import android.view.ViewGroup;
 
 import com.gc.materialdesign.views.ButtonFloat;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -44,10 +42,10 @@ import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
-import ru.rian.riamessenger.loaders.ChatsLoader;
-import ru.rian.riamessenger.loaders.ContactsLoader;
+import ru.rian.riamessenger.loaders.ChatsBaseLoader;
+import ru.rian.riamessenger.loaders.ChatsListenerLoader;
+import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
-import ru.rian.riamessenger.prefs.UserAppPreference;
 
 public class ChatsFragment extends BaseTabFragment {
 
@@ -76,7 +74,7 @@ public class ChatsFragment extends BaseTabFragment {
 
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
         buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
-        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(),contactsListClickListener);
+        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), contactsListClickListener);
         recyclerView.setAdapter(chatsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -87,11 +85,13 @@ public class ChatsFragment extends BaseTabFragment {
 
         return rootView;
     }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -102,12 +102,19 @@ public class ChatsFragment extends BaseTabFragment {
 
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
-        return new ChatsLoader(getActivity(), args);
+        FragIds fragIds = FragIds.values()[id];
+        switch (fragIds) {
+            case CHATS_FRAGMENT:
+                return new ChatsListenerLoader(getActivity(), args);
+            case CHAT_USER_STATUS_LOADER_ID:
+                return new ChatsOnlineStatesLoader(getActivity(), args);
+        }
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-       chatsAdapter.changeCursor(data.result);
+        chatsAdapter.changeCursor(data.result);
     }
 
     protected Bundle getBundle() {
@@ -116,5 +123,12 @@ public class ChatsFragment extends BaseTabFragment {
         bundle.putString(ARG_JID_TO_EXCLUDE, userAppPreference.getJidStringKey());
         return bundle;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal(), getBundle(), this);
+    }
+
     public static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
 }

@@ -58,7 +58,8 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
          GROUPS_FRAGMENT,
          CONTACTS_FRAGMENT,
          CHATS_FRAGMENT,
-         ROOMS_FRAGMENT
+         ROOMS_FRAGMENT,
+         CHAT_USER_STATUS_LOADER_ID
     }
 
 
@@ -105,10 +106,8 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
         } else {
-
         }
         getLoaderManager().initLoader(tabId, getBundle(), this);
-
     }
 
     protected Bundle getBundle() {

@@ -21,20 +21,12 @@ import ru.rian.riamessenger.model.MessageContainer;
  * fisher3421@gmail.com
  */
 
-public class ChatsLoader extends CursorRiaLoader {
+public class ChatsBaseLoader extends CursorRiaLoader {
 
 
-    String jid_to_exclude;
-    int tabIdloader = -1;
-
-    public ChatsLoader(Context ctx, Bundle args) {
-        super(ctx);
-        setSubscription(ContentProvider.createUri(MessageContainer.class, null));
-        jid_to_exclude = args.getString(ChatsFragment.ARG_JID_TO_EXCLUDE);
-        tabIdloader = args.getInt(BaseTabFragment.ARG_TAB_ID);
-        BaseTabFragment.FragIds fragIds = BaseTabFragment.FragIds.values()[tabIdloader];
+    public ChatsBaseLoader(Context context) {
+        super(context);
     }
-
 
     @Override
     protected Cursor loadCursor() throws Exception {

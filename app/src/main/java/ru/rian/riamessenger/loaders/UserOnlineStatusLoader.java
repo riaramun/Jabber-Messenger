@@ -12,6 +12,7 @@ import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.MessageContainer;
+import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
 
 /**
@@ -19,27 +20,24 @@ import ru.rian.riamessenger.utils.DbHelper;
  * fisher3421@gmail.com
  */
 
-public class MessagesLoader extends CursorRiaLoader {
+public class UserOnlineStatusLoader extends CursorRiaLoader {
 
-    String jid_to = null;
-    String jid_from = null;
+    String user_jid = null;
 
-    public MessagesLoader(Context ctx, Bundle args) {
+    public UserOnlineStatusLoader(Context ctx, Bundle args) {
         super(ctx);
-        jid_to = args.getString(ConversationActivity.ARG_TO_JID);
-        jid_from = args.getString(ConversationActivity.ARG_FROM_JID);
-
-        setSubscription(ContentProvider.createUri(MessageContainer.class, null));
+        user_jid = args.getString(ConversationActivity.ARG_TO_JID);
+        setSubscription(ContentProvider.createUri(RosterEntryModel.class, null));
     }
 
 
     @Override
     protected Cursor loadCursor() throws Exception {
-        String select = new Select().from(MessageContainer.class)
-                .where(DbColumns.FromJidCol + "='" + jid_from + "' and " + DbColumns.ToJidCol + "='" + jid_to + "'" + " OR " +
-                                DbColumns.FromJidCol + "='" + jid_to + "' and " + DbColumns.ToJidCol + "='" + jid_from + "'"
-                ).toSql();
+
+        String select = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + user_jid + "'").toSql();
         Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
+        boolean ret = msgCursor.moveToFirst();
+        int size = msgCursor.getCount();
         return msgCursor;
     }
 

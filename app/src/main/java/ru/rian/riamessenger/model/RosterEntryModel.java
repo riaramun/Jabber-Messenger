@@ -32,7 +32,7 @@ public class RosterEntryModel extends Model {
     @Column(name = DbColumns.NameCol)
     public String name;
 
-    @Column(name = DbColumns.RosterGroupModelCol, onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    @Column(name = DbColumns.RosterGroupModelCol,   onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     public RosterGroupModel rosterGroupModel;
 
     // Used to return items from another table based on the foreign key
