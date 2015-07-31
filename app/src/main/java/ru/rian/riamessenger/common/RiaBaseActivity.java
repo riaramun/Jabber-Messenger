@@ -18,7 +18,9 @@ package ru.rian.riamessenger.common;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.RiaBaseApplication;
+import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 
@@ -57,7 +60,13 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-
+    protected  void initOrRestartLoader(int loaderId, Bundle bundle,LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
+        if (getSupportLoaderManager().getLoader(loaderId) == null) {
+            getSupportLoaderManager().initLoader(loaderId, bundle, callback);
+        } else {
+            getSupportLoaderManager().restartLoader(loaderId, bundle, callback);
+        }
+    }
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         this.runOnUiThread(new Runnable() {

@@ -92,7 +92,7 @@ public class ChatsFragment extends BaseTabFragment {
             case ChatEvents.DO_REMOVE_CHAT:
                 String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
                 SQLiteUtils.execSql("DELETE FROM " + tableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
-                getLoaderManager().restartLoader(tabId, getBundle(), this);
+                initOrRestartLoader(tabId, getBundle(), this);
                 break;
         }
     }
@@ -163,12 +163,9 @@ public class ChatsFragment extends BaseTabFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
-        if (getLoaderManager().getLoader(loaderId) == null) {
-            getLoaderManager().initLoader(loaderId, getBundle(), this);
-        } else {
-            getLoaderManager().restartLoader(loaderId, getBundle(), this);
-        }
+        initOrRestartLoader(loaderId, getBundle(), this);
     }
+
 
     public static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
 }

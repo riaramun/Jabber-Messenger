@@ -109,11 +109,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         if (savedInstanceState != null) {
         } else {
         }
-        if (getLoaderManager().getLoader(tabId) == null) {
-            getLoaderManager().initLoader(tabId, getBundle(), this);
-        } else {
-            getLoaderManager().restartLoader(tabId, getBundle(), this);
-        }
+        initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
     }
 
     protected Bundle getBundle() {
@@ -164,19 +160,25 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
                 ScreenUtils.hideKeyboard(getActivity());
                 title_to_search = query;
-                getLoaderManager().restartLoader(tabId, getBundle(), BaseTabFragment.this);
+                initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 title_to_search = newText;
-                LoaderManager loaderManager = getLoaderManager();
-                if(loaderManager != null)
-                getLoaderManager().restartLoader(tabId, getBundle(), BaseTabFragment.this);
+                initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
                 return false;
             }
         });
+    }
+
+    protected  void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
+        if (getLoaderManager().getLoader(loaderId) == null) {
+            getLoaderManager().initLoader(loaderId, bundle, callback);
+        } else {
+            getLoaderManager().restartLoader(loaderId, bundle, callback);
+        }
     }
 
     @Override
