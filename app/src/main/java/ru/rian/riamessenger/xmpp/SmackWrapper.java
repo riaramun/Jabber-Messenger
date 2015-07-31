@@ -47,8 +47,9 @@ public class SmackWrapper {
     private Runnable xmppConnectingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!roster.isLoaded()) {
+            if (roster == null || !roster.isLoaded()) {
                 rosterConnectingTryCounter++;
+                Log.i("SmackWrapper", "try to connect again = " + rosterConnectingTryCounter);
                 RiaEventBus.post("try to connect again" + rosterConnectingTryCounter);
                 loadRosterSync();
             }
@@ -65,10 +66,6 @@ public class SmackWrapper {
     XmppMessageManager xmppMessageManager;
     @Getter
     Roster roster;
-
-    // private XmppMessageManager 				mMessageManager;
-    // private XmppRosterManager				mRosterManager;
-    //private XmppMucManager					mMucManager;
 
     public boolean isConnected() {
         boolean connected = false;
@@ -98,23 +95,24 @@ public class SmackWrapper {
     }
 
     public void sendMessage(final String jid, final String messageText) {
-        xmppMessageManager.sendMessage(jid, messageText);
+        if (xmppMessageManager != null) {
+            xmppMessageManager.sendMessage(jid, messageText);
+        }
     }
 
     public void loadRosterSync() {
+        Log.i("SmackWrapper", "loadRosterSync ()");
+
+        xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
+        xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
+
         Task.callInBackground(new Callable<Object>() {
             @Override
             public Object call() {
                 if (isAuthenticated()) {
                     try {
                         RiaEventBus.post("try to connect again" + rosterConnectingTryCounter++);
-
                         roster.reload();
-
-                        xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
-
-                        xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
-
                     } catch (SmackException.NotLoggedInException e) {
                         e.printStackTrace();
                     } catch (SmackException.NotConnectedException e) {
@@ -132,6 +130,7 @@ public class SmackWrapper {
 
 
     void connect() {
+        Log.i("SmackWrapper", "connect ()");
         Task.callInBackground(new Callable<Object>() {
             @Override
             public Object call() {
@@ -205,6 +204,9 @@ public class SmackWrapper {
 
             Presence presence = new Presence(Presence.Type.available);
             xmppConnection.sendStanza(presence);
+
+            Log.i("SmackWrapper", "Presence.Type.available");
+
         } catch (SmackException e) {
             RiaEventBus.post("doConnect!:" + e.getMessage());
             e.printStackTrace();

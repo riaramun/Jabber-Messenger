@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.SearchView;
+import android.view.View;
 
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     @Inject
     ContactsListClickListener contactsListClickListener;
+
 
     static public final String CHATS_FRAGMENT_TAG = ChatsFragment.class.getSimpleName();
     static public final String ROOMS_FRAGMENT_TAG = RoomsFragment.class.getSimpleName();
@@ -107,7 +109,11 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         if (savedInstanceState != null) {
         } else {
         }
-        getLoaderManager().initLoader(tabId, getBundle(), this);
+        if (getLoaderManager().getLoader(tabId) == null) {
+            getLoaderManager().initLoader(tabId, getBundle(), this);
+        } else {
+            getLoaderManager().restartLoader(tabId, getBundle(), this);
+        }
     }
 
     protected Bundle getBundle() {
@@ -165,6 +171,8 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
             @Override
             public boolean onQueryTextChange(String newText) {
                 title_to_search = newText;
+                LoaderManager loaderManager = getLoaderManager();
+                if(loaderManager != null)
                 getLoaderManager().restartLoader(tabId, getBundle(), BaseTabFragment.this);
                 return false;
             }

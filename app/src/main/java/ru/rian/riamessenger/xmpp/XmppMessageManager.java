@@ -121,9 +121,7 @@ public class XmppMessageManager implements MessageListener
                 if(jid.contains("lebedenko") || jid.contains("skurzhansky")) {
 
                     currentChat.sendMessage(messageText);
-
                     //RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
-
                     MessageContainer messageContainer = new MessageContainer();
                     messageContainer.body = messageText;
                     messageContainer.fromJid = mConnection.getUser().asBareJidString();

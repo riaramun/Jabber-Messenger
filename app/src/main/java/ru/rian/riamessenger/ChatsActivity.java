@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -23,16 +24,14 @@ import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
-import ru.rian.riamessenger.fragments.ChatsFragment;
-import ru.rian.riamessenger.fragments.ContactsFragment;
-import ru.rian.riamessenger.fragments.GroupsFragment;
-import ru.rian.riamessenger.fragments.RobotsFragment;
-import ru.rian.riamessenger.fragments.RoomsFragment;
+import ru.rian.riamessenger.fragments.ChatRemoveDialogFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 
 public class ChatsActivity extends TabsRiaBaseActivity {
+
 
     @Inject
     ConnectivityManager connectivityManager;
@@ -74,10 +73,37 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
         viewPager.setAdapter(adapter);
+        contactsMaterialTabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                removeFragment(ChatRemoveDialogFragment.TAG);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         contactsMaterialTabs.setViewPager(viewPager);
     }
 
 
+    public void onEvent(ChatEvents chatEvents) {
+        switch (chatEvents.getChatEventId()) {
+            case ChatEvents.SHOW_REMOVE_DIALOG:
+                ChatRemoveDialogFragment chatRemoveDialogFragment = new ChatRemoveDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(ChatRemoveDialogFragment.ARG_REMOVE_CHAT, chatEvents.getChatThreadId());
+                chatRemoveDialogFragment.setArguments(bundle);
+                addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container, true);
+                break;
+        }
+    }
 
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,7 +128,7 @@ public class ChatsActivity extends TabsRiaBaseActivity {
 
     @Override
     protected void onStart() {
-       // RiaEventBus.post(RiaServiceEvent.RiaEvent.GET_ROSTER);
+        // RiaEventBus.post(RiaServiceEvent.RiaEvent.GET_ROSTER);
         super.onStart();
     }
 
@@ -160,6 +186,25 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         }
     }
 
+
+    void addFragment(Fragment aFragment, String tag, int aContainerId, boolean addToBackStack) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment == null || !fragment.isVisible()) {
+            if (addToBackStack) {
+                fragmentTransaction = fragmentTransaction.addToBackStack(tag);
+            }
+            fragmentTransaction.replace(aContainerId, aFragment, tag).commit();
+        }
+    }
+
+    void removeFragment(String tag) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment != null) {
+            fragmentTransaction.remove(fragment).commit();
+        }
+    }
 
     @Override
     public int getIdByTabIndex(int tabIndex) {

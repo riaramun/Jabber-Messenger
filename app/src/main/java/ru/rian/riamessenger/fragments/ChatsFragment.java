@@ -31,21 +31,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.activeandroid.Cache;
+import com.activeandroid.util.SQLiteUtils;
 import com.gc.materialdesign.views.ButtonFloat;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 import lombok.val;
 import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
+import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.loaders.ChatsBaseLoader;
 import ru.rian.riamessenger.loaders.ChatsListenerLoader;
 import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.MessageContainer;
+import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class ChatsFragment extends BaseTabFragment {
 
@@ -65,6 +75,28 @@ public class ChatsFragment extends BaseTabFragment {
 
     ChatsAdapter chatsAdapter;
 
+    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int childPosition = recyclerView.getChildAdapterPosition(v);
+            MessageContainer messageContainer = chatsAdapter.getItem(childPosition);
+            if (messageContainer != null)
+                EventBus.getDefault().post(new ChatEvents(ChatEvents.SHOW_REMOVE_DIALOG, messageContainer.threadID));
+            return true;
+        }
+    };
+
+
+    public void onEvent(ChatEvents chatEvents) {
+        switch (chatEvents.getChatEventId()) {
+            case ChatEvents.DO_REMOVE_CHAT:
+                String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
+                SQLiteUtils.execSql("DELETE FROM " + tableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
+                getLoaderManager().restartLoader(tabId, getBundle(), this);
+                break;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -74,13 +106,16 @@ public class ChatsFragment extends BaseTabFragment {
 
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
         buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
-        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), contactsListClickListener);
-        recyclerView.setAdapter(chatsAdapter);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
 
-        val itemAnimator = new DefaultItemAnimator();
+
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), contactsListClickListener, onLongClickListener);
+
+        recyclerView.setAdapter(chatsAdapter);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(itemAnimator);
 
         return rootView;
@@ -127,7 +162,12 @@ public class ChatsFragment extends BaseTabFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal(), getBundle(), this);
+        int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
+        if (getLoaderManager().getLoader(loaderId) == null) {
+            getLoaderManager().initLoader(loaderId, getBundle(), this);
+        } else {
+            getLoaderManager().restartLoader(loaderId, getBundle(), this);
+        }
     }
 
     public static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";

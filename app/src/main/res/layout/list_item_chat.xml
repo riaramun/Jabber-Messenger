@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/list_item_message_margin"
-    android:clickable="true"
+    tools:context=".ChatsActivity$ChatsFragment"
+    android:longClickable="true"
+
     android:background="@drawable/list_item_bg_selector">
 
     <RelativeLayout
+        android:id="@+id/msg_from_container"
         android:clickable="false"
+        android:longClickable="false"
         android:layout_marginBottom="@dimen/list_item_message_text_padding"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <com.devspark.robototextview.widget.RobotoTextView
@@ -34,8 +39,10 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:layout_below="@+id/msg_from_container"
+        android:longClickable="false"
         android:clickable="false"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <com.devspark.robototextview.widget.RobotoTextView
@@ -58,4 +65,4 @@
             app:textWeight="normal" />
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

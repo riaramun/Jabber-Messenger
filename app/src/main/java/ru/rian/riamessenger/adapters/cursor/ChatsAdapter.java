@@ -37,11 +37,13 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     EmptyViewHolder emptyViewHolder;
     final String currentJid;
     final ContactsListClickListener contactsListClickListener;
+    final View.OnLongClickListener onLongClickListener;
 
-    public ChatsAdapter(Context context, Cursor cursor, String currentJid, ContactsListClickListener contactsListClickListener) {
+    public ChatsAdapter(Context context, Cursor cursor, String currentJid, ContactsListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, cursor);
         this.currentJid = currentJid;
         this.contactsListClickListener = contactsListClickListener;
+        this.onLongClickListener = onLongClickListener;
     }
 
     @Override
@@ -96,14 +98,16 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
         if (getItemCount() <= 0) {
             resType = VIEW_TYPE_EMPTY_ITEM;
         } else {
-            if (getCursor().moveToPosition(position)) {
-                final val messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
+            resType = VIEW_TYPE_CONTENT;
+            /*Cursor cursor = getCursor();
+            if (!cursor.isClosed() && cursor.moveToPosition(position)) {
+                final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
                 if (messageContainer.fromJid.contains(currentJid)) {
                     resType = VIEW_TYPE_CONTENT;
                 } else {
                     resType = VIEW_TYPE_CONTENT;
                 }
-            }
+            }*/
         }
         return resType;
     }
@@ -122,6 +126,7 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                         contactsListClickListener.onClick(ChatsAdapter.this, v);
                     }
                 });
+                itemView.setOnLongClickListener(onLongClickListener);
                 vh = new ChatViewHolder(itemView);
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
@@ -133,16 +138,22 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
         return vh;
     }
 
+    public MessageContainer getItem(int index) {
+        MessageContainer messageContainer = null;
+        Cursor cursor = getCursor();
+        if (!cursor.isClosed() && cursor.moveToPosition(index)) {
+            messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+        }
+        return messageContainer;
+
+    }
+
     @Override
     public String getJid(int index) {
         String jidRes = null;
-        if (getCursor() != null) {
-            if (getCursor().moveToPosition(index)) {
-                final val messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
-                if (messageContainer != null) {
-                    jidRes = messageContainer.threadID;
-                }
-            }
+        MessageContainer messageContainer = getItem(index);
+        if (messageContainer != null) {
+            jidRes = messageContainer.threadID;
         }
         return jidRes;
     }

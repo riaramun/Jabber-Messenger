@@ -25,6 +25,7 @@ public class DbHelper {
     }
 
     public static <T extends Model> T getModelByCursor(Cursor cursor, Class<T> cl) {
+        if (cursor.isClosed()) return null;
         int columnIndex = cursor.getColumnIndex(BaseColumns._ID);
         long id = cursor.getLong(columnIndex);
 
@@ -33,7 +34,7 @@ public class DbHelper {
             model = new Select().from(cl).where(BaseColumns._ID + "=?", id).executeSingle();
         }
         return model;
-}
+    }
 
    /* static public Cursor getMessagesByJid(String jid) {
 //        String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
