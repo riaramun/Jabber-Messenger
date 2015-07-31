@@ -75,7 +75,7 @@ public class ChatsFragment extends BaseTabFragment {
 
     ChatsAdapter chatsAdapter;
 
-    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             int childPosition = recyclerView.getChildAdapterPosition(v);

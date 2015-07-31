@@ -34,10 +34,12 @@ import ru.rian.riamessenger.utils.ViewUtils;
  */
 public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
 
-    EmptyViewHolder emptyViewHolder;
+    private boolean mListIsEmpty = false;
     final String currentJid;
     final ContactsListClickListener contactsListClickListener;
     final View.OnLongClickListener onLongClickListener;
+    //final int EMPTY_VIEW_ITEM_TYPE = 2;
+    private static final int LIST_EMPTY_ITEMS_COUNT = 1;
 
     public ChatsAdapter(Context context, Cursor cursor, String currentJid, ContactsListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, cursor);
@@ -47,10 +49,25 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     }
 
     @Override
+    public int getItemCount() {
+        int count = 0;
+        Cursor cursor = getCursor();
+        if (cursor != null && !cursor.isClosed()) {
+            count = cursor.getCount();
+        }
+        if (count == 0) {
+            mListIsEmpty = true;
+            count = LIST_EMPTY_ITEMS_COUNT;//empty view
+        } else {
+            mListIsEmpty = false;
+        }
+        return count;
+    }
+
+    @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         switch (viewHolder.getItemViewType()) {
             case VIEW_TYPE_EMPTY_ITEM:
-                emptyViewHolder = (EmptyViewHolder) viewHolder;
                 break;
             case VIEW_TYPE_CONTENT:
                 final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
@@ -95,19 +112,11 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     @Override
     public int getItemViewType(int position) {
         int resType = -1;
-        if (getItemCount() <= 0) {
+        // final int count = getItemCount();
+        if (mListIsEmpty) {
             resType = VIEW_TYPE_EMPTY_ITEM;
         } else {
             resType = VIEW_TYPE_CONTENT;
-            /*Cursor cursor = getCursor();
-            if (!cursor.isClosed() && cursor.moveToPosition(position)) {
-                final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
-                if (messageContainer.fromJid.contains(currentJid)) {
-                    resType = VIEW_TYPE_CONTENT;
-                } else {
-                    resType = VIEW_TYPE_CONTENT;
-                }
-            }*/
         }
         return resType;
     }
@@ -130,9 +139,9 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 vh = new ChatViewHolder(itemView);
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
-                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_empty, parent, false);
+                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_chats_empty, parent, false);
+                itemView.setLayoutParams(new RecyclerView.LayoutParams(parent.getWidth(), parent.getHeight()));
                 vh = new EmptyViewHolder(itemView);
-                emptyViewHolder = (EmptyViewHolder) vh;
                 break;
         }
         return vh;

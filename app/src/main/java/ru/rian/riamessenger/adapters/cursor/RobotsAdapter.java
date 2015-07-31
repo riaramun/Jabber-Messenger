@@ -23,7 +23,6 @@ import ru.rian.riamessenger.utils.ViewUtils;
  */
 public class RobotsAdapter extends CursorRecyclerViewAdapter {
 
-    EmptyViewHolder emptyViewHolder;
    final ContactsListClickListener contactsListClickListener;
 
     public RobotsAdapter(Context context, Cursor cursor, ContactsListClickListener contactsListClickListener) {
@@ -35,7 +34,6 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         switch (viewHolder.getItemViewType()) {
             case VIEW_TYPE_EMPTY_ITEM:
-                emptyViewHolder = (EmptyViewHolder) viewHolder;
                 break;
             case VIEW_TYPE_CONTENT:
                final val rosterEntry = DbHelper.getModelByCursor(cursor, RosterEntryModel.class);
@@ -85,7 +83,6 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_empty, parent, false);
                 // itemView.setLayoutParams(new RecyclerView.LayoutParams(parent.getWidth(), parent.getHeight()));
                 vh = new EmptyViewHolder(itemView);
-                emptyViewHolder = (EmptyViewHolder) vh;
                 break;
         }
         return vh;
