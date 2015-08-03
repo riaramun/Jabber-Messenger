@@ -1,5 +1,10 @@
 package ru.rian.riamessenger.xmpp;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 
@@ -17,7 +22,9 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
+import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
@@ -29,21 +36,24 @@ public class XmppMessageManager implements MessageListener
         , ChatMessageListener
         , ChatManagerListener {
 
-    private static final String TAG = "XmppChat.MessageManager";
+    static final String TAG = "XmppChat.MessageManager";
+    AbstractXMPPConnection mConnection;
+    ChatManager mChatManager;
+    HashMap<String, Chat> mPrivateChats;
+    final Context context;
 
-    private AbstractXMPPConnection mConnection;
-    private ChatManager mChatManager;
-    private HashMap<String, Chat> mPrivateChats;
+    SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
 
-    public XmppMessageManager(AbstractXMPPConnection connection) {
+    public XmppMessageManager(Context context, AbstractXMPPConnection connection) {
         mConnection = connection;
-        // setup chat manager
+        sendMsgBroadcastReceiver = new SendMsgBroadcastReceiver(context);
         mChatManager = ChatManager.getInstanceFor(mConnection);
         if (mChatManager != null) {
             mChatManager.addChatListener(this);
 
         }
         mPrivateChats = new HashMap();
+        this.context = context;
     }
 
     /**
@@ -72,6 +82,18 @@ public class XmppMessageManager implements MessageListener
         Log.d(TAG, "on received message");
     }
 
+    private boolean isApplicationBroughtToBackground() {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * event when incoming message from chat
@@ -79,18 +101,31 @@ public class XmppMessageManager implements MessageListener
      * @param chat
      * @param message
      */
+
     @Override
     public void processMessage(Chat chat, Message message) {
 
         Log.d(TAG, "on message from chat");
         // store message to DB
+
         MessageContainer messageContainer = new MessageContainer();
         messageContainer.body = message.getBody();
         messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
         messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
-        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();;
+        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();
         messageContainer.created = new Date();
         messageContainer.save();
+
+        if(isApplicationBroughtToBackground()) {
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.toJid);
+            broadcastIntent.putExtra(ConversationActivity.ARG_FROM_JID, messageContainer.fromJid);
+            // Send broadcast and expect result back.  If no result then
+            // then an appropriate activity is not alive and we should show a notification
+            context.sendOrderedBroadcast(broadcastIntent, null, sendMsgBroadcastReceiver, null,
+                    Activity.RESULT_CANCELED, null, null);
+        }
+
     }
 
     public void sendMessage(final String jid, final String messageText) {
@@ -118,7 +153,7 @@ public class XmppMessageManager implements MessageListener
             }
             try {
                 //TODO remove it after debug
-                if(jid.contains("lebedenko") || jid.contains("skurzhansky")) {
+                if (jid.contains("lebedenko") || jid.contains("skurzhansky")) {
 
                     currentChat.sendMessage(messageText);
                     //RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);

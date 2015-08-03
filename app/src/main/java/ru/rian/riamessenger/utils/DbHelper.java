@@ -8,6 +8,9 @@ import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
+
+import java.util.List;
 
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.model.MessageContainer;
@@ -60,5 +63,13 @@ public class DbHelper {
     static public RosterEntryModel getRosterEntryById(long id) {
         RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(BaseColumns._ID + "=" + id).executeSingle();
         return rosterEntryModel;
+    }
+
+    public static MessageContainer getLastMessageFrom(String jidFrom, String jidTo) {
+        String select = new Select().from(MessageContainer.class)
+                .where(DbColumns.FromJidCol + "='" + jidFrom + "' and " + DbColumns.ToJidCol + "='" + jidTo + "'" + " ORDER BY " + DbColumns.CreatedCol + " DESC"
+                ).toSql();
+        List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
+        return messageContainers.get(0);
     }
 }

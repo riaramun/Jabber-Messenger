@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     tools:context=".ConverationActivity">
 
     <android.support.v7.widget.RecyclerView
@@ -10,7 +11,7 @@
         android:background="#eef5fe"
         android:layout_above="@+id/send_msg_control"
         android:paddingBottom="@dimen/list_item_message_margin"
-        android:scrollbars="none" />
+        android:scrollbars="vertical" />
 
 
     <RelativeLayout
@@ -24,6 +25,7 @@
 
         <EditText
             android:id="@+id/message_edit_text"
+            android:paddingRight="48dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#00000000"

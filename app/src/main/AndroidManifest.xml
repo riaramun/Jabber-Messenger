@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <!--
          To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
          option is required to comply with the Google+ Sign-In developer policies
@@ -35,16 +37,21 @@
 
         <activity
             android:noHistory="true"
-            android:name=".ConversationActivity"
+            android:name="ru.rian.riamessenger.ConversationActivity"
             android:label=""
             android:configChanges="orientation"
             android:theme="@style/CustomActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            </activity>
 
         <activity
             android:name=".ChatsActivity"
             android:label="@string/mia_chat"
-            android:configChanges="orientation"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity

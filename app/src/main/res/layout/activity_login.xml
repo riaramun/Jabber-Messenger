@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity$LoginFragment">
+    tools:context=".LoginActivity">
 
     <RelativeLayout
         android:id="@+id/russia_logo"
@@ -72,7 +72,6 @@
                     android:id="@+id/login_edit_text"
                     style="@style/CredentialsEditText"
                     android:hint="@string/enter">
-
                     <requestFocus />
                 </EditText>
             </LinearLayout>

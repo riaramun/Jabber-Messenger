@@ -23,6 +23,8 @@
     <string name="short_description">
         Внутренний специализированный мессенджер с доступом только для сотрудников МИА Россия Сегодня
     </string>
+    <string name="new_message">Новое сообщение</string>
+    <string name="message_from">Сообщение от:</string>
     <string name="message_hint">Сообщение..</string>
     <string name="mia_chat">МИА Чат</string>
     <string name="you">Вы:\t</string>

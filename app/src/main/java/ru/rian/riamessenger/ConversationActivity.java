@@ -1,16 +1,27 @@
 package ru.rian.riamessenger;
 
+import android.app.Activity;
+import android.app.Service;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.malinskiy.materialicons.widget.IconTextView;
 
@@ -46,6 +57,9 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     @Inject
     UserAppPreference userAppPreference;
 
+    @Bind(R.id.container)
+    RelativeLayout relativeLayoutContainer;
+
     @Bind(R.id.send_icon_text_view)
     IconTextView sendIconTextView;
 
@@ -79,7 +93,13 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
         RiaBaseApplication.component().inject(this);
         ButterKnife.bind(this);
-
+        messageEditText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (messagesAdapter.getItemCount() > 1)
+                    linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
+            }
+        });
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -108,8 +128,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        val itemAnimator = new DefaultItemAnimator();
-        recyclerView.setItemAnimator(itemAnimator);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         messagesAdapter = new MessagesAdapter(this, null, userAppPreference.getLoginStringKey());
         recyclerView.setAdapter(messagesAdapter);
@@ -122,13 +141,13 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
     }
 
-    /*String getFromJid() {
-        return getIntent().getStringExtra(ARG_FROM_JID);
-    }*/
-
     String getToJid() {
-        return getIntent().getStringExtra(ARG_TO_JID);
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        String arg_to_jid = bundle.getString(ARG_TO_JID);
+        return arg_to_jid;
     }
+
 
     public int getIconIdByPresence(int presence) {
         int resId = -1;
@@ -183,8 +202,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
             }
             break;
         }
-
-
     }
 
     @Override

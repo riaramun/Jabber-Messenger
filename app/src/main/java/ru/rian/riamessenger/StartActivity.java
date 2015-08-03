@@ -3,9 +3,15 @@ package ru.rian.riamessenger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.utils.SysUtils;
@@ -18,11 +24,17 @@ public class StartActivity extends RiaBaseActivity {
     @Inject
     UserAppPreference userAppPreference;
 
+    @Bind(R.id.progress_bar)
+    ProgressBarCircularIndeterminate progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_start);
+        ButterKnife.bind(this);
+        progressBar.setVisibility(View.VISIBLE);
+
         /*getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
