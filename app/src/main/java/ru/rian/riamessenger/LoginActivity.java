@@ -23,8 +23,8 @@ import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.ScreenUtils;
 
 public class LoginActivity extends RiaBaseActivity {
@@ -32,6 +32,10 @@ public class LoginActivity extends RiaBaseActivity {
 
     @Inject
     UserAppPreference userAppPreference;
+
+
+    @Bind(R.id.name_edit_text)
+    EditText nameEditText;
 
     @Bind(R.id.login_edit_text)
     EditText loginEditText;
@@ -83,22 +87,20 @@ public class LoginActivity extends RiaBaseActivity {
         passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
 
-    @Override
+
     protected void authenticated(boolean isAuthenticated) {
-        if(isAuthenticated) {
+        if (isAuthenticated) {
             Intent intent = new Intent(this, ChatsActivity.class);
             startActivity(intent);
-        }
-        else {
+        } else {
             progressBar.setVisibility(View.INVISIBLE);
-
         }
     }
+
 
     @Override
     public void onStart() {
         super.onStart();
-
         String token = userAppPreference.getJidStringKey();
         String login = userAppPreference.getLoginStringKey();
         String pass = userAppPreference.getPassStringKey();
@@ -114,6 +116,7 @@ public class LoginActivity extends RiaBaseActivity {
         if (progressBar.getVisibility() != View.VISIBLE) {
             progressBar.setVisibility(View.VISIBLE);
 
+            userAppPreference.setFirstSecondName(nameEditText.getText().toString());
             userAppPreference.setLoginStringKey(loginEditText.getText().toString());
             userAppPreference.setPassStringKey(passwordEditText.getText().toString());
             RiaEventBus.post(RiaServiceEvent.RiaEvent.SIGN_IN);
@@ -134,6 +137,20 @@ public class LoginActivity extends RiaBaseActivity {
         }
     }
 
+
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EAuthenticated:
+                authenticated(true);
+                break;
+            case EAuthenticationFailed:
+                showAppMsgInView(this, getString(R.string.sign_in_error));
+                break;
+            default:
+                super.onEvent(xmppErrorEvent);
+                break;
+        }
+    }
     /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);

@@ -34,9 +34,9 @@ import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandab
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.viewholders.EmptyGroupsDataProvider;
-import ru.rian.riamessenger.adapters.list.GroupsAdapter;
 import ru.rian.riamessenger.adapters.expandable.GroupsDataProvider;
+import ru.rian.riamessenger.adapters.list.GroupsAdapter;
+import ru.rian.riamessenger.adapters.viewholders.EmptyGroupsDataProvider;
 import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
@@ -71,7 +71,7 @@ public class GroupsFragment extends BaseTabFragment {
 
         //adapter
 
-        groupsAdapter = new GroupsAdapter(new EmptyGroupsDataProvider(),contactsListClickListener);;
+        groupsAdapter = new GroupsAdapter(new EmptyGroupsDataProvider(),contactsListClickListener);
 
         mWrappedAdapter = mRecyclerViewExpandableItemManager.createWrappedAdapter(groupsAdapter);       // wrap for expanding
 

@@ -90,6 +90,15 @@
             android:name="com.activeandroid.content.ContentProvider"
             android:authorities="com.example"
             android:exported="false" />
+        <receiver android:name=".ConnectionBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="be1945259e4e4eb447fb5bec921ff84c89369168" />
     </application>
 
 </manifest>

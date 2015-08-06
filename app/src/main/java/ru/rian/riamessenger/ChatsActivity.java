@@ -1,17 +1,22 @@
 package ru.rian.riamessenger;
 
-import android.net.ConnectivityManager;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+
+import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
@@ -20,21 +25,26 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
-import ru.rian.riamessenger.common.RiaBaseActivity;
-import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ChatRemoveDialogFragment;
+import ru.rian.riamessenger.loaders.MessagesLoader;
+import ru.rian.riamessenger.loaders.UserOnlineStatusLoader;
+import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
+import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
+import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
+import ru.rian.riamessenger.utils.ViewUtils;
 
 
-public class ChatsActivity extends TabsRiaBaseActivity {
+public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>>{
 
 
-    @Inject
-    ConnectivityManager connectivityManager;
 
     BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.CHATS_FRAGMENT, BaseTabFragment.FragIds.ROOMS_FRAGMENT};
     String[] fragmentsTags = {BaseTabFragment.CHATS_FRAGMENT_TAG, BaseTabFragment.ROOMS_FRAGMENT_TAG};
@@ -48,6 +58,9 @@ public class ChatsActivity extends TabsRiaBaseActivity {
     @Bind(R.id.view_pager)
     ViewPager viewPager;
 
+    @Bind(R.id.progress_bar)
+    ProgressBarCircularIndeterminate progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,15 +73,6 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-
-        int resId = -1;
-        if (connectivityManager.getActiveNetworkInfo() != null &&
-                connectivityManager.getActiveNetworkInfo().isConnected()) {
-            resId = R.drawable.action_bar_status_online;
-        } else {
-            resId = R.drawable.action_bar_status_offline;
-        }
-        getSupportActionBar().setHomeAsUpIndicator(resId);
 
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
@@ -90,6 +94,11 @@ public class ChatsActivity extends TabsRiaBaseActivity {
             }
         });
         contactsMaterialTabs.setViewPager(viewPager);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_TO_JID, userAppPreference.getJidStringKey());
+        initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
+
     }
 
 
@@ -126,6 +135,14 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         finish();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!NetworkStateManager.isNetworkAvailable(this)) {
+            NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
+        }
+        progressBar.setVisibility(View.GONE);
+    }
     @Override
     protected void onStart() {
         // RiaEventBus.post(RiaServiceEvent.RiaEvent.GET_ROSTER);
@@ -216,8 +233,49 @@ public class ChatsActivity extends TabsRiaBaseActivity {
         return fragmentsTags[tabIndex];
     }
 
-    @Override
-    protected void authenticated(boolean isAuthenticated) {
-        //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EDbUpdating:
+            case EDbUpdated:
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
+                    }
+                });
+                break;
+            default:
+                super.onEvent(xmppErrorEvent);
+        }
     }
+
+    @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case USER_STATUS_LOADER_ID:
+                return new UserOnlineStatusLoader(this, args);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
+
+        switch (loader.getId()) {
+            case USER_STATUS_LOADER_ID: {
+                if (data.result != null) {
+                    RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
+                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+                    getSupportActionBar().setHomeAsUpIndicator(resId);
+                }
+            }
+            break;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
+
+    }
+
 }

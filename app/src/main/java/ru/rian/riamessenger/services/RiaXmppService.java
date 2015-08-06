@@ -21,15 +21,12 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -37,7 +34,6 @@ import javax.inject.Inject;
 import bolts.Continuation;
 import bolts.Task;
 import de.greenrobot.event.EventBus;
-import lombok.Getter;
 import ru.rian.riamessenger.RiaBaseApplication;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
@@ -46,9 +42,11 @@ import ru.rian.riamessenger.di.DaggerXmppServiceComponent;
 import ru.rian.riamessenger.di.XmppModule;
 import ru.rian.riamessenger.di.XmppServiceComponent;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.xmpp.SmackConnectionListener;
 import ru.rian.riamessenger.xmpp.SmackRosterListener;
 import ru.rian.riamessenger.xmpp.SmackRosterLoadedListener;
@@ -79,15 +77,12 @@ public class RiaXmppService extends Service {
     @Inject
     UserAppPreference userAppPreference;
 
-    
+
     private Handler xmppConnectingHandler = new Handler();
     private Runnable xmppConnectingRunnable = new Runnable() {
         @Override
         public void run() {
             if (roster == null || !roster.isLoaded()) {
-                rosterConnectingTryCounter++;
-                Log.i("SmackWrapper", "try to connect again = " + rosterConnectingTryCounter);
-                RiaEventBus.post("try to connect again" + rosterConnectingTryCounter);
                 loadRosterSync();
             }
 
@@ -96,7 +91,8 @@ public class RiaXmppService extends Service {
 
     AbstractXMPPConnection xmppConnection;
     XmppMessageManager xmppMessageManager;
-   
+    //OfflineMessageManager offlineMessageManager;
+
     Roster roster;
 
     public boolean isConnected() {
@@ -121,7 +117,7 @@ public class RiaXmppService extends Service {
     int rosterConnectingTryCounter = 0;
 
     public void connectAndSingIn() {
-        if (DoLoginAndPassExist()) {
+        if (DoLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
             connect();
         }
     }
@@ -133,7 +129,7 @@ public class RiaXmppService extends Service {
     }
 
     public void loadRosterSync() {
-        Log.i("SmackWrapper", "loadRosterSync ()");
+        Log.i("RiaService", "loadRosterSync ()");
 
         xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
         xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
@@ -143,7 +139,7 @@ public class RiaXmppService extends Service {
             public Object call() {
                 if (isAuthenticated()) {
                     try {
-                        RiaEventBus.post("try to connect again" + rosterConnectingTryCounter++);
+                        Log.i("RiaService", "try to load again" + rosterConnectingTryCounter++);
                         roster.reload();
                     } catch (SmackException.NotLoggedInException e) {
                         e.printStackTrace();
@@ -160,42 +156,27 @@ public class RiaXmppService extends Service {
         });
     }
 
-
     void connect() {
-        Log.i("SmackWrapper", "connect ()");
+        Log.i("RiaService", "connect ()");
         Task.callInBackground(new Callable<Object>() {
             @Override
             public Object call() {
-                isConnecting = true;
                 doConnect();
                 return null;
             }
         }).continueWith(new Continuation<Object, Void>() {
             public Void then(Task<Object> object) throws Exception {
-                isConnecting = false;
                 loadRosterSync();
                 return null;
             }
         }, Task.BACKGROUND_EXECUTOR);
     }
 
-    /* isConnecting = false;
-                    xmppConnectingHandler.removeCallbacks(xmppConnectingRunnable);
-                    if (DoLoginAndPassExist()) {
-                        xmppConnectingHandler.postDelayed(xmppConnectingRunnable, RiaConstants.CONNECTING_TIME_OUT);
-                    }
-                    return null;*/
     boolean DoLoginAndPassExist() {
-        if (!TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey())) {
-            return true;
-        }
-        return false;
+        return !TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey());
     }
 
-    @Getter
-    boolean isConnecting = false;
-
-    private void doConnect() {
+    synchronized private void doConnect() {
         try {
 
             final String username = userAppPreference.getLoginStringKey();
@@ -213,7 +194,7 @@ public class RiaXmppService extends Service {
             configBuilder.setPort(5222);
             configBuilder.setDebuggerEnabled(true);
             configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-            configBuilder.setSendPresence(true);
+            configBuilder.setSendPresence(false);
 
             configBuilder.setHost(RiaConstants.XMPP_SERVER_ADDRESS);
 
@@ -224,7 +205,7 @@ public class RiaXmppService extends Service {
             roster = Roster.getInstanceFor(xmppConnection);
             roster.setRosterLoadedAtLogin(false);
 
-            roster.addRosterLoadedListener(new SmackRosterLoadedListener(this));
+            roster.addRosterLoadedListener(new SmackRosterLoadedListener(this, userAppPreference));
             roster.addRosterListener(new SmackRosterListener());
 
             // Connect to the server
@@ -232,12 +213,13 @@ public class RiaXmppService extends Service {
             xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
             xmppConnection.login();
 
+            //offlineMessageManager = new OfflineMessageManager(xmppConnection);
             xmppMessageManager = new XmppMessageManager(this, xmppConnection);
 
-            Presence presence = new Presence(Presence.Type.available);
-            xmppConnection.sendStanza(presence);
+            //Presence presence = new Presence(Presence.Type.available);
+            //xmppConnection.sendStanza(presence);
 
-            Log.i("SmackWrapper", "Presence.Type.available");
+            Log.i("RiaService", "Presence.Type.available");
 
         } catch (SmackException e) {
             RiaEventBus.post("doConnect!:" + e.getMessage());
@@ -297,17 +279,24 @@ public class RiaXmppService extends Service {
 
 
     private static final int NOTIFICATION_CONNECTION_STATUS = 1;
-  //  private int mClientCount = 0;
+    //  private int mClientCount = 0;
 
 
     public NotificationManager getNotifyManager() {
         return (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-/*    @Getter
-    private Set<Integer> mActiveNotifications =
-            Collections.synchronizedSet(new LinkedHashSet<Integer>());
-*/
+    public void onEvent(final InternetConnEvent internetConnEvent) {
+        if (internetConnEvent.isConnectionAvailable()) {
+            if(!isAuthenticated()) {
+                connectAndSingIn();
+            }
+        }
+        else {
+            NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
+        }
+    }
+
     @Override
     public void onCreate() {
         Log.i("RiaService", "onCreate");
@@ -327,7 +316,7 @@ public class RiaXmppService extends Service {
 
         onStartService();
 
-        return START_STICKY;
+        return START_STICKY_COMPATIBILITY;
     }
 
     /**
@@ -369,150 +358,4 @@ public class RiaXmppService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    /*private void displayServiceNotification() {
-        int icon = android.R.drawable.sym_action_chat;
-        CharSequence tickerText = "XMPP Service Started";
-        long when = System.currentTimeMillis();
-
-        Notification notification = new Notification(icon, tickerText, when);
-        notification.flags |=
-                Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE | Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-        Intent i = new Intent("ru.rian.riamessenger.services.STOP_CONNECTION_SERVICE");
-        PendingIntent contentIntent = PendingIntent.getBroadcast(
-                RiaXmppService.this, 0, i, 0);
-        notification.setLatestEventInfo(getApplicationContext(),
-                "jmXMPP Connected", "Click to disconnect", contentIntent);
-        getNotifyManager().notify(NOTIFICATION_CONNECTION_STATUS, notification);
-    }*/
-
-    // @Inject
-    // private Roster roster;
-
-    // private ConnectionConfiguration mConnConfig;
-    // Test return reference to the service directly
-   /* private final IBinder myBinder = new LocalBinder();
-
-    public class LocalBinder extends Binder {
-        public RiaService getService() {
-            return RiaService.this;
-        }
-    }*/
-
-
-    /*@Override
-    public IBinder onBind(Intent arg0) {
-        Log.i("RiaService", "onBind");
-        displayServiceNotification();
-        ++mClientCount;
-        return myBinder;
-    }
-
-    @Override
-    public boolean onUnbind(Intent arg0) {
-        Log.i("RiaService", "onUnbind");
-        --mClientCount;
-        return true;
-    }*/
-
-/*
-
-
-    @Inject
-    RiaRosterListener riaRosterListener;
-
-    @Inject
-    ChatMessageListenerWrap chatMessageListenerWrap;
-
-    ChatManagerListener riaChatManagerListener = new ChatManagerListener() {
-        @Override
-        public void chatCreated(Chat chat, boolean createdLocally) {
-            chat.addMessageListener(chatMessageListenerWrap);
-        }
-    };
-
-    @Getter
-    XMPPTCPConnection xmpptcpConnection;
-
-    @Getter
-    Roster roster;
-
-    public interface SignInListener {
-        public void onSignedIn(boolean isConnected, boolean isAuthenticated);
-    }
-
-    public void signIn(final Context context, final SignInListener signInListener, final RosterLoadedListener riaRosterLoadedListener) {
-
-        final String username = userAppPreference.getLoginStringKey();
-        final String password = userAppPreference.getPassStringKey();
-
-        Task.callInBackground(new Callable<Object>() {
-            @Override
-            public Object call() {
-                try {
-                    final XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-                    configBuilder.setServiceName(RiaConstants.XMPP_SERVICE_NAME);
-                    configBuilder.setHost(RiaConstants.XMPP_SERVER_ADDRESS);
-                    configBuilder.setResource("test");
-                    configBuilder.setDebuggerEnabled(true);
-                    configBuilder.setPort(5222);
-                    configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-
-                    xmpptcpConnection = new XMPPTCPConnection(configBuilder.build());
-
-                    if (!xmpptcpConnection.isConnected()) {
-                        xmpptcpConnection.connect();
-                    }
-                    if (!xmpptcpConnection.isAuthenticated()) {
-                        xmpptcpConnection.login(username, password);
-                    }
-                    roster = Roster.getInstanceFor(xmpptcpConnection);
-                    roster.addRosterListener(riaRosterListener);
-                    roster.addRosterLoadedListener(riaRosterLoadedListener);
-
-                    ChatManager.getInstanceFor(xmpptcpConnection).addChatListener(riaChatManagerListener);
-                    System.out.println("Logged in!");
-
-                } catch (Exception e) {
-                    xmpptcpConnection.disconnect();
-                    e.printStackTrace();
-                    Toast.makeText(context, e.getExceptionMessage(), Toast.LENGTH_LONG).show();
-                }
-                return null;
-            }
-        }).continueWith(new Continuation<Object, Void>() {
-            public Void then(Task<Object> object) throws Exception {
-                signInListener.onSignedIn(isConnected(), isAuthenticated());
-                if (!isConnected()) {
-                    Toast.makeText(context, context.getText(R.string.no_response_server), Toast.LENGTH_LONG).show();
-                } else if (!isAuthenticated()) {
-                    Toast.makeText(context, context.getText(R.string.sign_in_error), Toast.LENGTH_LONG).show();
-                }
-                return null;
-            }
-        }, Task.UI_THREAD_EXECUTOR);
-    }
-
-    public void sendMessage(String to, String message) throws XMPPException {
-        //Why don't I have map of Chat objects?  Seems like I tried once and it
-        //would not work for some reason.  Try again and comment the issue
-        //if there is one
-        Chat chat = ChatManager.getInstanceFor(xmpptcpConnection).createChat(to,
-                null);
-        try {
-            chat.sendMessage(message);
-        } catch (SmackException.NotConnectedException e) {
-            e.printStackTrace();
-        }
-    }
-    /*if (intent != null) {
-            displayServiceNotification();
-            registerReceiver(new BroadcastReceiver() {
-                                 @Override
-                                 public void onReceive(Context context, Intent intent) {
-                                     stopSelf();
-                                 }
-                             },
-                    new IntentFilter("ru.rian.riamessenger.services.STOP_CONNECTION_SERVICE"));
-        }*/
 }

@@ -9,16 +9,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 
 public class ContactsActivity extends TabsRiaBaseActivity {
@@ -27,6 +31,9 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
     BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.ROBOTS_FRAGMENT, BaseTabFragment.FragIds.GROUPS_FRAGMENT, BaseTabFragment.FragIds.CONTACTS_FRAGMENT};
     String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
+
+    @Bind(R.id.progress_bar)
+    ProgressBarCircularIndeterminate progressBar;
 
     @Inject
     UserAppPreference userAppPreference;
@@ -139,10 +146,23 @@ public class ContactsActivity extends TabsRiaBaseActivity {
     }
 
 
-    @Override
-    protected void authenticated(boolean isAuthenticated) {
-        //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EDbUpdating:
+            case EDbUpdated:
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
+                    }
+                });
+                break;
+            default:
+                super.onEvent(xmppErrorEvent);
+                break;
+        }
     }
+
     /*@Override
     public void onBackPressed() {
         if (!searchView.isIconified()) {

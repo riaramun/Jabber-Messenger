@@ -17,23 +17,17 @@ package ru.rian.riamessenger.common;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.devspark.appmsg.AppMsg;
 
 import de.greenrobot.event.EventBus;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.RiaBaseApplication;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
@@ -42,6 +36,12 @@ import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
  * Base activity which sets up a per-activity object graph and performs injection.
  */
 public abstract class RiaBaseActivity extends AppCompatActivity {
+
+    public static final String ARG_FROM_JID = "from_jid";
+    public static final String ARG_TO_JID = "to_jid";
+
+    public final int MESSAGES_LOADER_ID = 100;
+    public final int USER_STATUS_LOADER_ID = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +60,14 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    protected  void initOrRestartLoader(int loaderId, Bundle bundle,LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
+    protected void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
         if (getSupportLoaderManager().getLoader(loaderId) == null) {
             getSupportLoaderManager().initLoader(loaderId, bundle, callback);
         } else {
             getSupportLoaderManager().restartLoader(loaderId, bundle, callback);
         }
     }
+
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         this.runOnUiThread(new Runnable() {
@@ -80,10 +81,10 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
                     case EReconnectionFailed:
                         msg = "Reconnection failed";
                         break;
-                    case EAuthenticated:
-                        authenticated(true);
+                    /*case EAuthenticated:
+                        //authenticated(true);
                         msg = "Authenticated";
-                        break;
+                        break;*/
                     case EConnectionClosed:
                         msg = "Connection closed";
                         break;
@@ -95,14 +96,14 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
                     case Empty:
                         msg = xmppErrorEvent.exceptionMessage;
                         break;
-                    case EAuthenticationFailed:
-                        authenticated(false);
+                    /*case EAuthenticationFailed:
+                       // authenticated(false);
                         showAppMsgInView(RiaBaseActivity.this, getString(R.string.sign_in_error));
-                        break;
+                        break;*/
                 }
                 if (msg != null) {
                     Log.i("RiaBaseActivity", msg);
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -123,7 +124,6 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         appMsg.show();
     }
 
-    protected abstract void authenticated(boolean isAuthenticated);
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

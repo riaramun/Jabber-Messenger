@@ -201,10 +201,7 @@ public class GroupsAdapter
         }
 
         // check is enabled
-        if (!(holder.itemView.isEnabled() && holder.itemView.isClickable())) {
-            return false;
-        }
+        return holder.itemView.isEnabled() && holder.itemView.isClickable();
 
-        return true;
     }
 }

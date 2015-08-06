@@ -9,12 +9,10 @@ import ru.rian.riamessenger.RiaApplication;
 
 
 public class UserAppPreference {
-   // private static final String RIA_XMPP_SERVICE_FLAG = "RIA_XMPP_SERVICE_FLAG";
+    private static final String FIRST_SECOND_NAME = "FIRST_SECOND_NAME";
     private static final String PASS_STRING_KEY = "PASS_STRING_KEY";
     private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
     private static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
-    private static final String SAMPLE_LONG_KEY = "SAMPLE_LONG_KEY";
-    private static final String SAMPLE_INT_KEY = "SAMPLE_INT_KEY";
     
     private static Editor mEditor;
 
@@ -28,13 +26,13 @@ public class UserAppPreference {
 
     }
 
-    /*public boolean getRiaXmppServiceStartedFlag() {
-        return sharedPreferences.getBoolean(RIA_XMPP_SERVICE_FLAG, false);
+    public String getFirstSecondName() {
+        return sharedPreferences.getString(FIRST_SECOND_NAME, "");
     }
 
-    public void setRiaXmppServiceStartedFlag(boolean value) {
-        mEditor.putBoolean(RIA_XMPP_SERVICE_FLAG, value).apply();
-    }*/
+    public void setFirstSecondName(String value) {
+        mEditor.putString(FIRST_SECOND_NAME, value).apply();
+    }
 
     public String getJidStringKey() {
         return sharedPreferences.getString(CURRENT_JID_STRING_KEY, "");
@@ -58,21 +56,5 @@ public class UserAppPreference {
 
     public void setLoginStringKey(String value) {
         mEditor.putString(LOGIN_STRING_KEY, value).apply();
-    }
-
-    public void setSampleLongKey(long value) {
-        mEditor.putLong(SAMPLE_LONG_KEY, value).apply();
-    }
-
-    public long getSampleLongKey() {
-        return sharedPreferences.getLong(SAMPLE_LONG_KEY, 0);
-    }
-
-    public void setSampleIntKey(Integer value) {
-        mEditor.putInt(SAMPLE_INT_KEY, value).apply();
-    }
-
-    public Integer getSampleIntKey() {
-        return sharedPreferences.getInt(SAMPLE_INT_KEY, 0);
     }
 }

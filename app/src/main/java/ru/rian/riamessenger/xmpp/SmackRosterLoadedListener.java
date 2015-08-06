@@ -14,17 +14,14 @@ import org.jivesoftware.smack.roster.RosterLoadedListener;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import javax.inject.Inject;
-
 import bolts.Continuation;
 import bolts.Task;
-import de.greenrobot.event.EventBus;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
+import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 
 
@@ -36,6 +33,8 @@ import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 public class SmackRosterLoadedListener implements RosterLoadedListener {
 
     final Context context;
+    final UserAppPreference userAppPreference;
+
     @Override
     public void onRosterLoaded(Roster roster) {
         saveRosterToDb(roster);
@@ -58,7 +57,7 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
     }
 
     void doSaveRosterToDb(final Roster roster) {
-        Log.i("SmackWrapper", "doSaveRosterToDb b");
+        Log.i("RiaService", "doSaveRosterToDb b");
         try {
             ActiveAndroid.beginTransaction();
             for (RosterGroup rosterGroup : roster.getGroups()) {
@@ -70,7 +69,7 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
                     RosterEntryModel rosterEntryModel = new RosterEntryModel();
                     rosterEntryModel.bareJid = rosterEntry.getJid().toString();
 
-                    if(rosterGroupModel.name.equals(context.getString(R.string.robots))) {
+                    if (rosterGroupModel.name.equals(context.getString(R.string.robots))) {
                         rosterEntryModel.name = rosterEntry.getName();
                     } else {
                         rosterEntryModel.name = rosterEntry.getName().toLowerCase(Locale.getDefault());
@@ -81,10 +80,16 @@ public class SmackRosterLoadedListener implements RosterLoadedListener {
                     rosterEntryModel.save();
                 }
             }
+            //add current user entry to track his presence via loader
+            RosterEntryModel rosterEntryModel = new RosterEntryModel();
+            rosterEntryModel.bareJid = userAppPreference.getJidStringKey();
+            rosterEntryModel.setPresence(new Presence(Presence.Type.available));
+            rosterEntryModel.save();
+
             ActiveAndroid.setTransactionSuccessful();
         } finally {
             ActiveAndroid.endTransaction();
         }
-        Log.i("SmackWrapper", "doSaveRosterToDb e");
+        Log.i("RiaService", "doSaveRosterToDb e");
     }
 }

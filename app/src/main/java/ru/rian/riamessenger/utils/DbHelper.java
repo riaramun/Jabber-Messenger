@@ -1,15 +1,16 @@
 package ru.rian.riamessenger.utils;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
-import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
+import org.jivesoftware.smack.packet.Message;
+
+import java.util.Date;
 import java.util.List;
 
 import ru.rian.riamessenger.common.DbColumns;
@@ -71,5 +72,16 @@ public class DbHelper {
                 ).toSql();
         List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
         return messageContainers.get(0);
+    }
+
+    public static MessageContainer addMessageToDb(Message message) {
+        MessageContainer messageContainer = new MessageContainer();
+        messageContainer.body = message.getBody();
+        messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
+        messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
+        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();
+        messageContainer.created = new Date();
+        messageContainer.save();
+        return messageContainer;
     }
 }

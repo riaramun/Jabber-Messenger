@@ -22,8 +22,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.SearchView;
-import android.view.View;
-
 
 import javax.inject.Inject;
 
@@ -31,7 +29,6 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.common.RiaBaseFragment;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
-import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
@@ -55,7 +52,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     protected int tabId;
 
-    static public enum FragIds {
+    public enum FragIds {
          ROBOTS_FRAGMENT,
          GROUPS_FRAGMENT,
          CONTACTS_FRAGMENT,

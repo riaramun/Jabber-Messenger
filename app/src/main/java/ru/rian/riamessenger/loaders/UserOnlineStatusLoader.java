@@ -33,7 +33,6 @@ public class UserOnlineStatusLoader extends CursorRiaLoader {
 
     @Override
     protected Cursor loadCursor() throws Exception {
-
         String select = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + user_jid + "'").toSql();
         Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
         boolean ret = msgCursor.moveToFirst();

@@ -1,50 +1,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
     tools:context=".ConverationActivity">
 
     <android.support.v7.widget.RecyclerView
         style="@style/RecyclerViewCommon"
-        android:background="#eef5fe"
         android:layout_above="@+id/send_msg_control"
+        android:background="#eef5fe"
         android:paddingBottom="@dimen/list_item_message_margin"
         android:scrollbars="vertical" />
 
 
     <RelativeLayout
         android:id="@+id/send_msg_control"
-        android:background="@drawable/send_msg_edit_text_bg"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/send_msg_edit_text_bg"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_alignParentBottom="true">
+        android:paddingRight="16dp">
 
         <EditText
             android:id="@+id/message_edit_text"
-            android:paddingRight="48dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#00000000"
-            android:hint="@string/message_hint">
+            android:hint="@string/message_hint"
+            android:paddingRight="48dp">
+
             <requestFocus />
         </EditText>
 
         <com.malinskiy.materialicons.widget.IconTextView
-            android:enabled="false"
             android:id="@+id/send_icon_text_view"
-            android:textColor="@drawable/icon_text_view_send_icon_color_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:enabled="false"
             android:text="{zmdi-mail-send}"
+            android:textColor="@drawable/icon_text_view_send_icon_color_selector"
             android:textSize="38sp" />
 
     </RelativeLayout>
 
-
+    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+        style="@style/RiaProgressBar"
+        android:layout_centerInParent="true" />
 </RelativeLayout>

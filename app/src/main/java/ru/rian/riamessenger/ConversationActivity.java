@@ -1,13 +1,8 @@
 package ru.rian.riamessenger;
 
-import android.app.Activity;
-import android.app.Service;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -15,14 +10,12 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.malinskiy.materialicons.widget.IconTextView;
 
 import javax.inject.Inject;
@@ -32,27 +25,27 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import de.greenrobot.event.EventBus;
-import lombok.val;
 import ru.rian.riamessenger.adapters.cursor.MessagesAdapter;
 import ru.rian.riamessenger.common.RiaBaseActivity;
-import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.MessagesLoader;
 import ru.rian.riamessenger.loaders.UserOnlineStatusLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ScreenUtils;
+import ru.rian.riamessenger.utils.ViewUtils;
 
 /**
  * Created by Roman on 7/21/2015.
  */
 public class ConversationActivity extends RiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
-    final int MESSAGES_LOADER_ID = 1;
-    final int USER_STATUS_LOADER_ID = 2;
+    @Bind(R.id.progress_bar)
+    ProgressBarCircularIndeterminate progressBar;
 
     @Inject
     UserAppPreference userAppPreference;
@@ -81,8 +74,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         messageEditText.setText("");
     }
 
-    public static final String ARG_FROM_JID = "from_jid";
-    public static final String ARG_TO_JID = "to_jid";
     MessagesAdapter messagesAdapter;
     LinearLayoutManager linearLayoutManager;
 
@@ -110,20 +101,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.action_bar_title_layout);
 
-        String jid_to = getToJid();
 
-        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
-        if (rosterEntryModel != null) {
-            String titleToSet;
-            if (rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
-                titleToSet = rosterEntryModel.name;
-            } else {
-                titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
-            }
-            ((TextView) findViewById(R.id.action_bar_title)).setText(titleToSet);
-            int resId = getIconIdByPresence(rosterEntryModel.presence);
-            ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
-        }
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -134,6 +112,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         recyclerView.setAdapter(messagesAdapter);
 
         Bundle bundle = new Bundle();
+        String jid_to = getToJid();
         bundle.putString(ARG_TO_JID, jid_to);
         bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
 
@@ -148,28 +127,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         return arg_to_jid;
     }
 
-
-    public int getIconIdByPresence(int presence) {
-        int resId = -1;
-        RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[presence];
-        switch (mode) {
-            case USER_STATUS_AVAILIBLE:
-                resId = R.drawable.action_bar_status_online;
-                break;
-            case USER_STATUS_AWAY:
-                resId = R.drawable.action_bar_status_away;
-                break;
-            case USER_STATUS_UNAVAILIBLE:
-                resId = R.drawable.action_bar_status_offline;
-                break;
-        }
-        return resId;
-    }
-
-    @Override
-    protected void authenticated(boolean isAuthenticated) {
-
-    }
 
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
@@ -196,7 +153,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
             case USER_STATUS_LOADER_ID: {
                 if (data.result != null) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
-                    int resId = getIconIdByPresence(rosterEntryModel.presence);
+                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
                     ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
                 }
             }
@@ -207,5 +164,48 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     @Override
     public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
 
+    }
+
+    protected void onResume() {
+        super.onResume();
+        updateStatusBar();
+    }
+
+    void updateStatusBar() {
+        String jid_to = getToJid();
+        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
+        if (rosterEntryModel != null) {
+            progressBar.setVisibility(View.GONE);
+            String titleToSet;
+            if (rosterEntryModel.rosterGroupModel != null &&
+                    rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
+                titleToSet = rosterEntryModel.name;
+            } else {
+                titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
+            }
+            ((TextView) findViewById(R.id.action_bar_title)).setText(titleToSet);
+            int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+            ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EDbUpdating:
+            case EDbUpdated:
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
+                        updateStatusBar();
+                    }
+                });
+                break;
+            default:
+                super.onEvent(xmppErrorEvent);
+                break;
+        }
     }
 }

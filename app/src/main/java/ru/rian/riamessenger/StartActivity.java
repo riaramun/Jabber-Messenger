@@ -4,20 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ProgressBar;
 
+import com.crashlytics.android.Crashlytics;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
+import io.fabric.sdk.android.Fabric;
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
-import ru.rian.riamessenger.utils.SysUtils;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.utils.SysUtils;
 
 public class StartActivity extends RiaBaseActivity {
 
@@ -30,6 +31,7 @@ public class StartActivity extends RiaBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_start);
         ButterKnife.bind(this);
@@ -69,10 +71,5 @@ public class StartActivity extends RiaBaseActivity {
         }
         Intent intent = new Intent(StartActivity.this, cl);
         startActivity(intent);
-    }
-
-    @Override
-    protected void authenticated(boolean isAuthenticated) {
-       //nothing to do, since in this case the method launchNextActivity starts ContactsActivity
     }
 }

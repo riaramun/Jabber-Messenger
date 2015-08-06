@@ -39,4 +39,26 @@ public class ViewUtils {
         }
         onlineStatus.setBackgroundResource(resId);
     }
+
+    public static int getIconIdByPresence(RosterEntryModel rosterEntryModel) {
+        int resId = -1;
+
+        if (rosterEntryModel == null) {
+            resId = R.drawable.action_bar_status_offline;
+        } else {
+            RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[rosterEntryModel.presence];
+            switch (mode) {
+                case USER_STATUS_AVAILIBLE:
+                    resId = R.drawable.action_bar_status_online;
+                    break;
+                case USER_STATUS_AWAY:
+                    resId = R.drawable.action_bar_status_away;
+                    break;
+                case USER_STATUS_UNAVAILIBLE:
+                    resId = R.drawable.action_bar_status_offline;
+                    break;
+            }
+        }
+        return resId;
+    }
 }

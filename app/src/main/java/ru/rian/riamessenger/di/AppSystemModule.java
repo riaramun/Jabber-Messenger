@@ -3,7 +3,6 @@ package ru.rian.riamessenger.di;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
@@ -11,7 +10,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import lombok.AllArgsConstructor;
-import ru.rian.riamessenger.utils.NetworkStateManager;
 
 @Module
 @AllArgsConstructor
@@ -30,16 +28,16 @@ public class AppSystemModule {
         return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
-    @Provides
+    /*@Provides
     @Singleton
     ConnectivityManager provideConnectivityManager() {
         return (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
-    }
+    }*/
 
-    @Provides
+    /*@Provides
     @Singleton
     //Method parameter injected by Dagger2
     NetworkStateManager provideNetworkStateManager(ConnectivityManager connectivityManagerCompat) {
         return new NetworkStateManager(connectivityManagerCompat);
-    }
+    }*/
 }

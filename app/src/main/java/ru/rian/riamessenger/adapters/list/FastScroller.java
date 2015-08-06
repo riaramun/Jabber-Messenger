@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.tonicartos.superslim.LayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import ru.rian.riamessenger.R;
 
@@ -115,7 +113,7 @@ public class FastScroller extends LinearLayout {
       else
         proportion=y/(float)height;
       int targetPos=getValueInRange(0,itemCount-1,(int)(proportion*(float)itemCount));
-      ((LayoutManager)recyclerView.getLayoutManager()).scrollToPosition(targetPos);
+      recyclerView.getLayoutManager().scrollToPosition(targetPos);
 //      recyclerView.oPositionWithOffset(targetPos);
       String bubbleText=((BubbleTextGetter)recyclerView.getAdapter()).getTextToShowInBubble(targetPos);
       bubble.setText(bubbleText);

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.SmackException;
@@ -23,10 +22,11 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import bolts.Task;
 import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.model.MessageContainer;
-import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
 
 /**
@@ -65,10 +65,12 @@ public class XmppMessageManager implements MessageListener
     @Override
     public void chatCreated(Chat chat, boolean createdLocally) {
 
-        Log.d(TAG, "on chat created");
-        String jid = chat.getParticipant().asBareJid().toString();
-        mPrivateChats.put(jid, chat);
-        chat.addMessageListener(this);
+        Log.d(TAG, "on chat created " + createdLocally);
+        if (!createdLocally) {
+            String jid = chat.getParticipant().asBareJid().toString();
+            mPrivateChats.put(jid, chat);
+            chat.addMessageListener(this);
+        }
     }
 
     /**
@@ -103,28 +105,26 @@ public class XmppMessageManager implements MessageListener
      */
 
     @Override
-    public void processMessage(Chat chat, Message message) {
-
+    public void processMessage(Chat chat, final Message message) {
         Log.d(TAG, "on message from chat");
         // store message to DB
+        Task.callInBackground(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                MessageContainer messageContainer = DbHelper.addMessageToDb(message);
+                if (isApplicationBroughtToBackground()) {
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.toJid);
+                    broadcastIntent.putExtra(ConversationActivity.ARG_FROM_JID, messageContainer.fromJid);
+                    // Send broadcast and expect result back.  If no result then
+                    // then an appropriate activity is not alive and we should show a notification
+                    context.sendOrderedBroadcast(broadcastIntent, null, sendMsgBroadcastReceiver, null,
+                            Activity.RESULT_CANCELED, null, null);
+                }
+                return null;
+            }
+        });
 
-        MessageContainer messageContainer = new MessageContainer();
-        messageContainer.body = message.getBody();
-        messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
-        messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
-        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();
-        messageContainer.created = new Date();
-        messageContainer.save();
-
-        if(isApplicationBroughtToBackground()) {
-            Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.toJid);
-            broadcastIntent.putExtra(ConversationActivity.ARG_FROM_JID, messageContainer.fromJid);
-            // Send broadcast and expect result back.  If no result then
-            // then an appropriate activity is not alive and we should show a notification
-            context.sendOrderedBroadcast(broadcastIntent, null, sendMsgBroadcastReceiver, null,
-                    Activity.RESULT_CANCELED, null, null);
-        }
 
     }
 
@@ -156,7 +156,6 @@ public class XmppMessageManager implements MessageListener
                 if (jid.contains("lebedenko") || jid.contains("skurzhansky")) {
 
                     currentChat.sendMessage(messageText);
-                    //RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid);
                     MessageContainer messageContainer = new MessageContainer();
                     messageContainer.body = messageText;
                     messageContainer.fromJid = mConnection.getUser().asBareJidString();

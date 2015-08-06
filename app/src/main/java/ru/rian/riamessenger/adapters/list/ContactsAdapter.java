@@ -14,7 +14,6 @@ import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
-import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
@@ -50,12 +49,12 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     }
 
     public boolean isItemHeader(int position) {
-        return ((LineItem) entries.get(position)).isHeader;
+        return entries.get(position).isHeader;
     }
 
 
     public String itemToString(int position) {
-        return ((LineItem) entries.get(position)).text;
+        return entries.get(position).text;
     }
 
     @Override
@@ -79,7 +78,6 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                     }
                 });
                 viewHolder = new ContactViewHolder(view);
-                ;
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
                 viewHolder = super.onCreateViewHolder(parent, viewType);
@@ -105,7 +103,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
             case VIEW_TYPE_CONTENT:
             case VIEW_TYPE_HEADER:
                 ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-                final LineItem item = (LineItem) entries.get(position);
+                final LineItem item = entries.get(position);
 
                 // Overrides xml attrs, could use different layouts too.
                 if (item.isHeader) {
@@ -134,7 +132,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     @Override
     public int getItemViewType(int position) {
         if (entries != null && entries.size() > 0) {
-            return ((LineItem) entries.get(position)).isHeader ? VIEW_TYPE_HEADER : VIEW_TYPE_CONTENT;
+            return entries.get(position).isHeader ? VIEW_TYPE_HEADER : VIEW_TYPE_CONTENT;
         } else {
             return VIEW_TYPE_EMPTY_ITEM;
         }
@@ -154,7 +152,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     private void notifyHeaderChanges() {
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
-                LineItem item = (LineItem) entries.get(i);
+                LineItem item = entries.get(i);
                 if (item.isHeader) {
                     notifyItemChanged(i);
                 }
