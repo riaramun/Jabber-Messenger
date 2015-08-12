@@ -21,7 +21,10 @@ public class RiaEventBus {
     public static void post(XmppErrorEvent.State state) {
         XmppErrorEvent xmppEvent = new XmppErrorEvent(state);
 
-        if (XmppErrorEvent.State.EDbUpdated == state || XmppErrorEvent.State.EDbUpdating == state) {
+        if (XmppErrorEvent.State.EDbUpdated == state
+                || XmppErrorEvent.State.EDbUpdating == state
+                || XmppErrorEvent.State.EAuthenticated == state
+                || XmppErrorEvent.State.EAuthenticationFailed == state) {
             EventBus.getDefault().postSticky(xmppEvent);
         } else {
             EventBus.getDefault().post(xmppEvent);

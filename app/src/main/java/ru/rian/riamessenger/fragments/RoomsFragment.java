@@ -38,7 +38,6 @@ import butterknife.ButterKnife;
 import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
-import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RoomsFragment extends BaseTabFragment {
@@ -86,6 +85,11 @@ public class RoomsFragment extends BaseTabFragment {
         setSearchViewListenersAndStyle(searchView);
     }
 
+    public void onResume() {
+        super.onResume();
+        buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
+    }
+
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
         return null;
@@ -94,5 +98,10 @@ public class RoomsFragment extends BaseTabFragment {
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
         robotsAdapter.changeCursor(data.result);
+    }
+
+    @Override
+    protected void rosterLoaded(boolean isLoaded) {
+        buttonFloat.setVisibility(isLoaded ?  View.VISIBLE : View.GONE);
     }
 }

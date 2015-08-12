@@ -88,16 +88,6 @@ public class LoginActivity extends RiaBaseActivity {
     }
 
 
-    protected void authenticated(boolean isAuthenticated) {
-        if (isAuthenticated) {
-            Intent intent = new Intent(this, ChatsActivity.class);
-            startActivity(intent);
-        } else {
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
-
     @Override
     public void onStart() {
         super.onStart();
@@ -119,7 +109,7 @@ public class LoginActivity extends RiaBaseActivity {
             userAppPreference.setFirstSecondName(nameEditText.getText().toString());
             userAppPreference.setLoginStringKey(loginEditText.getText().toString());
             userAppPreference.setPassStringKey(passwordEditText.getText().toString());
-            RiaEventBus.post(RiaServiceEvent.RiaEvent.SIGN_IN);
+            RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
         }
     }
 
@@ -139,17 +129,25 @@ public class LoginActivity extends RiaBaseActivity {
 
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
-        switch (xmppErrorEvent.state) {
-            case EAuthenticated:
-                authenticated(true);
-                break;
-            case EAuthenticationFailed:
-                showAppMsgInView(this, getString(R.string.sign_in_error));
-                break;
-            default:
-                super.onEvent(xmppErrorEvent);
-                break;
-        }
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (xmppErrorEvent.state) {
+                    case EAuthenticated:
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Intent intent = new Intent(LoginActivity.this, ChatsActivity.class);
+                        startActivity(intent);
+                        break;
+                    case EAuthenticationFailed:
+                        progressBar.setVisibility(View.INVISIBLE);
+                        showAppMsgInView(LoginActivity.this, getString(R.string.sign_in_error));
+                        break;
+                    default:
+                        LoginActivity.super.onEvent(xmppErrorEvent);
+                        break;
+                }
+            }
+        });
     }
     /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

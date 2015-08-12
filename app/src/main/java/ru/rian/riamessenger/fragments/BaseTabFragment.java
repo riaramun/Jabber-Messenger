@@ -53,12 +53,12 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     protected int tabId;
 
     public enum FragIds {
-         ROBOTS_FRAGMENT,
-         GROUPS_FRAGMENT,
-         CONTACTS_FRAGMENT,
-         CHATS_FRAGMENT,
-         ROOMS_FRAGMENT,
-         CHAT_USER_STATUS_LOADER_ID
+        ROBOTS_FRAGMENT,
+        GROUPS_FRAGMENT,
+        CONTACTS_FRAGMENT,
+        CHATS_FRAGMENT,
+        ROOMS_FRAGMENT,
+        CHAT_USER_STATUS_LOADER_ID
     }
 
 
@@ -106,7 +106,6 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         if (savedInstanceState != null) {
         } else {
         }
-        initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
     }
 
     protected Bundle getBundle() {
@@ -119,6 +118,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
     }
 
     @Override
@@ -131,19 +131,21 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         getLoaderManager().restartLoader(tabId, getBundle(), this);
     }*/
 
-    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+    protected abstract void rosterLoaded(boolean isLoaded);
 
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         switch (xmppErrorEvent.state) {
-            case EDbUpdated:
-                isUpdating = false;
-                break;
-            case EDbUpdating:
-                isUpdating = true;
+            case ENotConnecting:
+            case EConnecting:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rosterLoaded(xmppErrorEvent.state == XmppErrorEvent.State.ENotConnecting ? true : false);
+                    }
+                });
                 break;
         }
     }
-
-    Boolean isUpdating = false;
 
     protected String title_to_search = null;
 
@@ -170,7 +172,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         });
     }
 
-    protected  void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
+    protected void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
         if (getLoaderManager().getLoader(loaderId) == null) {
             getLoaderManager().initLoader(loaderId, bundle, callback);
         } else {

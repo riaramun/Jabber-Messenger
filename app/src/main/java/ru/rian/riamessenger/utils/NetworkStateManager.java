@@ -1,8 +1,12 @@
 package ru.rian.riamessenger.utils;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+
+import com.activeandroid.ActiveAndroid;
 
 import org.jivesoftware.smack.packet.Presence;
 
@@ -30,9 +34,18 @@ public class NetworkStateManager {
     }
 
     public static void setCurrentUserPresence(Presence presence, String bareJid) {
+
         RosterEntryModel rosterEntryModel = new RosterEntryModel();
         rosterEntryModel.bareJid = bareJid;
         rosterEntryModel.setPresence(presence);
-        rosterEntryModel.save();
+        try {
+            ActiveAndroid.beginTransaction();
+            rosterEntryModel.save();
+            ActiveAndroid.setTransactionSuccessful();
+        } catch (SQLiteDiskIOException e) {
+            Log.i("Service", e.getMessage());
+        } finally {
+            ActiveAndroid.endTransaction();
+        }
     }
 }

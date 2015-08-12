@@ -31,26 +31,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.activeandroid.Cache;
 import com.activeandroid.util.SQLiteUtils;
 import com.gc.materialdesign.views.ButtonFloat;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
-import lombok.val;
 import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
 import ru.rian.riamessenger.common.DbColumns;
-import ru.rian.riamessenger.loaders.ChatsBaseLoader;
 import ru.rian.riamessenger.loaders.ChatsListenerLoader;
 import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -162,8 +156,18 @@ public class ChatsFragment extends BaseTabFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    public void onResume() {
+        super.onResume();
+        buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
+    }
+
+    @Override
+    protected void rosterLoaded(boolean isLoaded) {
+        buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
     }
 
 

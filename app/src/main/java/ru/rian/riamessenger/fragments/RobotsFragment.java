@@ -70,4 +70,9 @@ public class RobotsFragment extends BaseTabFragment {
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
         robotsAdapter.changeCursor(data.result);
     }
+
+    @Override
+    protected void rosterLoaded(boolean isLoaded) {
+
+    }
 }

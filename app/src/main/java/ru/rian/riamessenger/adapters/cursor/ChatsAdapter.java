@@ -2,13 +2,10 @@ package ru.rian.riamessenger.adapters.cursor;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,10 +72,10 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                     final val contactViewHolder = (ChatViewHolder) viewHolder;
 
                     RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(messageContainer.threadID);
-
                     if (rosterEntryModel != null) {
                         String titleToSet;
-                        if (rosterEntryModel.rosterGroupModel.name.equals(mContext.getString(R.string.robots))) {
+                        if (rosterEntryModel.rosterGroupModel != null
+                                && rosterEntryModel.rosterGroupModel.name.equals(mContext.getString(R.string.robots))) {
                             titleToSet = rosterEntryModel.name;
                         } else {
                             titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);

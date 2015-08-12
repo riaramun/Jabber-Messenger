@@ -13,7 +13,8 @@ public class UserAppPreference {
     private static final String PASS_STRING_KEY = "PASS_STRING_KEY";
     private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
     private static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
-    
+    private static final String CONNECTING_STATE_BOOL_KEY = "CONNECTING_STATE_BOOL_KEY";
+
     private static Editor mEditor;
 
     @Inject
@@ -40,6 +41,14 @@ public class UserAppPreference {
 
     public void setJidStringKey(String value) {
         mEditor.putString(CURRENT_JID_STRING_KEY, value).apply();
+    }
+
+    public boolean getConnectingStateKey() {
+        return sharedPreferences.getBoolean(CONNECTING_STATE_BOOL_KEY, false);
+    }
+
+    public void setConnectingStateKey(boolean value) {
+        mEditor.putBoolean(CONNECTING_STATE_BOOL_KEY, value).apply();
     }
 
     public String getPassStringKey() {

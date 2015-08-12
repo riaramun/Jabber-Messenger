@@ -1,22 +1,36 @@
 package ru.rian.riamessenger.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.packet.Presence;
+
+import ru.rian.riamessenger.ConversationActivity;
+import ru.rian.riamessenger.model.MessageContainer;
+import ru.rian.riamessenger.xmpp.SmackXmppConnection;
+
 /**
  * Created by grigoriy on 26.06.15.
  */
 public class XmppUtils {
-	public static String extractJid(String recepient){
-		int pos = recepient.indexOf("/");
-		if(pos >= 0){
-			return recepient.substring(0,pos);
-		}
-		return recepient;
+
+	static public void changeCurrentUserStatus(Presence presence, String jid, XMPPConnection xmppConnection ) {
+		NetworkStateManager.setCurrentUserPresence(presence, jid);
+		changeCurrentUserPresenceOnServer(presence, xmppConnection);
 	}
 
-	public static String extractResource(String recepient){
-		int pos = recepient.indexOf("/");
-		if(pos >= 0){
-			return recepient.substring(pos+1);
+	static void changeCurrentUserPresenceOnServer(Presence presence, XMPPConnection xmppConnection) {
+		if (xmppConnection != null) {
+			try {
+				xmppConnection.sendStanza(presence);
+			} catch (SmackException.NotConnectedException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		return "";
 	}
 }

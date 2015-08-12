@@ -22,7 +22,6 @@ public class RosterEntryModel extends Model {
     // This is a regular field
 
 
-
     @Column(name = DbColumns.FromJidCol, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String bareJid;
 
@@ -32,7 +31,7 @@ public class RosterEntryModel extends Model {
     @Column(name = DbColumns.NameCol)
     public String name;
 
-    @Column(name = DbColumns.RosterGroupModelCol,   onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    @Column(name = DbColumns.RosterGroupModelCol, onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     public RosterGroupModel rosterGroupModel;
 
     // Used to return items from another table based on the foreign key
@@ -46,11 +45,10 @@ public class RosterEntryModel extends Model {
     }
 
     public void setPresence(Presence presence) {
-
-        if (presence.isAvailable())
-            this.presence = UserStatus.USER_STATUS_AVAILIBLE.ordinal();
-        else if (presence.isAway())
+        if (presence.isAway())
             this.presence = UserStatus.USER_STATUS_AWAY.ordinal();
+        else if (presence.isAvailable())
+            this.presence = UserStatus.USER_STATUS_AVAILIBLE.ordinal();
         else
             this.presence = UserStatus.USER_STATUS_UNAVAILIBLE.ordinal();
     }

@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.malinskiy.materialicons.widget.IconTextView;
+
 import ru.rian.riamessenger.R;
 
 /**
@@ -12,11 +14,13 @@ import ru.rian.riamessenger.R;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
 
+    public IconTextView messageSentIcon;
     public TextView messageTextView;
     public TextView dateTextView;
 
     public MessageViewHolder(View itemView) {
         super(itemView);
+        messageSentIcon = (IconTextView) itemView.findViewById(R.id.message_sent_icon);
         messageTextView = (TextView) itemView.findViewById(R.id.message_text);
         dateTextView = (TextView) itemView.findViewById(R.id.message_created_date);
     }

@@ -11,7 +11,6 @@ import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.loaders.base.BaseRiaLoader;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.services.RiaXmppService;
-import ru.rian.riamessenger.xmpp.SmackRosterListener;
 
 public interface AppGraph {
 
@@ -25,7 +24,6 @@ public interface AppGraph {
 
     void inject(BaseTabFragment fragment);
     void inject(UserAppPreference userAppPreference);
-    void inject(SmackRosterListener listener);
     void inject(BaseRiaLoader loader);
     void inject(RiaXmppService riaXmppService);
 

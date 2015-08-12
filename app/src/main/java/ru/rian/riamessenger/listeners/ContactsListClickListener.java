@@ -3,6 +3,7 @@ package ru.rian.riamessenger.listeners;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import ru.rian.riamessenger.ConversationActivity;
@@ -27,6 +28,8 @@ public class ContactsListClickListener {
             String jid = rosterEntryIdGetter.getJid(childPosition);
             if (jid != null) {
                 onClick(jid, v.getContext());
+            } else {
+                Log.i("RiaService", "onClick jid = null");
             }
         }
     }

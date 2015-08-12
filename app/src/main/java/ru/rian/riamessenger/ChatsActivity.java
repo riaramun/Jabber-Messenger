@@ -1,5 +1,6 @@
 package ru.rian.riamessenger;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
@@ -25,16 +25,15 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.karim.MaterialTabs;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ChatRemoveDialogFragment;
-import ru.rian.riamessenger.loaders.MessagesLoader;
 import ru.rian.riamessenger.loaders.UserOnlineStatusLoader;
-import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
+import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 import ru.rian.riamessenger.utils.DbHelper;
@@ -42,8 +41,7 @@ import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.ViewUtils;
 
 
-public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>>{
-
+public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
 
     BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.CHATS_FRAGMENT, BaseTabFragment.FragIds.ROOMS_FRAGMENT};
@@ -94,11 +92,6 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
             }
         });
         contactsMaterialTabs.setViewPager(viewPager);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_TO_JID, userAppPreference.getJidStringKey());
-        initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
-
     }
 
 
@@ -123,29 +116,37 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     }*/
 
     private void logout(boolean clean) {
+
         if (clean) {
             userAppPreference.setLoginStringKey("");
             userAppPreference.setPassStringKey("");
+            DbHelper.clearDb();
+            RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_OUT);
         }
-        /*
-        Intent intent = new Intent(this, EnterActivity.class);
+        Intent intent = new Intent(this, StartActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
+        startActivity(intent);
         finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(!NetworkStateManager.isNetworkAvailable(this)) {
+        if (!NetworkStateManager.isNetworkAvailable(this)) {
             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
         }
-        progressBar.setVisibility(View.GONE);
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_TO_JID, userAppPreference.getJidStringKey());
+        initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
+
+        progressBar.setVisibility(!userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
+
     }
+
     @Override
     protected void onStart() {
-        // RiaEventBus.post(RiaServiceEvent.RiaEvent.GET_ROSTER);
+        // RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_GET_ROSTER);
         super.onStart();
     }
 
@@ -235,12 +236,19 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         switch (xmppErrorEvent.state) {
-            case EDbUpdating:
-            case EDbUpdated:
+            case EAuthenticated:
+                NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getJidStringKey());
+                break;
+            case EAuthenticationFailed:
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                break;
+            case ENotConnecting:
+            case EConnecting:
                 this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
+                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.ENotConnecting ? View.GONE : View.VISIBLE);
                     }
                 });
                 break;
@@ -263,7 +271,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
         switch (loader.getId()) {
             case USER_STATUS_LOADER_ID: {
-                if (data.result != null) {
+                if (data.result != null && data.result.moveToFirst()) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
                     int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
                     getSupportActionBar().setHomeAsUpIndicator(resId);
@@ -277,5 +285,4 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
 
     }
-
 }

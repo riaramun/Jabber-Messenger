@@ -149,4 +149,9 @@ public class GroupsFragment extends BaseTabFragment {
         return new ContactsLoader(getActivity(), args);
     }
     GroupsAdapter groupsAdapter;
+
+    @Override
+    protected void rosterLoaded(boolean isLoaded) {
+
+    }
 }

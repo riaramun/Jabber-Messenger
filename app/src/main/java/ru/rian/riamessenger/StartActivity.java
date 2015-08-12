@@ -46,16 +46,15 @@ public class StartActivity extends RiaBaseActivity {
     protected void onResume() {
         super.onResume();
 
-        final String username = userAppPreference.getLoginStringKey();
         final String password = userAppPreference.getPassStringKey();
 
         if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
-            RiaEventBus.post(RiaServiceEvent.RiaEvent.SIGN_IN);
+            RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
         } else {
             Intent intent = new Intent(this, RiaXmppService.class);
             startService(intent);
         }
-        launchNextActivity(TextUtils.isEmpty(username) || TextUtils.isEmpty(password) ? false : true);
+        launchNextActivity(TextUtils.isEmpty(password) ? false : true);
     }
 
     /*public void onEvent(AuthClientEvent event) {

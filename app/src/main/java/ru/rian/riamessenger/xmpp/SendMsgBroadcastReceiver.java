@@ -1,27 +1,21 @@
 package ru.rian.riamessenger.xmpp;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.loaders.MessagesLoader;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 
@@ -31,6 +25,16 @@ import ru.rian.riamessenger.utils.RiaTextUtils;
 @RequiredArgsConstructor
 public class SendMsgBroadcastReceiver extends BroadcastReceiver {
 
+    public void sendOrderedBroadcastIntent(MessageContainer messageContainer) {
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.toJid);
+        broadcastIntent.putExtra(ConversationActivity.ARG_FROM_JID, messageContainer.fromJid);
+        // Send broadcast and expect result back.  If no result then
+        // then an appropriate activity is not alive and we should show a notification
+        context.sendOrderedBroadcast(broadcastIntent, null, this, null,
+                Activity.RESULT_CANCELED, null, null);
+    }
+
     final static int NOTIFICATION_MAX_LENGTH = 10;
     //Stores messages when there was no proper BroadcastReceiver
     //so that a ChatView can display them later
@@ -39,7 +43,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
     //because the actual message being stored could be from ourselves TO the person
     //we are chatting with.  This info is not stored with the message, it is tracked
     //by who the chat session is with, so using a simple class to track this
-  //  private HashMap<String, List<JmMessage>> mQueuedMessages = new HashMap<String, List<JmMessage>>();
+    //  private HashMap<String, List<JmMessage>> mQueuedMessages = new HashMap<String, List<JmMessage>>();
 
     final Context context;
 
@@ -54,7 +58,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             MessageContainer messageContainer = DbHelper.getLastMessageFrom(jid_from, jid_to);
             RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
             String messageFromPref = context.getString(R.string.message_from);
-          //  queueMessage(messageFrom, message);
+            //  queueMessage(messageFrom, message);
             String messageText = messageContainer.body;
             int messageLength = NOTIFICATION_MAX_LENGTH;
             if (messageText.length() <= messageLength) {
@@ -68,9 +72,8 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             notificationBundle.putString(ConversationActivity.ARG_FROM_JID, messageContainer.toJid);
             notificationIntent.putExtras(notificationBundle);*/
             //myIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
-          //  notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-           //         Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
+            //  notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+            //         Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
 
             Intent notificationIntent = new Intent(context, ConversationActivity.class);
@@ -87,12 +90,12 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                     .setTicker(context.getString(R.string.new_message))
                     .setWhen(System.currentTimeMillis())
                     .setContentIntent(pendingIntent)
-                   //.setDefaults(Notification.DEFAULT_SOUND)
+                            //.setDefaults(Notification.DEFAULT_SOUND)
                     .setAutoCancel(true)
                     .setSmallIcon(R.drawable.push_icon)
                     .build();
             NotificationManager notificationManager =
-                    (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             //notification.setLatestEventInfo(context, title, message, pIntent);
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -102,7 +105,6 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             //Notification notification = new Notification(icon, tickerText, when);
             //notification.flags = notification.defaults;
             //notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
 
 
             // Uri uri = Uri.parse("ru.rian.riamessenger.ConversationActivity");
@@ -118,7 +120,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
 
             //PendingIntent contentIntent = PendingIntent.getActivity(
             //        context, 0, activityIntent, 0);
-           // notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+            // notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 
             //Use the hashcode of the message sender's user id
             //so that there's a unique id per message source.  This way

@@ -1,6 +1,7 @@
 package ru.rian.riamessenger;
 
 import android.app.Application;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 
 import com.activeandroid.ActiveAndroid;
@@ -32,4 +33,11 @@ public abstract class RiaBaseApplication extends Application {
         return ((RiaBaseApplication) mContext).appComponent;
     }
 
+    @Override
+    public void onTrimMemory(final int level) {
+        super.onTrimMemory(level);
+        if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            // Get called every-time when application went to background.
+        }
+    }
 }

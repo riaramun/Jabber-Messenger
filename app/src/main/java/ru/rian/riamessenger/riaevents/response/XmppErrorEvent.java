@@ -24,6 +24,8 @@ public class XmppErrorEvent {
 
     public enum State {
         Empty,
+        EConnecting,
+        ENotConnecting,
         EConnected,
         EReconnected,
         EReconnectionFailed,

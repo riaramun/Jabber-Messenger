@@ -15,6 +15,8 @@ public class MessageContainer extends Model {
 
     public MessageContainer() {
         super();
+        isSent = false;
+        isRead = false;
     }
 
     @Column(name = DbColumns.ToJidCol)
@@ -22,6 +24,9 @@ public class MessageContainer extends Model {
 
     @Column(name = DbColumns.FromJidCol)
     public String fromJid;
+
+    @Column(name = DbColumns.ReceiptIdCol)
+    public String receiptId;
 
     @Column(name = DbColumns.ThreadIdCol)
     public String threadID;
@@ -35,4 +40,10 @@ public class MessageContainer extends Model {
     public boolean sended;*/
     @Column(name = DbColumns.MsgBodyCol)
     public String body;
+
+    @Column(name = DbColumns.ReadFlagIdCol)
+    public Boolean isRead;
+
+    @Column(name = DbColumns.SentFlagIdCol)
+    public Boolean isSent;
 }

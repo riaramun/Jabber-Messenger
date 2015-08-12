@@ -1,31 +1,29 @@
 package ru.rian.riamessenger.xmpp;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.activeandroid.ActiveAndroid;
 
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.provider.ProviderManager;
-import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.bytestreams.ibb.provider.DataPacketProvider;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
-import org.jivesoftware.smackx.offline.packet.OfflineMessageInfo;
-import org.jivesoftware.smackx.offline.packet.OfflineMessageRequest;
-import org.jivesoftware.smackx.xdata.Form;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import bolts.Task;
 import lombok.AllArgsConstructor;
 import ru.rian.riamessenger.common.RiaEventBus;
+import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
+import ru.rian.riamessenger.utils.SysUtils;
+import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by Roman on 7/12/2015.
@@ -34,74 +32,105 @@ import ru.rian.riamessenger.utils.NetworkStateManager;
 public class SmackConnectionListener implements ConnectionListener {
 
 
+    final Context context;
     final UserAppPreference userAppPreference;
+    final SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
 
     @Override
     public void connected(XMPPConnection connection) {
+        Log.i("RiaService", "EConnected");
         RiaEventBus.post(XmppErrorEvent.State.EConnected);
     }
 
     @Override
     public void authenticated(final XMPPConnection connection, boolean resumed) {
         RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
+        Log.i("RiaService", "EAuthenticated");
         //add current user entry to track his presence via loader
         userAppPreference.setJidStringKey(connection.getUser().asBareJidString());
-        NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getJidStringKey());
-      /*  Task.callInBackground(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-*/
-
-        //OfflineMessageInfo.Provider offlineProvider  = new OfflineMessageInfo.Provider();
-
-        //ProviderManager.addExtensionProvider("offline", "http://jabber.org/protocol/offline", new OfflineMessageInfo.Provider());
-        //ProviderManager.addIQProvider("offline", "http://jabber.org/protocol/offline", new OfflineMessageRequest.Provider());
         try {
             handleOfflineMessages(connection);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.available), userAppPreference.getJidStringKey(), connection);
+        /*
+        DeliveryReceiptManager.getInstanceFor(connection).setAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.always);
+        DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(new ReceiptReceivedListener() {
+            @Override
+            public void onReceiptReceived(Jid fromJid, Jid toJid, String receiptId, Stanza receipt) {
+                Log.i("RiaService", "receiptId = " + receiptId + " receipt = " + receipt.toString());
+            }
+        });*/
 
     }
-    public static void handleOfflineMessages(XMPPConnection connection)throws Exception {
-        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(connection);
+
+    /* void getOfflineMessages()
+     {
+         PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
+         this.connection.addPacketListener(new PacketListener() {
+             public void processPacket(Packet packet) {
+
+                 Message message = (Message) packet;
+                 if (message.getBody() != null) {
+                     String fromName = StringUtils.parseBareAddress(message
+                             .getFrom());
+                     Log.i("XMPPClient", "Got text [" + message.getBody()
+                             + "] from [" + fromName + "]");
+                     if (fromName.equalsIgnoreCase(matchUserJabberId
+                             + "server name")) {
+
+
+                         // }
+                     }
+                 }
+             }
+         }, filter);
+     }*/
+    public void handleOfflineMessages(XMPPConnection connection) throws Exception {
+        final OfflineMessageManager offlineMessageManager = new OfflineMessageManager(connection);
 
         if (!offlineMessageManager.supportsFlexibleRetrieval()) {
-            //Log.d("Offline messages not supported");
+            Log.i("RiaService", "Offline messages not supported");
             return;
         }
-
-        if (offlineMessageManager.getMessageCount() == 0) {
-            //Log.d("No offline messages found on server");
-        } else {
-            List<Message> msgs = offlineMessageManager.getMessages();
-            for (Message msg : msgs) {
-
+        Task.callInBackground(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                if (offlineMessageManager.getMessageCount() == 0) {
+                    Log.i("RiaService", "No offline messages found on server");
+                } else {
+                    MessageContainer messageContainer = null;
+                    try {
+                        ActiveAndroid.beginTransaction();
+                        List<Message> messages = offlineMessageManager.getMessages();
+                        if (messages.size() > 0) {
+                            Log.i("RiaService", "offline messages = " + messages.size());
+                            for (Message msg : messages) {
+                                messageContainer = DbHelper.addMessageToDb(msg, msg.getFrom().asEntityBareJidIfPossible().toString(), false);
+                            }
+                        }
+                        ActiveAndroid.setTransactionSuccessful();
+                    } finally {
+                        ActiveAndroid.endTransaction();
+                    }
+                    if (messageContainer != null && SysUtils.isApplicationBroughtToBackground(context)) {
+                        sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
+                    }
+                    offlineMessageManager.deleteMessages();
+                }
+                return null;
             }
-            offlineMessageManager.deleteMessages();
-        }
+        });
     }
 
-    public int offlinemessagecount(final XMPPConnection connection){
-        try {
-
-            ServiceDiscoveryManager manager = ServiceDiscoveryManager
-                    .getInstanceFor(connection);
-            DiscoverInfo info = manager.discoverInfo(null,
-                    "http://jabber.org/protocol/offline");
-            Form extendedInfo = Form.getFormFrom(info);
-            if (extendedInfo != null) {
-                String value = extendedInfo.getField("number_of_messages")
-                        .getValues().get(0);
-
-                return Integer.parseInt(value);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    /*class EntrySortBasedOnName implements Comparator {
+        public int compare(Object o1, Object o2) {
+            val dd1 = (Message) o1;// where FBFriends_Obj is your object class
+            val dd2 = (Message) o2;
+            return dd1.compareToIgnoreCase(dd2.getName());//where uname is field name
         }
-        return 0;
-
-    }
+    }*/
     @Override
     public void connectionClosed() {
 

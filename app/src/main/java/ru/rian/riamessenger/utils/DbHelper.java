@@ -2,9 +2,11 @@ package ru.rian.riamessenger.utils;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
@@ -16,6 +18,7 @@ import java.util.List;
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
+import ru.rian.riamessenger.model.RosterGroupModel;
 
 /**
  * Created by Roman on 7/14/2015.
@@ -29,7 +32,10 @@ public class DbHelper {
     }
 
     public static <T extends Model> T getModelByCursor(Cursor cursor, Class<T> cl) {
-        if (cursor.isClosed()) return null;
+        if (cursor.isClosed()) {
+            Log.i("RiaService", "cursor.isClosed");
+            return null;
+        }
         int columnIndex = cursor.getColumnIndex(BaseColumns._ID);
         long id = cursor.getLong(columnIndex);
 
@@ -40,6 +46,11 @@ public class DbHelper {
         return model;
     }
 
+    public static void clearDb() {
+        new Delete().from(RosterGroupModel.class).execute();
+        new Delete().from(RosterEntryModel.class).execute();
+        new Delete().from(MessageContainer.class).execute();
+    }
    /* static public Cursor getMessagesByJid(String jid) {
 //        String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
         String resultRecords = new Select().
@@ -55,6 +66,12 @@ public class DbHelper {
         Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
         return msgCursor;
     }*/
+
+    public static boolean rosterTableIsNotEmpty() {
+        List<RosterEntryModel> rosterEntryModels = new Select().from(RosterEntryModel.class).execute();
+        final int currenUserEtriesNumber = 1;
+        return rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
+    }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
         RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
@@ -74,13 +91,26 @@ public class DbHelper {
         return messageContainers.get(0);
     }
 
-    public static MessageContainer addMessageToDb(Message message) {
+    public static MessageContainer getMessageByReceiptId(String receiptId) {
+        String select = new Select().from(MessageContainer.class).where(DbColumns.ReceiptIdCol + "='" + receiptId + "'").toSql();
+        MessageContainer messageContainer = SQLiteUtils.rawQuerySingle(MessageContainer.class, select, null);
+        return messageContainer;
+    }
+
+    public static List<MessageContainer> getAllNotSentMessages(String currentUserJid) {
+        String select = new Select().from(MessageContainer.class).where(DbColumns.SentFlagIdCol + "=0 and " + DbColumns.FromJidCol + "='" + currentUserJid + "'").toSql();
+        List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
+        return messageContainers;
+    }
+
+    public static MessageContainer addMessageToDb(Message message, String messageId, boolean isRead) {
         MessageContainer messageContainer = new MessageContainer();
         messageContainer.body = message.getBody();
         messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
         messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
-        messageContainer.threadID = message.getFrom().asEntityBareJidIfPossible().toString();
+        messageContainer.threadID = messageId;// message.getThread();
         messageContainer.created = new Date();
+        messageContainer.isRead = isRead;
         messageContainer.save();
         return messageContainer;
     }

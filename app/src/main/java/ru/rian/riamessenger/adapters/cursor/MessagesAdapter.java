@@ -3,7 +3,6 @@ package ru.rian.riamessenger.adapters.cursor;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,8 @@ import java.text.SimpleDateFormat;
 import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
-import ru.rian.riamessenger.adapters.viewholders.MessageViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
+import ru.rian.riamessenger.adapters.viewholders.MessageViewHolder;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.utils.DbHelper;
 
@@ -46,13 +45,22 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
             case VIEW_TYPE_CONTENT_INCOME_MSG:
                 final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
                 if (messageContainer != null) {
-                    final val contactViewHolder = (MessageViewHolder) viewHolder;
-                    contactViewHolder.messageTextView.setText(messageContainer.body);
-                    contactViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
+                    final val messageViewHolder = (MessageViewHolder) viewHolder;
+                    messageViewHolder.messageTextView.setText(messageContainer.body);
+                    messageViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
+                    if (viewHolder.getItemViewType() == VIEW_TYPE_CONTENT_OUTCOME_MSG) {
+                        messageViewHolder.messageSentIcon.setVisibility(messageContainer.isSent ? View.VISIBLE : View.GONE);
+                    } else {
+                        if (!messageContainer.isRead) {
+                            messageContainer.isRead = true;
+                            messageContainer.save();
+                        }
+                    }
                 }
                 break;
         }
     }
+
     private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @Override
@@ -83,12 +91,12 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
             case VIEW_TYPE_CONTENT_OUTCOME_MSG:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_outcome, parent, false);
                 vh = new MessageViewHolder(itemView);
-                ((MessageViewHolder)vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
+                ((MessageViewHolder) vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
                 break;
             case VIEW_TYPE_CONTENT_INCOME_MSG:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message_income, parent, false);
                 vh = new MessageViewHolder(itemView);
-                ((MessageViewHolder)vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
+                ((MessageViewHolder) vh).messageTextView.setMaxWidth(displayMetrics.widthPixels / 2);
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_empty, parent, false);

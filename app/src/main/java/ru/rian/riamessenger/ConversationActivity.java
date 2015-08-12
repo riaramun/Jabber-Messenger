@@ -104,8 +104,8 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
 
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         messagesAdapter = new MessagesAdapter(this, null, userAppPreference.getLoginStringKey());

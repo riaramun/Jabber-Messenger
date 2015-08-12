@@ -74,6 +74,7 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_marginRight">24dp</item>
         <item name="android:layout_marginBottom">24dp</item>
+        <item name="android:visibility">gone</item>
         <item name="android:background">@color/floating_buton_color</item>
     </style>
 

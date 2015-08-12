@@ -36,4 +36,6 @@
     <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
         style="@style/RiaProgressBar"
         android:layout_centerInParent="true" />
+
+    <RelativeLayout style="@style/AppMessageView" />
 </RelativeLayout>

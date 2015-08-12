@@ -210,15 +210,17 @@ public class ContactsFragment extends BaseTabFragment {
         int sectionFirstPosition = 0;
         for (int i = 0; i < usersNames.size(); i++) {
             RosterEntryModel rosterEntryModel = usersNames.get(i);
-            String header = rosterEntryModel.name.substring(0, 1).toUpperCase(Locale.getDefault());
-            if (!TextUtils.equals(lastHeader, header)) {
-                sectionManager = (sectionManager + 1) % 2;
-                sectionFirstPosition = i + headerCount;
-                lastHeader = header;
-                headerCount += 1;
-                objectArrayList.add(new ContactsAdapter.LineItem(header, true, sectionManager, sectionFirstPosition, -1, null));
+            if (rosterEntryModel != null && !TextUtils.isEmpty(rosterEntryModel.name)) {
+                String header = rosterEntryModel.name.substring(0, 1).toUpperCase(Locale.getDefault());
+                if (!TextUtils.equals(lastHeader, header)) {
+                    sectionManager = (sectionManager + 1) % 2;
+                    sectionFirstPosition = i + headerCount;
+                    lastHeader = header;
+                    headerCount += 1;
+                    objectArrayList.add(new ContactsAdapter.LineItem(header, true, sectionManager, sectionFirstPosition, -1, null));
+                }
+                objectArrayList.add(new ContactsAdapter.LineItem(rosterEntryModel.name, false, sectionManager, sectionFirstPosition, rosterEntryModel.presence, rosterEntryModel.getId()));
             }
-            objectArrayList.add(new ContactsAdapter.LineItem(rosterEntryModel.name, false, sectionManager, sectionFirstPosition, rosterEntryModel.presence, rosterEntryModel.getId()));
         }
         return objectArrayList;
     }
@@ -239,6 +241,12 @@ public class ContactsFragment extends BaseTabFragment {
         bundle.putString(BaseTabFragment.ARG_TITLE_FILTER, title_to_search);
         return bundle;
     }
+
+    @Override
+    protected void rosterLoaded(boolean isLoaded) {
+
+    }
+
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
         return new ContactsLoader(getActivity(), args);

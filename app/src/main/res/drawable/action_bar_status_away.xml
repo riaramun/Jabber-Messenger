@@ -5,5 +5,5 @@
     <size android:width="@dimen/action_bar_status_img_width"
         android:height="@dimen/action_bar_status_img_height" />
     <corners android:radius="8dp" />
-    <solid android:color="#4CAE4F" />
+    <solid android:color="#F0C30F" />
 </shape>

@@ -38,7 +38,7 @@ public class MessagesLoader extends CursorRiaLoader {
         String select = new Select().from(MessageContainer.class)
                 .where(DbColumns.FromJidCol + "='" + jid_from + "' and " + DbColumns.ToJidCol + "='" + jid_to + "'" + " OR " +
                                 DbColumns.FromJidCol + "='" + jid_to + "' and " + DbColumns.ToJidCol + "='" + jid_from + "'"
-                ).toSql();
+                ).orderBy(DbColumns.CreatedCol).toSql();
         Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
         return msgCursor;
     }

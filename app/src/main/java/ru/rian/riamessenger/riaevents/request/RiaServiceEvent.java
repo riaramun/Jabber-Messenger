@@ -15,8 +15,8 @@ public class RiaServiceEvent {
     RiaEvent eventId;
 
     public enum RiaEvent {
-        SIGN_IN,
-        SIGN_OUT,
-        GET_ROSTER
+        TO_SIGN_IN,
+        TO_SIGN_OUT,
+        TO_GET_ROSTER
     }
 }

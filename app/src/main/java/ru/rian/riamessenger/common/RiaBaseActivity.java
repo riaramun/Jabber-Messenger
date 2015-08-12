@@ -67,47 +67,31 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
             getSupportLoaderManager().restartLoader(loaderId, bundle, callback);
         }
     }
-
-
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String msg = null;
-                switch (xmppErrorEvent.state) {
-                    case EConnected:
-                        msg = "Server connected";
-                        break;
-                    case EReconnectionFailed:
-                        msg = "Reconnection failed";
-                        break;
-                    /*case EAuthenticated:
-                        //authenticated(true);
-                        msg = "Authenticated";
-                        break;*/
-                    case EConnectionClosed:
-                        msg = "Connection closed";
-                        break;
-                    case EDbUpdated:
-                        //preocessed in fragment
-                        //dbUpdated();
-                        msg = "Roster updated";
-                        break;
-                    case Empty:
-                        msg = xmppErrorEvent.exceptionMessage;
-                        break;
-                    /*case EAuthenticationFailed:
-                       // authenticated(false);
-                        showAppMsgInView(RiaBaseActivity.this, getString(R.string.sign_in_error));
-                        break;*/
-                }
-                if (msg != null) {
-                    Log.i("RiaBaseActivity", msg);
-                    //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+        String msg = null;
+        switch (xmppErrorEvent.state) {
+            case EConnected:
+                msg = "Server connected";
+                break;
+            case EReconnectionFailed:
+                msg = "Reconnection failed";
+                break;
+            case EConnectionClosed:
+                msg = "Connection closed";
+                break;
+            case EDbUpdated:
+                //preocessed in fragment
+                //dbUpdated();
+                msg = "Roster updated";
+                break;
+            case Empty:
+                msg = xmppErrorEvent.exceptionMessage;
+                break;
+        }
+        if (msg != null) {
+            Log.i("RiaBaseActivity", msg);
+            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void showAppMsgInView(Context aContext, String aMsg) {
