@@ -9,7 +9,7 @@ public class DbColumns {
     final public static String ToJidCol = "ToJid";
     final public static String FromJidCol = "FromJid";
     final public static String ThreadIdCol = "ThreadID";
-    final public static String ReceiptIdCol = "ReceiptID";
+    final public static String StanzaIdCol = "StanzaId";
     final public static String NameCol = "Name";
     final public static String CreatedCol = "created";
     final public static String RosterGroupModelCol = "RosterGroupModel";

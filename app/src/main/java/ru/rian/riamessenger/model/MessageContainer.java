@@ -25,9 +25,6 @@ public class MessageContainer extends Model {
     @Column(name = DbColumns.FromJidCol)
     public String fromJid;
 
-    @Column(name = DbColumns.ReceiptIdCol)
-    public String receiptId;
-
     @Column(name = DbColumns.ThreadIdCol)
     public String threadID;
 
@@ -46,4 +43,8 @@ public class MessageContainer extends Model {
 
     @Column(name = DbColumns.SentFlagIdCol)
     public Boolean isSent;
+
+    @Column(name = DbColumns.StanzaIdCol, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    public String stanzaID;
+
 }

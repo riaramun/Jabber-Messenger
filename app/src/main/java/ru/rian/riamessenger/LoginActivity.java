@@ -25,7 +25,9 @@ import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.ScreenUtils;
+import ru.rian.riamessenger.utils.SysUtils;
 
 public class LoginActivity extends RiaBaseActivity {
 
@@ -109,7 +111,14 @@ public class LoginActivity extends RiaBaseActivity {
             userAppPreference.setFirstSecondName(nameEditText.getText().toString());
             userAppPreference.setLoginStringKey(loginEditText.getText().toString());
             userAppPreference.setPassStringKey(passwordEditText.getText().toString());
-            RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
+
+
+            if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
+                RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
+            } else {
+                Intent intent = new Intent(this, RiaXmppService.class);
+                startService(intent);
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -91,10 +92,16 @@ public class DbHelper {
         return messageContainers.get(0);
     }
 
-    public static MessageContainer getMessageByReceiptId(String receiptId) {
-        String select = new Select().from(MessageContainer.class).where(DbColumns.ReceiptIdCol + "='" + receiptId + "'").toSql();
+    public static MessageContainer getMessageByReceiptId(String stanzaId) {
+        String select = new Select().from(MessageContainer.class).where(DbColumns.StanzaIdCol + "='" + stanzaId + "'").toSql();
         MessageContainer messageContainer = SQLiteUtils.rawQuerySingle(MessageContainer.class, select, null);
         return messageContainer;
+    }
+
+    public static List<MessageContainer> getAllNotReadMessages(String messageThreadId) {
+        String select = new Select().from(MessageContainer.class).where(DbColumns.ReadFlagIdCol + "=0 and " + DbColumns.ThreadIdCol + "='" + messageThreadId + "'").toSql();
+        List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
+        return messageContainers;
     }
 
     public static List<MessageContainer> getAllNotSentMessages(String currentUserJid) {
@@ -103,14 +110,17 @@ public class DbHelper {
         return messageContainers;
     }
 
+
     public static MessageContainer addMessageToDb(Message message, String messageId, boolean isRead) {
         MessageContainer messageContainer = new MessageContainer();
         messageContainer.body = message.getBody();
+        messageContainer.stanzaID = message.getStanzaId();
         messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
         messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
         messageContainer.threadID = messageId;// message.getThread();
         messageContainer.created = new Date();
         messageContainer.isRead = isRead;
+        messageContainer.stanzaID = message.getStanzaId();
         messageContainer.save();
         return messageContainer;
     }

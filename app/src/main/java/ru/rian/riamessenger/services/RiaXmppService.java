@@ -188,7 +188,7 @@ public class RiaXmppService extends Service {
 
     boolean isConnecting = false;
 
-    synchronized void onStartService() {
+    void onStartService() {
         if (!isConnecting && doLoginAndPassExist()) {
             setConnectingState(true);
             bolts.Task.callInBackground(new Callable<Object>() {
@@ -196,18 +196,18 @@ public class RiaXmppService extends Service {
                 public Object call() throws Exception {
                     smackXmppConnection.tryConnectToServer();
                     smackXmppConnection.tryLoginToServer();
+                    connectionHandler.removeCallbacks(connectionRunnable);
                     if (doLoginAndPassExist()) {
-                        if (xmppMessageManager != null) {
-                            xmppMessageManager.sendAllNotSentMessages();
-                        }
                         boolean isOk = smackRosterManager.tryGetRosterFromServer();
-                        connectionHandler.removeCallbacks(connectionRunnable);
                         if (!isOk) {
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
                             connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         } else {
                             Log.i("RiaService", "everything is ok, we've got roster!!!");
                             setConnectingState(false);
+                            if (xmppMessageManager != null) {
+                                xmppMessageManager.sendAllNotSentMessages();
+                            }
                         }
                     } else {
                         setConnectingState(false);
