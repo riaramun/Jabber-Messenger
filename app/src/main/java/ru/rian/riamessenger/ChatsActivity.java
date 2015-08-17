@@ -36,8 +36,10 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
+import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
+import ru.rian.riamessenger.utils.SysUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 
 

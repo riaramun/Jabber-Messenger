@@ -82,8 +82,13 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                         }
                         contactViewHolder.contactName.setText(titleToSet);
                         ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntryModel.presence);
+                        int unread = DbHelper.getUnReadMessagesNum(messageContainer.threadID);
+                        if (unread != 0) {
+                            contactViewHolder.onlineStatus.setText("" + unread);
+                        } else {
+                            contactViewHolder.onlineStatus.setText("");
+                        }
                     }
-
                     String bodyToSet = messageContainer.body;
 
                     if (messageContainer.fromJid.equals(currentJid)) {

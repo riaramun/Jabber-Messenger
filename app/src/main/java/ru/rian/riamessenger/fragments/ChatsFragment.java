@@ -168,6 +168,8 @@ public class ChatsFragment extends BaseTabFragment {
     @Override
     protected void rosterLoaded(boolean isLoaded) {
         buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
+        int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
+        initOrRestartLoader(loaderId, getBundle(), this);
     }
 
 

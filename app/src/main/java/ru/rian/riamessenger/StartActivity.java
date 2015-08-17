@@ -8,11 +8,14 @@ import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
-import io.fabric.sdk.android.Fabric;
+import java.io.File;
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -45,15 +48,11 @@ public class StartActivity extends RiaBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         final String password = userAppPreference.getPassStringKey();
-
-        if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
+        if (!TextUtils.isEmpty(password) && SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
             RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
-        } else {
-            Intent intent = new Intent(this, RiaXmppService.class);
-            startService(intent);
         }
+        createRosterStoreFile();
         launchNextActivity(TextUtils.isEmpty(password) ? false : true);
     }
 
@@ -70,5 +69,10 @@ public class StartActivity extends RiaBaseActivity {
         }
         Intent intent = new Intent(StartActivity.this, cl);
         startActivity(intent);
+    }
+
+    void createRosterStoreFile() {
+        String path = getCacheDir().getAbsolutePath();
+        userAppPreference.setRosterPathStringKey(path);
     }
 }

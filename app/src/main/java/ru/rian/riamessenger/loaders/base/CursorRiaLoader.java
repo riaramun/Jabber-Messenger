@@ -9,19 +9,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import ru.rian.riamessenger.loaders.base.BaseCursorRiaLoader;
-
 /**
  * Created by Vladimir Molodkin on 03/12/14.
  * fisher3421@gmail.com
  */
 public abstract class CursorRiaLoader extends BaseCursorRiaLoader<Cursor> {
 
-    private Uri     mSubscription;
+    private Uri mSubscription;
     private Context mContext;
 
     public CursorRiaLoader(Context context) {
         super(context);
+        setUpdateThrottle(1000);
         mContext = context;
     }
 

@@ -17,6 +17,7 @@ package ru.rian.riamessenger.common;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -30,6 +31,8 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.utils.SysUtils;
 
 
 /**
@@ -52,6 +55,10 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        if (!SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
+            Intent intent = new Intent(this, RiaXmppService.class);
+            startService(intent);
+        }
     }
 
     @Override

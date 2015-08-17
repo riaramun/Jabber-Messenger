@@ -7,10 +7,14 @@ import android.util.Log;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
@@ -55,6 +59,11 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         //mPrivateChats = new HashMap();
         this.context = context;
 
+        Roster roster = Roster.getInstanceFor(connection);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+
+
+     //   xmppConnection.addAsyncStanzaListener(this, new StanzaTypeFilter(Presence.class));
         xmppConnection.addAsyncStanzaListener(this, new StanzaTypeFilter(Message.class));
 
     }
@@ -124,7 +133,11 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         try {
             final String jidTo = message.getTo().asEntityBareJidIfPossible().toString();
             //TODO remove it after debug
-            if (jidTo.contains("lebedenko") || jidTo.contains("skurzhansky") || jidTo.contains("pronkin")) {
+            if (jidTo.contains("lebedenko")
+                    || jidTo.contains("sazonov")
+                    || jidTo.contains("koltsov")
+                    || jidTo.contains("skurzhansky")
+                    || jidTo.contains("pronkin")) {
                 DeliveryReceiptRequest.addTo(message);
                 xmppConnection.sendStanza(message);
                 Log.i(TAG, "send msg id = " + message.getStanzaId());

@@ -16,6 +16,8 @@ import android.util.Log;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.concurrent.Callable;
 
@@ -28,6 +30,7 @@ import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
+import ru.rian.riamessenger.riaevents.request.RiaPresenceEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.NetworkStateManager;
@@ -110,6 +113,15 @@ public class RiaXmppService extends Service {
         }
     }
 
+    /*public void onEvent(RiaPresenceEvent event) {
+        try {
+            smackRosterManager.getRoster().getPresence(JidCreate.bareFrom(event.getJid()));
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+
     public void onEvent(RiaServiceEvent event) {
 
         switch (event.getEventId()) {
@@ -189,7 +201,7 @@ public class RiaXmppService extends Service {
     boolean isConnecting = false;
 
     void onStartService() {
-        if (!isConnecting && doLoginAndPassExist()) {
+        if (!isConnecting && doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
             setConnectingState(true);
             bolts.Task.callInBackground(new Callable<Object>() {
                 @Override

@@ -11,7 +11,6 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -98,7 +97,12 @@ public class DbHelper {
         return messageContainer;
     }
 
-    public static List<MessageContainer> getAllNotReadMessages(String messageThreadId) {
+    public static int getUnReadMessagesNum(String messageThreadId) {
+        List<MessageContainer> messageContainers = getUnReadMessages(messageThreadId);
+        int num = messageContainers == null ? 0 : messageContainers.size();
+        return num;
+    }
+    public static List<MessageContainer> getUnReadMessages(String messageThreadId) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.ReadFlagIdCol + "=0 and " + DbColumns.ThreadIdCol + "='" + messageThreadId + "'").toSql();
         List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
         return messageContainers;

@@ -28,7 +28,6 @@ public class MessagesLoader extends CursorRiaLoader {
         super(ctx);
         jid_to = args.getString(ConversationActivity.ARG_TO_JID);
         jid_from = args.getString(ConversationActivity.ARG_FROM_JID);
-
         setSubscription(ContentProvider.createUri(MessageContainer.class, null));
     }
 
