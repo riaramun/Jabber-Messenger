@@ -16,8 +16,6 @@ import android.util.Log;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.concurrent.Callable;
 
@@ -30,8 +28,8 @@ import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
-import ru.rian.riamessenger.riaevents.request.RiaPresenceEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.XmppUtils;
@@ -107,24 +105,35 @@ public class RiaXmppService extends Service {
         return !TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey());
     }
 
+    public void onEvent(RiaUpdateCurrentUserPresenceEvent event) {
+        Presence presence = new Presence(event.getIsAvailable() && NetworkStateManager.isNetworkAvailable(this) ? Presence.Type.available : Presence.Type.unavailable);
+        XmppUtils.changeCurrentUserStatus(presence, userAppPreference.getJidStringKey(), xmppConnection);
+    }
+
     public void onEvent(RiaMessageEvent event) {
         if (xmppMessageManager != null) {
             xmppMessageManager.sendMessageToServer(event.getJid(), event.getMessage());
         }
     }
 
-    /*public void onEvent(RiaPresenceEvent event) {
-        try {
-            smackRosterManager.getRoster().getPresence(JidCreate.bareFrom(event.getJid()));
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        }
-    }*/
 
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EDbUpdated:
+                connectionHandler.removeCallbacks(connectionRunnable);
+                Log.i("RiaService", "everything is ok, we've got roster!!!");
+                setConnectingState(false);
+                if (xmppMessageManager != null) {
+                    xmppMessageManager.sendAllNotSentMessages();
+                }
+                break;
+        }
+    }
 
     public void onEvent(RiaServiceEvent event) {
 
         switch (event.getEventId()) {
+
             case TO_SIGN_IN:
                 if (smackXmppConnection.isAuthenticated()) {
                     RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
@@ -181,7 +190,6 @@ public class RiaXmppService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-
         Log.i("RiaService", "onStartCommand()");
         onStartService();
         return START_STICKY_COMPATIBILITY;
@@ -201,6 +209,13 @@ public class RiaXmppService extends Service {
     boolean isConnecting = false;
 
     void onStartService() {
+
+        Presence.Type presenceType = Presence.Type.available;
+        if (!smackXmppConnection.isAuthenticated()) {
+            presenceType = Presence.Type.unavailable;
+        }
+        XmppUtils.changeCurrentUserStatus(new Presence(presenceType), userAppPreference.getJidStringKey(), xmppConnection);
+
         if (!isConnecting && doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
             setConnectingState(true);
             bolts.Task.callInBackground(new Callable<Object>() {
@@ -209,7 +224,7 @@ public class RiaXmppService extends Service {
                     smackXmppConnection.tryConnectToServer();
                     smackXmppConnection.tryLoginToServer();
                     connectionHandler.removeCallbacks(connectionRunnable);
-                    if (doLoginAndPassExist()) {
+                    if (doLoginAndPassExist() && smackXmppConnection.isAuthenticated()) {
                         boolean isOk = smackRosterManager.tryGetRosterFromServer();
                         if (!isOk) {
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
@@ -225,7 +240,8 @@ public class RiaXmppService extends Service {
                         setConnectingState(false);
                         xmppConnection.disconnect();
                         XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey(), xmppConnection);
-                        stopSelf();
+                        connectionHandler.removeCallbacks(connectionRunnable);
+                        connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         //if sign in failed it doesn't sign in second time for some reason
                         //so we try to reinitialise smack modules
                     }

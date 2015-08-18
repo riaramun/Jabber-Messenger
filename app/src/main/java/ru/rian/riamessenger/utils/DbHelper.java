@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
@@ -47,8 +48,9 @@ public class DbHelper {
     }
 
     public static void clearDb() {
-        new Delete().from(RosterGroupModel.class).execute();
+
         new Delete().from(RosterEntryModel.class).execute();
+        new Delete().from(RosterGroupModel.class).execute();
         new Delete().from(MessageContainer.class).execute();
     }
    /* static public Cursor getMessagesByJid(String jid) {
@@ -69,7 +71,7 @@ public class DbHelper {
 
     public static boolean rosterTableIsNotEmpty() {
         List<RosterEntryModel> rosterEntryModels = new Select().from(RosterEntryModel.class).execute();
-        final int currenUserEtriesNumber = 1;
+        final int currenUserEtriesNumber = 2;
         return rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
     }
 

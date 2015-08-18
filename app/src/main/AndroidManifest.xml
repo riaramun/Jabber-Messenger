@@ -4,8 +4,8 @@
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -37,35 +37,38 @@
         </activity>
 
         <activity
-            android:noHistory="true"
-            android:name="ru.rian.riamessenger.ConversationActivity"
-            android:label=""
+            android:name=".ConversationActivity"
             android:configChanges="orientation"
+            android:label=""
+            android:parentActivityName=".ChatsActivity"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChatsActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            </activity>
+        </activity>
 
         <activity
             android:name=".ChatsActivity"
-            android:label="@string/mia_chat"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout"
+            android:label="@string/mia_chat"
             android:theme="@style/CustomActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ContactsActivity"
-            android:label="@string/new_chat"
             android:configChanges="orientation"
+            android:label="@string/new_chat"
             android:theme="@style/CustomActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".LoginActivity"
             android:noHistory="true"
             android:theme="@style/AppFullScreenTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
 
         <service
@@ -91,7 +94,7 @@
             android:name="com.activeandroid.content.ContentProvider"
             android:authorities="com.example"
             android:exported="false" />
-        <receiver android:name=".ConnectionBroadcastReceiver" >
+        <receiver android:name=".ConnectionBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />

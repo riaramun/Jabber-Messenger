@@ -15,6 +15,7 @@ public class UserAppPreference {
     private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
     private static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
     private static final String CONNECTING_STATE_BOOL_KEY = "CONNECTING_STATE_BOOL_KEY";
+    private static final String AUTH_STATE_BOOL_KEY = "AUTH_STATE_BOOL_KEY";
 
     private static Editor mEditor;
 
@@ -50,6 +51,14 @@ public class UserAppPreference {
 
     public void setConnectingStateKey(boolean value) {
         mEditor.putBoolean(CONNECTING_STATE_BOOL_KEY, value).apply();
+    }
+
+    public boolean getAuthStateKey() {
+        return sharedPreferences.getBoolean(AUTH_STATE_BOOL_KEY, false);
+    }
+
+    public void setAuthStateKey(boolean value) {
+        mEditor.putBoolean(AUTH_STATE_BOOL_KEY, value).apply();
     }
 
     public String getPassStringKey() {

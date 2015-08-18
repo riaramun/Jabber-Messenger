@@ -8,10 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.model.MessageContainer;
@@ -57,7 +57,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             String jid_to = bundle.getString(ConversationActivity.ARG_TO_JID);
             MessageContainer messageContainer = DbHelper.getLastMessageFrom(jid_from, jid_to);
             RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
-            String messageFromPref = context.getString(R.string.message_from);
+            String messageFromPref = arg0.getString(R.string.message_from);
             //  queueMessage(messageFrom, message);
             String messageText = messageContainer.body;
             int messageLength = NOTIFICATION_MAX_LENGTH;
@@ -66,74 +66,31 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             }
             CharSequence contentText = messageText.subSequence(0, messageLength);
 
-            /*Intent notificationIntent = new Intent(context, ConversationActivity.class);
+            Intent resultIntent = new Intent(arg0, ConversationActivity.class);
+            resultIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(arg0);
+            stackBuilder.addParentStack(ConversationActivity.class);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT
+                            | PendingIntent.FLAG_ONE_SHOT);
 
-            Bundle notificationBundle = new Bundle();
-            notificationBundle.putString(ConversationActivity.ARG_FROM_JID, messageContainer.toJid);
-            notificationIntent.putExtras(notificationBundle);*/
-            //myIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
-            //  notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-            //         Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(arg0);
+            builder.setContentIntent(resultPendingIntent);
 
-
-            Intent notificationIntent = new Intent(context, ConversationActivity.class);
-            notificationIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-            val notification = new NotificationCompat.Builder(context)
+            NotificationManager mNotificationManager =
+                    (NotificationManager) arg0.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new NotificationCompat.Builder(arg0)
                     .setContentTitle(messageFromPref + RiaTextUtils.capFirst(rosterEntryModel.name))
                     .setContentText(contentText)
-                    .setTicker(context.getString(R.string.new_message))
+                    .setTicker(arg0.getString(R.string.new_message))
                     .setWhen(System.currentTimeMillis())
-                    .setContentIntent(pendingIntent)
+                    .setContentIntent(resultPendingIntent)
                             //.setDefaults(Notification.DEFAULT_SOUND)
                     .setAutoCancel(true)
                     .setSmallIcon(R.drawable.push_icon)
                     .build();
-            NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            //notification.setLatestEventInfo(context, title, message, pIntent);
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-            notificationManager.notify(0, notification);
-
-
-            //Notification notification = new Notification(icon, tickerText, when);
-            //notification.flags = notification.defaults;
-            //notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-
-            // Uri uri = Uri.parse("ru.rian.riamessenger.ConversationActivity");
-
-            //Intent activityIntent = new Intent("android.intent.action.VIEW", uri);
-
-            //Intent activityIntent = new Intent("android.intent.action.VIEW");
-            //activityIntent.setClassName("ru.rian.riamessenger", "ru.rian.riamessenger.ConversationActivity");
-            //activityIntent.putExtra("participant", messageFrom);
-            //activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //context.startActivity(activityIntent);
-
-
-            //PendingIntent contentIntent = PendingIntent.getActivity(
-            //        context, 0, activityIntent, 0);
-            // notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-
-            //Use the hashcode of the message sender's user id
-            //so that there's a unique id per message source.  This way
-            //there will be a new notification per new source, but if that source
-            //sends multiple messages, the notification for them will just update
-            //with the latest message
-            //This needs to be an int due to NotificationManager.notify() so the
-            //hashcode is used rather than the username.
-            //int notificationId = messageFrom.getUser().hashCode();
-
-            /*synchronized (((RiaXmppService) context).getMActiveNotifications()) {
-                ((RiaXmppService) context).getMActiveNotifications().add(notificationId);
-            }*/
+            mNotificationManager.notify(0, notification);
         }
     }
 

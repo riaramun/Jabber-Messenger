@@ -33,6 +33,7 @@ public class XmppErrorEvent {
         EAuthenticated,
         EAuthenticationFailed,
         EDbUpdating,
-        EDbUpdated
+        EDbUpdated,
+        EMessageReceived
     }
 }

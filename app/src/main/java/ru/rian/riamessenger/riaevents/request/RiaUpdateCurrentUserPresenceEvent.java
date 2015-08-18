@@ -8,9 +8,9 @@ import lombok.Getter;
  */
 
 @AllArgsConstructor
-public class RiaPresenceEvent {
+public class RiaUpdateCurrentUserPresenceEvent {
 
     @Getter
-    final String jid;
+    final Boolean isAvailable;
 
 }

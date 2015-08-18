@@ -3,8 +3,6 @@ package ru.rian.riamessenger.xmpp;
 import android.util.Log;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jxmpp.jid.DomainBareJid;
@@ -16,7 +14,6 @@ import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
-import ru.rian.riamessenger.utils.NetworkStateManager;
 
 /**
  * Created by Roman on 8/10/2015.
@@ -65,7 +62,6 @@ public class SmackXmppConnection {
     }
 
 
-
     public void tryConnectToServer() {
         if (isConnected() || xmppConnection == null) return;
         try {
@@ -83,10 +79,15 @@ public class SmackXmppConnection {
             Log.i("RiaService", "tryLoginToServer");
             xmppConnection.login(userAppPreference.getLoginStringKey(), userAppPreference.getPassStringKey());
         } catch (Exception e) {
-            userAppPreference.setLoginStringKey("");
-            userAppPreference.setPassStringKey("");
+            if (e.getMessage().contains("No response") || e.getMessage().contains("reply timeout") || e.getMessage().contains("is no longer connected")) {
+                //From time to time we ca not login to server because of "No response received within reply timeout"
+                //it is a workaround for this situation
+            } else {
+                userAppPreference.setLoginStringKey("");
+                userAppPreference.setPassStringKey("");
+                RiaEventBus.post(XmppErrorEvent.State.EAuthenticationFailed);
+            }
             Log.i("RiaService", "sign in error, " + e.getMessage());
-            RiaEventBus.post(XmppErrorEvent.State.EAuthenticationFailed);
             e.printStackTrace();
         }
     }

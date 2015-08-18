@@ -25,6 +25,7 @@ public class ChatsListenerLoader extends ChatsBaseLoader {
     int tabIdloader = -1;
     public ChatsListenerLoader(Context ctx, Bundle args) {
         super(ctx);
+        setSubscription(ContentProvider.createUri(MessageContainer.class, null));
       //  jid_to_exclude = args.getString(ChatsFragment.ARG_JID_TO_EXCLUDE);
         tabIdloader = args.getInt(BaseTabFragment.ARG_TAB_ID);
         BaseTabFragment.FragIds fragIds = BaseTabFragment.FragIds.values()[tabIdloader];

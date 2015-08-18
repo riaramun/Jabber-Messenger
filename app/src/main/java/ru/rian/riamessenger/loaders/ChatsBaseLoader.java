@@ -22,12 +22,11 @@ public class ChatsBaseLoader extends CursorRiaLoader {
 
     public ChatsBaseLoader(Context context) {
         super(context);
-        setSubscription(ContentProvider.createUri(MessageContainer.class, null));
     }
 
     @Override
     protected Cursor loadCursor() throws Exception {
-        Log.i("RiaService", "chats base loads cursor");
+        //Log.i("RiaService", "chats base loads cursor");
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
                 + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " GROUP BY " + DbColumns.ThreadIdCol;

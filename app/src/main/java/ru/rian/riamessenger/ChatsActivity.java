@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
@@ -34,12 +35,11 @@ import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
-import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
-import ru.rian.riamessenger.utils.SysUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 
 
@@ -119,12 +119,10 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
     private void logout(boolean clean) {
 
-        if (clean) {
-            userAppPreference.setLoginStringKey("");
-            userAppPreference.setPassStringKey("");
-            DbHelper.clearDb();
-            RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_OUT);
-        }
+        userAppPreference.setLoginStringKey("");
+        userAppPreference.setPassStringKey("");
+        DbHelper.clearDb();
+        RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_OUT);
         Intent intent = new Intent(this, StartActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -137,6 +135,8 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         super.onResume();
         if (!NetworkStateManager.isNetworkAvailable(this)) {
             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
+        } else {
+            EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
         }
         Bundle bundle = new Bundle();
         bundle.putString(ARG_TO_JID, userAppPreference.getJidStringKey());

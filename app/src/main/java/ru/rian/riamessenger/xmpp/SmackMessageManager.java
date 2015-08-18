@@ -7,11 +7,8 @@ import android.util.Log;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 import org.jivesoftware.smack.roster.Roster;
@@ -23,13 +20,14 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.SysUtils;
 
@@ -62,8 +60,6 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         Roster roster = Roster.getInstanceFor(connection);
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
-
-     //   xmppConnection.addAsyncStanzaListener(this, new StanzaTypeFilter(Presence.class));
         xmppConnection.addAsyncStanzaListener(this, new StanzaTypeFilter(Message.class));
 
     }
@@ -98,7 +94,8 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         EntityJid entityJidFrom = null;
         try {
             entityJidTo = JidCreate.bareFrom(messageContainer.toJid).asEntityJidIfPossible();
-            entityJidFrom = JidCreate.bareFrom(messageContainer.fromJid).asEntityJidIfPossible();;
+            entityJidFrom = JidCreate.bareFrom(messageContainer.fromJid).asEntityJidIfPossible();
+            ;
         } catch (XmppStringprepException e) {
             e.printStackTrace();
         }
@@ -204,6 +201,9 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                     MessageContainer messageContainer = DbHelper.addMessageToDb(message, message.getFrom().asEntityBareJidIfPossible().toString(), false);
                     if (SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
+                    } else {
+                        //Message loader is not restarted immediately for unknown reason, so we do it by this event
+                        RiaEventBus.post(XmppErrorEvent.State.EMessageReceived);
                     }
                     return null;
                 }

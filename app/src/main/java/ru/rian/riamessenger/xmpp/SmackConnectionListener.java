@@ -47,6 +47,7 @@ public class SmackConnectionListener implements ConnectionListener {
         RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
         Log.i("RiaService", "EAuthenticated");
         //add current user entry to track his presence via loader
+        userAppPreference.setAuthStateKey(true);
         userAppPreference.setJidStringKey(connection.getUser().asEntityBareJidString());
         try {
             handleOfflineMessages(connection);
@@ -153,6 +154,7 @@ public class SmackConnectionListener implements ConnectionListener {
 
     @Override
     public void reconnectionFailed(Exception e) {
+        userAppPreference.setAuthStateKey(false);
         RiaEventBus.post(XmppErrorEvent.State.EReconnectionFailed);
         NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
     }

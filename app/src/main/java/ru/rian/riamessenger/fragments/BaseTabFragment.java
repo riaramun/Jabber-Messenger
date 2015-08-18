@@ -144,6 +144,18 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
                     }
                 });
                 break;
+            case EMessageReceived:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (FragIds.values()[tabId] == FragIds.CHATS_FRAGMENT || FragIds.values()[tabId] == FragIds.ROBOTS_FRAGMENT) {
+                            initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
+                        }
+                    }
+                });
+                //Message loader is not restarted immediately for unknown reason, so we do it by this event
+
+                break;
         }
     }
 

@@ -2,8 +2,6 @@ package ru.rian.riamessenger.xmpp;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDiskIOException;
-import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,7 +11,6 @@ import com.activeandroid.query.Select;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
@@ -21,13 +18,11 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.roster.RosterLoadedListener;
-import org.jivesoftware.smack.roster.SubscribeListener;
 import org.jivesoftware.smack.roster.rosterstore.DirectoryRosterStore;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jxmpp.jid.Jid;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -38,13 +33,11 @@ import lombok.Getter;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.common.RiaEventBus;
-import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
-import ru.rian.riamessenger.utils.SysUtils;
 
 /**
  * Created by Roman on 8/10/2015.
@@ -64,20 +57,18 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         this.userAppPreference = userAppPreference;
         roster = Roster.getInstanceFor(xmppConnection);
 
-        String path = userAppPreference.getRosterPathStringKey();
-        if(!TextUtils.isEmpty(path)) {
+/*        String path = userAppPreference.getRosterPathStringKey();
+        if (!TextUtils.isEmpty(path)) {
             File file = new File(path);
             DirectoryRosterStore store = DirectoryRosterStore.init(file);
-           // roster.setRosterStore(store);
+            // roster.setRosterStore(store);
         }
-
+*/
         //roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
         xmppConnection.addSyncStanzaListener(this, StanzaTypeFilter.PRESENCE);
         roster.setRosterLoadedAtLogin(false);
         roster.addRosterLoadedListener(this);
         roster.addRosterListener(this);
-
-
     }
 
     public boolean isRosterLoaded() {
@@ -130,7 +121,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     }
 
     void doSaveRosterToDb(final Roster roster) {
-        if (ActiveAndroid.inTransaction() || roster.isLoaded()) return;
+        if (ActiveAndroid.inTransaction()) return;
         Log.i("RiaService", "doSaveRosterToDb b");
         try {
             ActiveAndroid.beginTransaction();
@@ -185,16 +176,18 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     @Override
     public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
         Presence presence = (Presence) packet;
-        Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom().asEntityBareJidIfPossible().toString());
-        String bareJid = presence.getFrom().asEntityBareJidIfPossible().toString();
-        if (!TextUtils.isEmpty(bareJid)) {
-            RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
-            if (rosterEntryModel != null) {
-                rosterEntryModel.setPresence(presence);
-                try {
-                    rosterEntryModel.save();
-                } catch (SQLiteDiskIOException e) {
-                    Log.i("Service", e.getMessage());
+        if (presence != null && presence.getFrom() != null) {
+            //Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom().asEntityBareJidIfPossible().toString());
+            String bareJid = presence.getFrom().asEntityBareJidIfPossible().toString();
+            if (!TextUtils.isEmpty(bareJid)) {
+                RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
+                if (rosterEntryModel != null) {
+                    rosterEntryModel.setPresence(presence);
+                    try {
+                        rosterEntryModel.save();
+                    } catch (SQLiteDiskIOException e) {
+                        Log.i("Service", e.getMessage());
+                    }
                 }
             }
         }

@@ -3,7 +3,9 @@ package ru.rian.riamessenger;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -33,6 +35,7 @@ import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
+import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
@@ -169,6 +172,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     protected void onResume() {
         super.onResume();
         updateStatusBar();
+        EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
     }
 
     void updateStatusBar() {
