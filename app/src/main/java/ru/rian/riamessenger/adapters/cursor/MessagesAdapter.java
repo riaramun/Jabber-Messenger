@@ -3,6 +3,7 @@ package ru.rian.riamessenger.adapters.cursor;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,9 @@ import android.view.ViewGroup;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
-import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
@@ -42,10 +44,32 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                 emptyViewHolder = (EmptyViewHolder) viewHolder;
                 break;
             case VIEW_TYPE_CONTENT_OUTCOME_MSG:
-            case VIEW_TYPE_CONTENT_INCOME_MSG:
-                final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+            case VIEW_TYPE_CONTENT_INCOME_MSG: {
+                boolean isFirstDayVideo = false;
+                final MessageContainer messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+                if (cursor.isFirst()) {
+                    isFirstDayVideo = true;
+                } else {
+                    cursor.moveToPrevious();
+                    MessageContainer prevListItem = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+                    if (!areTheDatesAtTheSameDay(prevListItem.created, messageContainer.created)) {
+                        isFirstDayVideo = true;
+                    }
+                    cursor.moveToNext();
+                }
+                final MessageViewHolder messageViewHolder = (MessageViewHolder) viewHolder;
                 if (messageContainer != null) {
-                    final val messageViewHolder = (MessageViewHolder) viewHolder;
+                    if (isFirstDayVideo) {
+                        if (DateUtils.isToday(messageContainer.created.getTime())) {
+                            messageViewHolder.messageTodayDate.setText(mContext.getText(R.string.today));
+                        } else {
+                            messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
+                        }
+                        //messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
+                        messageViewHolder.messageTodayDate.setVisibility(View.VISIBLE);
+                    } else {
+                        messageViewHolder.messageTodayDate.setVisibility(View.INVISIBLE);
+                    }
                     messageViewHolder.messageTextView.setText(messageContainer.body);
                     messageViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
                     if (viewHolder.getItemViewType() == VIEW_TYPE_CONTENT_OUTCOME_MSG) {
@@ -57,10 +81,12 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                         }
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 
+    private static final DateFormat dateFormat = new SimpleDateFormat("dd.mm.yy");
     private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @Override
@@ -70,7 +96,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
             resType = VIEW_TYPE_EMPTY_ITEM;
         } else {
             if (getCursor().moveToPosition(position)) {
-                final val messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
+                final MessageContainer messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
                 if (messageContainer.fromJid.contains(currentJid)) {
                     resType = VIEW_TYPE_CONTENT_OUTCOME_MSG;
                 } else {
@@ -107,4 +133,18 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         }
         return vh;
     }
+
+    boolean areTheDatesAtTheSameDay(Date aPreviousDate, Date aCurrentDate) {
+
+        final Calendar calInst = Calendar.getInstance();
+        calInst.setTime(aPreviousDate);
+        final int prevDay = calInst.get(Calendar.DAY_OF_WEEK);
+        calInst.setTime(aCurrentDate);
+        final int currDay = calInst.get(Calendar.DAY_OF_WEEK);
+        //there two conditions we must check to understand is it the same day or not:
+        //it must be the same day and time difference must be < 24 hours
+        return aCurrentDate.getTime() - aPreviousDate.getTime() < MILLI_SEC_IN_DAY && currDay == prevDay;
+    }
+
+    final long MILLI_SEC_IN_DAY = 24 * 60 * 60 * 1000; //millisecond per 24 hours
 }

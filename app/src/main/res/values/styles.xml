@@ -87,6 +87,16 @@
         <item name="android:paddingRight">0dp</item>
     </style>
 
+    <style name="MessageTodayTomorrowDateStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">#777777</item>
+        <item name="android:background">#E5E5E5</item>
+    </style>
+
     <style name="MessageCreatedDateStyle">
         <item name="android:id">@id/message_created_date</item>
         <item name="android:layout_width">wrap_content</item>

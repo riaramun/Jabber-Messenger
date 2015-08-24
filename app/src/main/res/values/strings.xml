@@ -29,4 +29,5 @@
     <string name="mia_chat">МИА Чат</string>
     <string name="you">Вы:\t</string>
     <string name="remove_chat">Удалить чат и историю переписки</string>
+    <string name="yesterday">Вчера</string>
 </resources>
