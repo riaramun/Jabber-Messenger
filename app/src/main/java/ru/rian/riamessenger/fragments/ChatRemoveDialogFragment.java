@@ -41,7 +41,7 @@ import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class ChatRemoveDialogFragment extends DialogFragment {
 
-    static public final String TAG = ChatsFragment.class.getSimpleName();
+    static public final String TAG = ChatRemoveDialogFragment.class.getSimpleName();
     static public final String ARG_REMOVE_CHAT = "remove_chat_arg";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

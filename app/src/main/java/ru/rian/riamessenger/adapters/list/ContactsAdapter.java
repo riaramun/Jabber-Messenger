@@ -17,6 +17,7 @@ import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 
@@ -119,7 +120,11 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                     lp.headerStartMarginIsAuto = !mMarginsFixed;
                 } else {
                     contactViewHolder.contactName.setText(RiaTextUtils.capFirst(item.text));
-                    ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, item.presence);
+                    if (NetworkStateManager.isNetworkAvailable(mContext)) {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, item.presence);
+                    } else {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                    }
                 }
                 lp.setSlm(LinearSLM.ID);
                 lp.setColumnWidth(mContext.getResources().getDimensionPixelSize(R.dimen.grid_column_width));

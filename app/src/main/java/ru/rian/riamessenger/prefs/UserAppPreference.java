@@ -30,7 +30,7 @@ public class UserAppPreference {
     }
 
     public String getFirstSecondName() {
-        return sharedPreferences.getString(FIRST_SECOND_NAME, "");
+        return sharedPreferences.getString(FIRST_SECOND_NAME, "Ô_È_Î");
     }
 
     public void setFirstSecondName(String value) {

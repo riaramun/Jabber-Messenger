@@ -71,7 +71,7 @@ public class GroupsFragment extends BaseTabFragment {
 
         //adapter
 
-        groupsAdapter = new GroupsAdapter(new EmptyGroupsDataProvider(),contactsListClickListener);
+        groupsAdapter = new GroupsAdapter(getContext(), new EmptyGroupsDataProvider(), contactsListClickListener);
 
         mWrappedAdapter = mRecyclerViewExpandableItemManager.createWrappedAdapter(groupsAdapter);       // wrap for expanding
 
@@ -93,7 +93,7 @@ public class GroupsFragment extends BaseTabFragment {
         } else {
             //mRecyclerView.addItemDecoration(new ItemShadowDecorator((NinePatchDrawable) getResources().getDrawable(R.drawable.material_shadow_z1)));
         }
-       // mRecyclerView.addItemDecoration(new SimpleListDividerDecorator(getResources().getDrawable(R.drawable.list_divider), true));
+        // mRecyclerView.addItemDecoration(new SimpleListDividerDecorator(getResources().getDrawable(R.drawable.list_divider), true));
 
         mRecyclerViewExpandableItemManager.attachRecyclerView(mRecyclerView);
     }
@@ -139,15 +139,17 @@ public class GroupsFragment extends BaseTabFragment {
 
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-        if(data.result != null && data.result.getCount() > 0) {
+        if (data.result != null && data.result.getCount() > 0) {
             groupsAdapter.swapProvider(new GroupsDataProvider(data.result));
             groupsAdapter.notifyDataSetChanged();
         }
     }
+
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
         return new ContactsLoader(getActivity(), args);
     }
+
     GroupsAdapter groupsAdapter;
 
     @Override

@@ -16,6 +16,7 @@
 
 package ru.rian.riamessenger.adapters.list;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import ru.rian.riamessenger.compat.MorphButtonCompat;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 
@@ -76,7 +78,9 @@ public class GroupsAdapter
         }
     }*/
 
-    public GroupsAdapter(AbstractExpandableDataProvider dataProvider,ContactsListClickListener contactsListClickListener) {
+    Context context;
+    public GroupsAdapter(Context context, AbstractExpandableDataProvider dataProvider,ContactsListClickListener contactsListClickListener) {
+        this.context = context;
         mProvider = dataProvider;
         this.contactsListClickListener = contactsListClickListener;
         // ExpandableItemAdapter requires stable ID, and also
@@ -178,7 +182,14 @@ public class GroupsAdapter
         if (item != null) {
             // set text
             holder.contactName.setText(RiaTextUtils.capFirst(item.getText()));
-            ViewUtils.setOnlineStatus(holder.onlineStatus, item.getPresence());
+
+
+            if (NetworkStateManager.isNetworkAvailable(context)) {
+                ViewUtils.setOnlineStatus(holder.onlineStatus, item.getPresence());
+            } else {
+                ViewUtils.setOnlineStatus(holder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+            }
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

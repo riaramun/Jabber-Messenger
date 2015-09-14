@@ -16,6 +16,7 @@ import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.ViewUtils;
 
 /**
@@ -40,7 +41,14 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
                 if (rosterEntry != null) {
                     final val contactViewHolder = (ContactViewHolder) viewHolder;
                     contactViewHolder.contactName.setText(rosterEntry.name);
-                    ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntry.presence);
+
+                    if (NetworkStateManager.isNetworkAvailable(mContext)) {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntry.presence);
+                    } else {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                    }
+
+
                     contactViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

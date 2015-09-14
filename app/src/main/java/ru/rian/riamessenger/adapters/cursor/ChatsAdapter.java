@@ -23,6 +23,7 @@ import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 
@@ -81,7 +82,14 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                             titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
                         }
                         contactViewHolder.contactName.setText(titleToSet);
-                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntryModel.presence);
+
+                        if (NetworkStateManager.isNetworkAvailable(mContext)) {
+                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntryModel.presence);
+                        } else {
+                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                        }
+
+
                         int unread = DbHelper.getUnReadMessagesNum(messageContainer.threadID);
                         if (unread != 0) {
                             contactViewHolder.onlineStatus.setText("" + unread);
