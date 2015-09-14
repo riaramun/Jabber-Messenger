@@ -66,6 +66,17 @@
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
+            android:name=".AddNewRoomActivity"
+            android:configChanges="orientation"
+            android:label=""
+            android:parentActivityName=".ChatsActivity"
+            android:theme="@style/CustomActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChatsActivity" />
+        </activity>
+        <activity
             android:name=".LoginActivity"
             android:noHistory="true"
             android:theme="@style/AppFullScreenTheme"

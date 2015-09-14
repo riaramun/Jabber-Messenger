@@ -17,6 +17,7 @@
 package ru.rian.riamessenger.fragments;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -35,7 +36,10 @@ import com.gc.materialdesign.views.ButtonFloat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import lombok.val;
+import ru.rian.riamessenger.AddNewRoomActivity;
+import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -50,6 +54,12 @@ public class RoomsFragment extends BaseTabFragment {
     ButtonFloat buttonFloat;
 
     RobotsAdapter robotsAdapter;
+
+    @OnClick(R.id.buttonFloat)
+    void onClick() {
+        Intent intent = new Intent(getActivity(), AddNewRoomActivity.class);
+        getActivity().startActivity(intent);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

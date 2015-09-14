@@ -1,0 +1,15 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/action_btn_width"
+    android:layout_height="match_parent"
+    android:background="@drawable/abc_item_background_holo_dark"
+    android:gravity="center">
+
+    <com.malinskiy.materialicons.widget.IconTextView
+        android:layout_marginRight="10dp"
+        android:id="@+id/add_news_line_icon_text_view"
+        style="@style/LoginViewIconImage"
+        android:enabled="false"
+        android:text="{zmdi-check}"
+        android:textColor="@drawable/menu_text_color_selector"
+        android:textSize="20dp" />
+</RelativeLayout>

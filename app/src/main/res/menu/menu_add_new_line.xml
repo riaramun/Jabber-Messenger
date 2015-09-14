@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add_new_line_edit"
+        android:title=""
+        app:actionLayout="@layout/add_new_line_layout"
+        app:showAsAction="always" />
+<!--    <item
+        android:id="@+id/action_add_news_line"
+        android:enabled="false"
+        android:title=""
+        app:actionLayout="@layout/action_btn_add_news_line"
+        app:showAsAction="always" />
+-->
+</menu>

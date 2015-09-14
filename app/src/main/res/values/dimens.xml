@@ -19,4 +19,6 @@
 
     <dimen name="list_item_message_margin">16dp</dimen>
     <dimen name="list_item_message_text_padding">8dp</dimen>
+
+    <dimen name="action_btn_width">60dp</dimen>
 </resources>
