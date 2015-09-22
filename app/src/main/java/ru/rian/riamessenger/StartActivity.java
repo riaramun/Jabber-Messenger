@@ -8,9 +8,6 @@ import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import butterknife.Bind;

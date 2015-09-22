@@ -3,14 +3,13 @@ package ru.rian.riamessenger;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,10 +31,12 @@ import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.loaders.MessagesLoader;
 import ru.rian.riamessenger.loaders.UserOnlineStatusLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
-import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
+import ru.rian.riamessenger.riaevents.request.ChatMessageEvent;
 import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
+import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
@@ -72,7 +73,14 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     @OnClick(R.id.send_icon_text_view)
     void onClick() {
-        EventBus.getDefault().post(new RiaMessageEvent(getToJid(), messageEditText.getText().toString()));
+        String jid_to = getExtraJid(ARG_TO_JID);
+        if (!TextUtils.isEmpty(jid_to)) {
+            EventBus.getDefault().post(new ChatMessageEvent(jid_to, messageEditText.getText().toString()));
+        } else {
+            jid_to = getExtraJid(ARG_ROOM_JID);
+            EventBus.getDefault().post(new RoomMessageEvent(jid_to, messageEditText.getText().toString()));
+        }
+
         ScreenUtils.hideKeyboard(ConversationActivity.this);
         messageEditText.setText("");
     }
@@ -115,18 +123,24 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         recyclerView.setAdapter(messagesAdapter);
 
         Bundle bundle = new Bundle();
-        String jid_to = getToJid();
-        bundle.putString(ARG_TO_JID, jid_to);
-        bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
+        String jid_to = getExtraJid(ARG_TO_JID);
+        if (!TextUtils.isEmpty(jid_to)) {
+            bundle.putString(ARG_TO_JID, jid_to);
+            bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
+            initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
+            initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
+        } else {
+            bundle.putString(ARG_ROOM_JID, getExtraJid(ARG_ROOM_JID));
+            initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
+        }
 
-        initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
-        initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
+
     }
 
-    String getToJid() {
+    String getExtraJid(String arg_jid) {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        String arg_to_jid = bundle.getString(ARG_TO_JID);
+        String arg_to_jid = bundle.getString(arg_jid);
         return arg_to_jid;
     }
 
@@ -176,23 +190,31 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     }
 
     void updateStatusBar() {
-        String jid_to = getToJid();
-        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
-        if (rosterEntryModel != null) {
-            progressBar.setVisibility(View.GONE);
-            String titleToSet;
-            if (rosterEntryModel.rosterGroupModel != null &&
-                    rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
-                titleToSet = rosterEntryModel.name;
+        String jid_to = getExtraJid(ARG_TO_JID);
+        String titleToSet = "";
+        if (!TextUtils.isEmpty(jid_to)) {
+            RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
+            if (rosterEntryModel != null) {
+                progressBar.setVisibility(View.GONE);
+
+                if (rosterEntryModel.rosterGroupModel != null &&
+                        rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
+                    titleToSet = rosterEntryModel.name;
+                } else {
+                    titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
+                }
+                int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+                ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
             } else {
-                titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
+                progressBar.setVisibility(View.VISIBLE);
             }
-            ((TextView) findViewById(R.id.action_bar_title)).setText(titleToSet);
-            int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
-            ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
         } else {
-            progressBar.setVisibility(View.VISIBLE);
+            jid_to = getExtraJid(ARG_ROOM_JID);
+            ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(jid_to);
+            if(chatRoomModel != null)
+            titleToSet = RiaTextUtils.capFirst(chatRoomModel.name);
         }
+        ((TextView) findViewById(R.id.action_bar_title)).setText(titleToSet);
     }
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {

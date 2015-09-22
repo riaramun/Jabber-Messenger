@@ -16,27 +16,15 @@
 
 package ru.rian.riamessenger.fragments;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
-import lombok.val;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
-import ru.rian.riamessenger.common.RiaBaseFragment;
-import ru.rian.riamessenger.loaders.ContactsLoader;
-import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class ChatRemoveDialogFragment extends DialogFragment {

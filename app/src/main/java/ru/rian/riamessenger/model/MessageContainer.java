@@ -13,11 +13,22 @@ import ru.rian.riamessenger.common.DbColumns;
 @Table(name = "MessageContainer", id = BaseColumns._ID)
 public class MessageContainer extends Model {
 
+    public static int CHAT_SIMPLE = 0;
+    public static int CHAT_GROUP = 1;
+
     public MessageContainer() {
         super();
+    }
+
+    public MessageContainer(int chatType) {
+        super();
+        this.chatType = chatType;
         isSent = false;
         isRead = false;
     }
+
+    @Column(name = DbColumns.ChatTypeCol)
+    public Integer chatType;
 
     @Column(name = DbColumns.ToJidCol)
     public String toJid;
@@ -30,11 +41,7 @@ public class MessageContainer extends Model {
 
     @Column(name = DbColumns.CreatedCol)
     public Date created;
-    /*
-    @Column(name = "readed")
-    public boolean readed;
-    @Column(name = "sended")
-    public boolean sended;*/
+
     @Column(name = DbColumns.MsgBodyCol)
     public String body;
 

@@ -17,7 +17,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.greenrobot.event.EventBus;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;

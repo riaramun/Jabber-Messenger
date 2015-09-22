@@ -15,10 +15,10 @@ import ru.rian.riamessenger.model.MessageContainer;
  * fisher3421@gmail.com
  */
 
-public class ChatsBaseLoader extends CursorRiaLoader {
+public class RoomsListenerLoader extends CursorRiaLoader {
 
 
-    public ChatsBaseLoader(Context context) {
+    public RoomsListenerLoader(Context context) {
         super(context);
     }
 
@@ -27,7 +27,7 @@ public class ChatsBaseLoader extends CursorRiaLoader {
         //Log.i("RiaService", "chats base loads cursor");
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
-                + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_SIMPLE + " GROUP BY " + DbColumns.ThreadIdCol;
+                + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
         Cursor resultCursor = Cache.openDatabase().rawQuery(req, null);
         /*boolean isMoved = resultCursor.moveToPosition(0);
         int count = resultCursor.getCount();*/

@@ -7,9 +7,10 @@ import android.content.Context;
 import com.activeandroid.ActiveAndroid;
 
 import ru.rian.riamessenger.di.AppComponent;
-//import ru.rian.riamessenger.di.DaggerAppComponent;
 import ru.rian.riamessenger.di.AppSystemModule;
 import ru.rian.riamessenger.di.DaggerAppComponent;
+
+//import ru.rian.riamessenger.di.DaggerAppComponent;
 
 
 public abstract class RiaBaseApplication extends Application {

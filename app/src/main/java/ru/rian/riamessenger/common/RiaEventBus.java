@@ -1,7 +1,6 @@
 package ru.rian.riamessenger.common;
 
 import de.greenrobot.event.EventBus;
-import lombok.val;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 

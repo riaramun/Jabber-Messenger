@@ -39,7 +39,7 @@ public class SmackXmppConnection {
         configBuilder.setPort(5222);
         configBuilder.setDebuggerEnabled(true);
         configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-        configBuilder.setSendPresence(false);
+        configBuilder.setSendPresence(true);
         configBuilder.setHost(RiaConstants.XMPP_SERVER_ADDRESS);
 
         return configBuilder.build();

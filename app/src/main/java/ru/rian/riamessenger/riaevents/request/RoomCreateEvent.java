@@ -1,5 +1,7 @@
 package ru.rian.riamessenger.riaevents.request;
 
+import java.util.ArrayList;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,14 +10,11 @@ import lombok.Getter;
  */
 
 @AllArgsConstructor
-public class RiaServiceEvent {
+public class RoomCreateEvent {
 
     @Getter
-    RiaEvent eventId;
+    String roomName;
 
-    public enum RiaEvent {
-        TO_SIGN_IN,
-        TO_SIGN_OUT,
-        TO_GET_ROSTER
-    }
+    @Getter
+    ArrayList<String> participantsArrayList;
 }

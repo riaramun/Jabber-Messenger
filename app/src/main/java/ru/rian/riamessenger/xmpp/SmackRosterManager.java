@@ -18,11 +18,9 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.roster.RosterLoadedListener;
-import org.jivesoftware.smack.roster.rosterstore.DirectoryRosterStore;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jxmpp.jid.Jid;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.Callable;

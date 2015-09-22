@@ -12,11 +12,11 @@ import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
 /**
  * Created by Roman on 7/21/2015.
  */
-public class ContactsListClickListener implements BaseRiaListClickListener{
+public class RoomsListClickListener implements BaseRiaListClickListener {
 
     public void onClick(String jid, Context context) {
         Intent intent = new Intent(context, ConversationActivity.class);
-        intent.putExtra(ConversationActivity.ARG_TO_JID, jid);
+        intent.putExtra(ConversationActivity.ARG_ROOM_JID, jid);
         context.startActivity(intent);
     }
 

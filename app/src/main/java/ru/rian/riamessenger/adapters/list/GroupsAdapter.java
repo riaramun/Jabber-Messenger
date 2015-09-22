@@ -136,7 +136,7 @@ public class GroupsAdapter
     @Override
     public ContactViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View view = inflater.inflate(R.layout.list_item_contact, parent, false);
+        final View view = inflater.inflate(R.layout.list_item_contact_with_presence, parent, false);
         return new ContactViewHolder(view);
     }
 

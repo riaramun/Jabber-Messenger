@@ -20,7 +20,7 @@ import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
 import ru.rian.riamessenger.adapters.viewholders.ChatViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.BaseRiaListClickListener;
-import ru.rian.riamessenger.listeners.ContactsListClickListener;
+import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
@@ -31,19 +31,19 @@ import ru.rian.riamessenger.utils.ViewUtils;
 /**
  * Created by Roman on 6/30/2015.
  */
-public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
+public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
 
     private boolean mListIsEmpty = false;
     final String currentJid;
-    final BaseRiaListClickListener contactsListClickListener;
+    final BaseRiaListClickListener roomsListClickListener;
     final View.OnLongClickListener onLongClickListener;
     //final int EMPTY_VIEW_ITEM_TYPE = 2;
     private static final int LIST_EMPTY_ITEMS_COUNT = 1;
 
-    public ChatsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
+    public RoomsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener roomsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, cursor);
         this.currentJid = currentJid;
-        this.contactsListClickListener = contactsListClickListener;
+        this.roomsListClickListener = roomsListClickListener;
         this.onLongClickListener = onLongClickListener;
     }
 
@@ -73,24 +73,11 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 if (messageContainer != null) {
                     final val contactViewHolder = (ChatViewHolder) viewHolder;
 
-                    RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(messageContainer.threadID);
-                    if (rosterEntryModel != null) {
+                    ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(messageContainer.threadID);
+                    if (chatRoomModel != null) {
                         String titleToSet;
-                        if (rosterEntryModel.rosterGroupModel != null
-                                && rosterEntryModel.rosterGroupModel.name.equals(mContext.getString(R.string.robots))) {
-                            titleToSet = rosterEntryModel.name;
-                        } else {
-                            titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
-                        }
+                        titleToSet = RiaTextUtils.capFirst(chatRoomModel.name);
                         contactViewHolder.contactName.setText(titleToSet);
-
-                        if (NetworkStateManager.isNetworkAvailable(mContext)) {
-                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, rosterEntryModel.presence);
-                        } else {
-                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
-                        }
-
-
                         int unread = DbHelper.getUnReadMessagesNum(messageContainer.threadID);
                         if (unread != 0) {
                             contactViewHolder.onlineStatus.setText("" + unread);
@@ -143,7 +130,7 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        contactsListClickListener.onClick(ChatsAdapter.this, v);
+                        roomsListClickListener.onClick(RoomsAdapter.this, v);
                     }
                 });
                 itemView.setOnLongClickListener(onLongClickListener);

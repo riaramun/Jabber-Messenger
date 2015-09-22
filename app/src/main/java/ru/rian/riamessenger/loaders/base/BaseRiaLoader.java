@@ -5,10 +5,6 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import ru.rian.riamessenger.RiaApplication;
-
 
 /**
  * Created by Roman Lebedenko.

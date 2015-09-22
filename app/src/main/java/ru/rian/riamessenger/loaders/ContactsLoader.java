@@ -25,7 +25,6 @@ import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
-import ru.rian.riamessenger.utils.DbHelper;
 
 /**
  * Created by Roman Lebedenko.

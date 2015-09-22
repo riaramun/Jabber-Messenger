@@ -1,7 +1,6 @@
 package ru.rian.riamessenger.adapters.expandable;
 
 
-import lombok.val;
 import ru.rian.riamessenger.adapters.base.AbstractExpandableDataProvider;
 import ru.rian.riamessenger.model.RosterGroupModel;
 

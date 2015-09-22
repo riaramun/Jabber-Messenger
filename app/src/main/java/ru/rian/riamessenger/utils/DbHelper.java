@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
@@ -17,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
@@ -49,6 +49,8 @@ public class DbHelper {
 
     public static void clearDb() {
 
+
+        new Delete().from(ChatRoomModel.class).execute();
         new Delete().from(RosterEntryModel.class).execute();
         new Delete().from(RosterGroupModel.class).execute();
         new Delete().from(MessageContainer.class).execute();
@@ -73,6 +75,11 @@ public class DbHelper {
         List<RosterEntryModel> rosterEntryModels = new Select().from(RosterEntryModel.class).execute();
         final int currenUserEtriesNumber = 2;
         return rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
+    }
+
+    static public ChatRoomModel getChatRoomByJid(String bareJid) {
+        ChatRoomModel chatRoomModel = new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + bareJid + "'").executeSingle();
+        return chatRoomModel;
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
@@ -104,6 +111,7 @@ public class DbHelper {
         int num = messageContainers == null ? 0 : messageContainers.size();
         return num;
     }
+
     public static List<MessageContainer> getUnReadMessages(String messageThreadId) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.ReadFlagIdCol + "=0 and " + DbColumns.ThreadIdCol + "='" + messageThreadId + "'").toSql();
         List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
@@ -117,8 +125,8 @@ public class DbHelper {
     }
 
 
-    public static MessageContainer addMessageToDb(Message message, String messageId, boolean isRead) {
-        MessageContainer messageContainer = new MessageContainer();
+    public static MessageContainer addMessageToDb(Message message, int chatType, String messageId, boolean isRead) {
+        MessageContainer messageContainer = new MessageContainer(chatType);
         messageContainer.body = message.getBody();
         messageContainer.stanzaID = message.getStanzaId();
         messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();

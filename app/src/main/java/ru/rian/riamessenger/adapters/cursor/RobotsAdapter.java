@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
@@ -83,7 +82,7 @@ public class RobotsAdapter extends CursorRecyclerViewAdapter {
         RecyclerView.ViewHolder vh = null;
         switch (viewType) {
             case VIEW_TYPE_CONTENT:
-                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_contact, parent, false);
+                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_contact_with_presence, parent, false);
                 //itemView.setOnLongClickListener(mOnLongClickListener);
                 vh = new ContactViewHolder(itemView);
                 break;

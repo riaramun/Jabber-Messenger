@@ -22,7 +22,6 @@ package ru.rian.riamessenger.xmpp;
 
 
 import org.jivesoftware.smack.filter.PacketFilter;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Stanza;
 
 /**

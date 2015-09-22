@@ -20,7 +20,6 @@ package ru.rian.riamessenger.adapters.base;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
 /**

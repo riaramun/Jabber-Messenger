@@ -16,11 +16,6 @@ import ru.rian.riamessenger.common.DbColumns;
 
 @Table(name = "RosterEntryModels", id = BaseColumns._ID)
 public class RosterEntryModel extends Model {
-    // This is the unique id given by the server
-    //@Column(name = "remote_id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-    //public long remoteId;
-    // This is a regular field
-
 
     @Column(name = DbColumns.FromJidCol, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String bareJid;
@@ -28,10 +23,13 @@ public class RosterEntryModel extends Model {
     @Column(name = "Presence")
     public Integer presence;
 
+    /*@Column(name = DbColumns.ChatRoomModel)
+    public ChatRoomModel chatRoomModel;*/
+
     @Column(name = DbColumns.NameCol)
     public String name;
 
-    @Column(name = DbColumns.RosterGroupModelCol, onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    @Column(name = DbColumns.RosterGroupModelCol)
     public RosterGroupModel rosterGroupModel;
 
     // Used to return items from another table based on the foreign key

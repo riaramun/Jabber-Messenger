@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
+import ru.rian.riamessenger.BuildConfig;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -38,10 +39,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
 
     static final String TAG = "RiaService";
     AbstractXMPPConnection xmppConnection;
-
-    //HashMap<String, Chat> mPrivateChats;
     final Context context;
-
     UserAppPreference userAppPreference;
     SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
     DeliveryReceiptManager deliveryReceiptManager;
@@ -83,7 +81,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
             @Override
             public void run() {
                 Message message = createMessage(jidTo, messageText);
-                DbHelper.addMessageToDb(message, jidTo, true);
+                DbHelper.addMessageToDb(message, MessageContainer.CHAT_SIMPLE, jidTo, true);
                 doSendMessage(message);
             }
         }).start();
@@ -130,11 +128,12 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         try {
             final String jidTo = message.getTo().asEntityBareJidIfPossible().toString();
             //TODO remove it after debug
-            if (jidTo.contains("lebedenko")
+
+            if (BuildConfig.DEBUG && (jidTo.contains("lebedenko")
                     || jidTo.contains("sazonov")
                     || jidTo.contains("koltsov")
                     || jidTo.contains("skurzhansky")
-                    || jidTo.contains("pronkin")) {
+                    || jidTo.contains("pronkin"))) {
                 DeliveryReceiptRequest.addTo(message);
                 xmppConnection.sendStanza(message);
                 Log.i(TAG, "send msg id = " + message.getStanzaId());
@@ -198,7 +197,8 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
             Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                    MessageContainer messageContainer = DbHelper.addMessageToDb(message, message.getFrom().asEntityBareJidIfPossible().toString(), false);
+                    int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
+                    MessageContainer messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom().asEntityBareJidIfPossible().toString(), false);
                     if (SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
                     } else {

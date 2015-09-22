@@ -8,14 +8,11 @@ import lombok.Getter;
  */
 
 @AllArgsConstructor
-public class RiaServiceEvent {
+public class RoomMessageEvent {
 
     @Getter
-    RiaEvent eventId;
+    final String roomJid;
 
-    public enum RiaEvent {
-        TO_SIGN_IN,
-        TO_SIGN_OUT,
-        TO_GET_ROSTER
-    }
+    @Getter
+    final String message;
 }

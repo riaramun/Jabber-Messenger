@@ -11,9 +11,7 @@ import com.activeandroid.query.Select;
 import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
-import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.utils.DbHelper;
 
 /**
  * Created by Roman Lebedenko.

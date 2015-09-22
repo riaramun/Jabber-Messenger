@@ -42,6 +42,7 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
 
     public static final String ARG_FROM_JID = "from_jid";
     public static final String ARG_TO_JID = "to_jid";
+    public static final String ARG_ROOM_JID = "room_jid";
 
     public final int MESSAGES_LOADER_ID = 100;
     public final int USER_STATUS_LOADER_ID = 200;

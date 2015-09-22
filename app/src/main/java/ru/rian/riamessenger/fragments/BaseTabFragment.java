@@ -29,6 +29,7 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.common.RiaBaseFragment;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
+import ru.rian.riamessenger.listeners.RoomsListClickListener;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
@@ -43,6 +44,9 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     @Inject
     ContactsListClickListener contactsListClickListener;
 
+    @Inject
+    RoomsListClickListener roomsListClickListener;
+
 
     static public final String CHATS_FRAGMENT_TAG = ChatsFragment.class.getSimpleName();
     static public final String ROOMS_FRAGMENT_TAG = RoomsFragment.class.getSimpleName();
@@ -50,7 +54,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
     static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
 
-    protected int tabId;
+    protected int tabId = 0;
 
     public enum FragIds {
         ROBOTS_FRAGMENT,
@@ -97,7 +101,12 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RiaApplication.component().inject(this);
-        tabId = getArguments().getInt(ARG_TAB_ID);
+        if (getArguments() != null)
+            tabId = getArguments().getInt(ARG_TAB_ID);
+        else {
+            //we put contacts fragment as a defalt
+            tabId = FragIds.CONTACTS_FRAGMENT.ordinal();
+        }
     }
 
     @Override

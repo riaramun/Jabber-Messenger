@@ -67,9 +67,9 @@ dependencies {
     apt "com.google.dagger:dagger-compiler:2.0"
     // provided 'javax.annotation:jsr250-api:1.0'
     provided 'org.projectlombok:lombok:1.16.2'
-    compile 'org.igniterealtime.smack:smack-android:+'
+    compile 'org.igniterealtime.smack:smack-android:4.1.4'
     compile 'org.igniterealtime.smack:smack-tcp:+'
-    compile 'org.igniterealtime.smack:smack-android-extensions:+'
+    compile 'org.igniterealtime.smack:smack-android-extensions:4.1.0-alpha6'
     compile 'com.parse.bolts:bolts-android:1.1.4'
     // compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.4.0'

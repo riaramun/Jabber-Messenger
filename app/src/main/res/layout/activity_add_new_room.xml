@@ -3,18 +3,10 @@
     android:layout_height="match_parent"
     android:paddingBottom="0dp">
 
-    <LinearLayout
-        android:id="@+id/empty_item"
+    <fragment
+        android:tag="CONTACTS_FRAGMENT_TAG"
+        android:id="@+id/contacts_fragment_id"
+        android:name="ru.rian.riamessenger.fragments.ContactsAddNewRoomFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/placeholder_chat" />
-
-    </LinearLayout>
-
+        android:layout_height="match_parent" />
 </RelativeLayout>

@@ -20,6 +20,7 @@ import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.SysUtils;
@@ -38,14 +39,14 @@ public class SmackConnectionListener implements ConnectionListener {
 
     @Override
     public void connected(XMPPConnection connection) {
-        Log.i("RiaService", "EConnected");
+        Log.i(RiaXmppService.TAG, "EConnected");
         RiaEventBus.post(XmppErrorEvent.State.EConnected);
     }
 
     @Override
     public void authenticated(final XMPPConnection connection, boolean resumed) {
         RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
-        Log.i("RiaService", "EAuthenticated");
+        Log.i(RiaXmppService.TAG, "EAuthenticated");
         //add current user entry to track his presence via loader
         userAppPreference.setAuthStateKey(true);
         userAppPreference.setJidStringKey(connection.getUser().asEntityBareJidString());
@@ -60,7 +61,7 @@ public class SmackConnectionListener implements ConnectionListener {
         DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(new ReceiptReceivedListener() {
             @Override
             public void onReceiptReceived(Jid fromJid, Jid toJid, String receiptId, Stanza receipt) {
-                Log.i("RiaService", "receiptId = " + receiptId + " receipt = " + receipt.toString());
+                Log.i(RiaXmppService.TAG, "receiptId = " + receiptId + " receipt = " + receipt.toString());
             }
         });*/
 
@@ -92,23 +93,32 @@ public class SmackConnectionListener implements ConnectionListener {
         final OfflineMessageManager offlineMessageManager = new OfflineMessageManager(connection);
 
         if (!offlineMessageManager.supportsFlexibleRetrieval()) {
-            Log.i("RiaService", "Offline messages not supported");
+            Log.i(RiaXmppService.TAG, "Offline messages not supported");
             return;
         }
         Task.callInBackground(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 if (offlineMessageManager.getMessageCount() == 0) {
-                    Log.i("RiaService", "No offline messages found on server");
+                    Log.i(RiaXmppService.TAG, "No offline messages found on server");
                 } else {
                     MessageContainer messageContainer = null;
                     try {
                         ActiveAndroid.beginTransaction();
                         List<Message> messages = offlineMessageManager.getMessages();
                         if (messages.size() > 0) {
-                            Log.i("RiaService", "offline messages = " + messages.size());
+                            Log.i(RiaXmppService.TAG, "offline messages = " + messages.size());
                             for (Message msg : messages) {
-                                messageContainer = DbHelper.addMessageToDb(msg, msg.getFrom().asEntityBareJidIfPossible().toString(), false);
+                                int msgType = MessageContainer.CHAT_SIMPLE;
+                                //int msgType = msg.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
+                                /*String msgId;
+                                if(msgType == MessageContainer.CHAT_SIMPLE) {
+                                    msgId = msg.getFrom().asEntityBareJidIfPossible().toString();
+                                }
+                                else {
+                                    msgId = msg.getThread()
+                                }*/
+                                messageContainer = DbHelper.addMessageToDb(msg, msgType, msg.getFrom().asEntityBareJidIfPossible().toString(), false);
                             }
                         }
                         ActiveAndroid.setTransactionSuccessful();

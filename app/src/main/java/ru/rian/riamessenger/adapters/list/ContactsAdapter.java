@@ -9,7 +9,10 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LinearSLM;
 
+import java.util.HashMap;
+
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
@@ -25,6 +28,16 @@ import ru.rian.riamessenger.utils.ViewUtils;
  *
  */
 public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEntryIdGetter, BubbleTextGetter {
+
+    public enum ListItemMode {
+        EPresence,
+        ECheckNox
+    }
+
+    @Getter
+    HashMap<Integer, String> selectedUsersJidMap = new HashMap<Integer, String>();
+
+    ListItemMode listItemMode;
 
     private int mHeaderDisplay;
 
@@ -43,7 +56,8 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
         return retStr;
     }
 
-    public ContactsAdapter(Context context, int headerMode, ContactsListClickListener contactsListClickListener) {
+    public ContactsAdapter(ListItemMode listItemMode, Context context, int headerMode, ContactsListClickListener contactsListClickListener) {
+        this.listItemMode = listItemMode;
         mContext = context;
         mHeaderDisplay = headerMode;
         this.contactsListClickListener = contactsListClickListener;
@@ -70,12 +84,27 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
 
                 break;
             case VIEW_TYPE_CONTENT:
+                int resId = -1;
+                if (listItemMode == ListItemMode.EPresence) {
+                    resId = R.layout.list_item_contact_with_presence;
+                } else {
+                    resId = R.layout.list_item_contact_with_checkbox;
+                }
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.list_item_contact, parent, false);
+                        .inflate(resId, parent, false);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        RecyclerView recyclerView = (RecyclerView) v.getParent();
+                        int pos = recyclerView.getChildAdapterPosition(v);
+                        if (selectedUsersJidMap.containsKey(pos)) {
+                            selectedUsersJidMap.remove(pos);
+                        } else {
+                            String jid = getJid(pos);
+                            selectedUsersJidMap.put(pos, jid);
+                        }
                         contactsListClickListener.onClick(ContactsAdapter.this, v);
+                        ContactsAdapter.this.notifyItemChanged(pos);
                     }
                 });
                 viewHolder = new ContactViewHolder(view);
@@ -120,10 +149,14 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                     lp.headerStartMarginIsAuto = !mMarginsFixed;
                 } else {
                     contactViewHolder.contactName.setText(RiaTextUtils.capFirst(item.text));
-                    if (NetworkStateManager.isNetworkAvailable(mContext)) {
-                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, item.presence);
+                    if (listItemMode == ListItemMode.EPresence) {
+                        if (NetworkStateManager.isNetworkAvailable(mContext)) {
+                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, item.presence);
+                        } else {
+                            ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                        }
                     } else {
-                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                        contactViewHolder.contactSelected.setChecked(selectedUsersJidMap.containsKey(position));
                     }
                 }
                 lp.setSlm(LinearSLM.ID);
@@ -171,7 +204,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
         if (entries != null && entries.size() > index) {
             long id = entries.get(index).modelId;
             RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryById(id);
-            if(rosterEntryModel != null) {
+            if (rosterEntryModel != null) {
                 jid = rosterEntryModel.bareJid;
             }
         }

@@ -37,11 +37,11 @@ import com.gc.materialdesign.views.ButtonFloat;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import lombok.val;
 import ru.rian.riamessenger.AddNewRoomActivity;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.cursor.RobotsAdapter;
+import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
+import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
+import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class RoomsFragment extends BaseTabFragment {
@@ -52,8 +52,7 @@ public class RoomsFragment extends BaseTabFragment {
 
     @Bind(R.id.buttonFloat)
     ButtonFloat buttonFloat;
-
-    RobotsAdapter robotsAdapter;
+    RoomsAdapter roomsAdapter;
 
     @OnClick(R.id.buttonFloat)
     void onClick() {
@@ -61,21 +60,34 @@ public class RoomsFragment extends BaseTabFragment {
         getActivity().startActivity(intent);
     }
 
+    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            /*int childPosition = recyclerView.getChildAdapterPosition(v);
+            MessageContainer messageContainer = roomsAdapter.getItem(childPosition);
+            if (messageContainer != null)
+                EventBus.getDefault().post(new ChatEvents(ChatEvents.SHOW_REMOVE_DIALOG, messageContainer.threadID));
+            */
+            return true;
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_rooms, container, false);
         ButterKnife.bind(this, rootView);
 
-        buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
+        buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
-        robotsAdapter = new RobotsAdapter(getActivity(), null, contactsListClickListener);
-        recyclerView.setAdapter(robotsAdapter);
+        roomsAdapter = new RoomsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), roomsListClickListener, onLongClickListener);
+
+        recyclerView.setAdapter(roomsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        val itemAnimator = new DefaultItemAnimator();
+        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
         recyclerView.setItemAnimator(itemAnimator);
 
         return rootView;
@@ -100,18 +112,23 @@ public class RoomsFragment extends BaseTabFragment {
         buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
     }
 
-    @Override
-    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
 
     @Override
+    public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
+        FragIds fragIds = FragIds.values()[id];
+        switch (fragIds) {
+            case ROOMS_FRAGMENT:
+                return new RoomsListenerLoader(getActivity());
+        }
+        return null;
+    }
+    @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
-        robotsAdapter.changeCursor(data.result);
+        roomsAdapter.changeCursor(data.result);
     }
 
     @Override
     protected void rosterLoaded(boolean isLoaded) {
-        buttonFloat.setVisibility(isLoaded ?  View.VISIBLE : View.GONE);
+        buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
     }
 }

@@ -26,7 +26,6 @@ public class RosterGroupModel extends Model {
         super();
     }
 
-    // Used to return items from another table based on the foreign key
     public List<RosterEntryModel> items() {
         return getMany(RosterEntryModel.class, "RosterGroupModel");
     }

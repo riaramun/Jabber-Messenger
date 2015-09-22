@@ -27,12 +27,15 @@ import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
-import ru.rian.riamessenger.riaevents.request.RiaMessageEvent;
+import ru.rian.riamessenger.riaevents.request.ChatMessageEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
+import ru.rian.riamessenger.riaevents.request.RoomCreateEvent;
+import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.XmppUtils;
+import ru.rian.riamessenger.xmpp.MUCManager;
 import ru.rian.riamessenger.xmpp.SendMsgBroadcastReceiver;
 import ru.rian.riamessenger.xmpp.SmackConnectionListener;
 import ru.rian.riamessenger.xmpp.SmackMessageManager;
@@ -47,7 +50,10 @@ public class RiaXmppService extends Service {
     SmackXmppConnection smackXmppConnection;
     SmackMessageManager xmppMessageManager;
     SmackRosterManager smackRosterManager;
+    MUCManager mucManager;
 
+    public static String TAG = "Service";
+    
     @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
@@ -60,7 +66,7 @@ public class RiaXmppService extends Service {
 
     public RiaXmppService() {
         super();
-        Log.i("RiaService", "RiaService()");
+        Log.i(TAG, "RiaService()");
         RiaBaseApplication.component().inject(this);
         sendMsgBroadcastReceiver = new SendMsgBroadcastReceiver(this);
         initSmackModules();
@@ -73,6 +79,8 @@ public class RiaXmppService extends Service {
         smackRosterManager = new SmackRosterManager(this, userAppPreference, xmppConnection);
         smackXmppConnection = new SmackXmppConnection(xmppConnection, userAppPreference);
         xmppMessageManager = new SmackMessageManager(this, xmppConnection, sendMsgBroadcastReceiver, userAppPreference);
+        mucManager = new MUCManager(this, xmppConnection, userAppPreference);
+        mucManager.init();
     }
 
     //XmppServiceComponent xmppServiceComponent;
@@ -110,9 +118,21 @@ public class RiaXmppService extends Service {
         XmppUtils.changeCurrentUserStatus(presence, userAppPreference.getJidStringKey(), xmppConnection);
     }
 
-    public void onEvent(RiaMessageEvent event) {
+    public void onEvent(ChatMessageEvent event) {
         if (xmppMessageManager != null) {
             xmppMessageManager.sendMessageToServer(event.getJid(), event.getMessage());
+        }
+    }
+
+    public void onEvent(RoomCreateEvent event) {
+        if (mucManager != null) {
+            mucManager.createRoom(event.getRoomName(), event.getParticipantsArrayList());
+        }
+    }
+
+    public void onEvent(RoomMessageEvent event) {
+        if (mucManager != null) {
+            mucManager.sendMessageToServer(event.getRoomJid(), event.getMessage());
         }
     }
 
@@ -121,7 +141,7 @@ public class RiaXmppService extends Service {
         switch (xmppErrorEvent.state) {
             case EDbUpdated:
                 connectionHandler.removeCallbacks(connectionRunnable);
-                Log.i("RiaService", "everything is ok, we've got roster!!!");
+                Log.i(TAG, "everything is ok, we've got roster!!!");
                 setConnectingState(false);
                 if (xmppMessageManager != null) {
                     xmppMessageManager.sendAllNotSentMessages();
@@ -178,7 +198,7 @@ public class RiaXmppService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("RiaService", "onCreate");
+        Log.i(TAG, "onCreate");
         EventBus.getDefault().register(this);
         /*mContext = this;
         xmppServiceComponent = DaggerXmppServiceComponent.builder()
@@ -190,7 +210,7 @@ public class RiaXmppService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Log.i("RiaService", "onStartCommand()");
+        Log.i(TAG, "onStartCommand()");
         onStartService();
         return START_STICKY_COMPATIBILITY;
     }
@@ -230,11 +250,11 @@ public class RiaXmppService extends Service {
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
                             connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         } else {
-                            Log.i("RiaService", "everything is ok, we've got roster!!!");
+                            Log.i(TAG, "everything is ok, we've got roster!!!");
                             setConnectingState(false);
-                            if (xmppMessageManager != null) {
-                                xmppMessageManager.sendAllNotSentMessages();
-                            }
+                        }
+                        if (xmppMessageManager != null) {
+                            xmppMessageManager.sendAllNotSentMessages();
                         }
                     } else {
                         setConnectingState(false);
@@ -254,7 +274,7 @@ public class RiaXmppService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i("RiaService", "onDestroy");
+        Log.i(TAG, "onDestroy");
         EventBus.getDefault().unregister(this);
         //  mContext = null;
         //userAppPreference.setRiaXmppServiceStartedFlag(false);
