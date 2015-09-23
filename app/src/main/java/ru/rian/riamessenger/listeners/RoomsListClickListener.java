@@ -25,7 +25,7 @@ public class RoomsListClickListener implements BaseRiaListClickListener {
         int childPosition = recyclerView.getChildAdapterPosition(v);
         //RosterEntryIdGetter rosterEntryIdGetter = (RosterEntryIdGetter) recyclerView.getAdapter();
         if(childPosition >= 0) {
-            String jid = rosterEntryIdGetter.getJid(childPosition);
+            String jid = rosterEntryIdGetter.getUser(childPosition);
             if (jid != null) {
                 onClick(jid, v.getContext());
             } else {

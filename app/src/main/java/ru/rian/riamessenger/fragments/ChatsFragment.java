@@ -106,7 +106,7 @@ public class ChatsFragment extends BaseTabFragment {
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
 
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), contactsListClickListener, onLongClickListener);
+        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getUserStringKey(), contactsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(chatsAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -149,7 +149,7 @@ public class ChatsFragment extends BaseTabFragment {
     protected Bundle getBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_TAB_ID, tabId);
-        bundle.putString(ARG_JID_TO_EXCLUDE, userAppPreference.getJidStringKey());
+        bundle.putString(ARG_JID_TO_EXCLUDE, userAppPreference.getUserStringKey());
         return bundle;
     }
 

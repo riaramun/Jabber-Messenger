@@ -49,13 +49,13 @@ public class SmackConnectionListener implements ConnectionListener {
         Log.i(RiaXmppService.TAG, "EAuthenticated");
         //add current user entry to track his presence via loader
         userAppPreference.setAuthStateKey(true);
-        userAppPreference.setJidStringKey(connection.getUser().asEntityBareJidString());
+        userAppPreference.setJidStringKey(XmppUtils.entityJid(connection.getUser()));
         try {
             handleOfflineMessages(connection);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.available), userAppPreference.getJidStringKey(), connection);
+        XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.available), userAppPreference.getUserStringKey(), connection);
         /*
         DeliveryReceiptManager.getInstanceFor(connection).setAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.always);
         DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(new ReceiptReceivedListener() {
@@ -109,16 +109,16 @@ public class SmackConnectionListener implements ConnectionListener {
                         if (messages.size() > 0) {
                             Log.i(RiaXmppService.TAG, "offline messages = " + messages.size());
                             for (Message msg : messages) {
-                                int msgType = MessageContainer.CHAT_SIMPLE;
-                                //int msgType = msg.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
+                               // int msgType = MessageContainer.CHAT_SIMPLE;
+                                int msgType = msg.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
                                 /*String msgId;
                                 if(msgType == MessageContainer.CHAT_SIMPLE) {
-                                    msgId = msg.getFrom().asEntityBareJidIfPossible().toString();
+                                    msgId = msg.getFrom();
                                 }
                                 else {
                                     msgId = msg.getThread()
                                 }*/
-                                messageContainer = DbHelper.addMessageToDb(msg, msgType, msg.getFrom().asEntityBareJidIfPossible().toString(), false);
+                                messageContainer = DbHelper.addMessageToDb(msg, msgType, msg.getFrom(), false);
                             }
                         }
                         ActiveAndroid.setTransactionSuccessful();
@@ -166,6 +166,6 @@ public class SmackConnectionListener implements ConnectionListener {
     public void reconnectionFailed(Exception e) {
         userAppPreference.setAuthStateKey(false);
         RiaEventBus.post(XmppErrorEvent.State.EReconnectionFailed);
-        NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
+        NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
     }
 }

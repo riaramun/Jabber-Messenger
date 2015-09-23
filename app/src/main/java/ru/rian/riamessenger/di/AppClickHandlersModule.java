@@ -1,7 +1,5 @@
 package ru.rian.riamessenger.di;
 
-import javax.inject.Inject;
-
 import dagger.Module;
 import dagger.Provides;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;

@@ -25,10 +25,6 @@ import com.activeandroid.util.SQLiteUtils;
 import com.malinskiy.materialicons.widget.IconTextView;
 import com.tonicartos.superslim.LayoutManager;
 
-import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +61,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             int childPosition = recyclerView.getChildAdapterPosition(v);
             //RosterEntryIdGetter rosterEntryIdGetter = (RosterEntryIdGetter) recyclerView.getAdapter();
             if (childPosition >= 0) {
-                String jid = rosterEntryIdGetter.getJid(childPosition);
+                String jid = rosterEntryIdGetter.getUser(childPosition);
                 if (jid != null) {
 
                 } else {
@@ -329,14 +325,11 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             }
             String roomName = editText.getText().toString();
             EventBus.getDefault().post(new RoomCreateEvent(roomName, participantsArrayList));
-            try {
-                EntityBareJid bareJid = JidCreate.entityBareFrom(roomName + "@" + RiaConstants.ROOM_DOMAIN);
-                Intent intent = new Intent(getActivity(), ConversationActivity.class);
-                intent.putExtra(RiaBaseActivity.ARG_ROOM_JID, bareJid.toString());
-                getActivity().startActivity(intent);
-            } catch (XmppStringprepException e) {
-                e.printStackTrace();
-            }
+            String bareJid = (roomName + "@" + RiaConstants.ROOM_DOMAIN);
+            Intent intent = new Intent(getActivity(), ConversationActivity.class);
+            intent.putExtra(RiaBaseActivity.ARG_ROOM_JID, bareJid.toString());
+            getActivity().startActivity(intent);
+
             getActivity().onBackPressed();
         }
     }

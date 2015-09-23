@@ -22,11 +22,8 @@ import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.BaseRiaListClickListener;
 import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.MessageContainer;
-import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
-import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
-import ru.rian.riamessenger.utils.ViewUtils;
 
 /**
  * Created by Roman on 6/30/2015.
@@ -156,7 +153,7 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     }
 
     @Override
-    public String getJid(int index) {
+    public String getUser(int index) {
         String jidRes = null;
         MessageContainer messageContainer = getItem(index);
         if (messageContainer != null) {

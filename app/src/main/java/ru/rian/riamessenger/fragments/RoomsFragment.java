@@ -39,7 +39,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.rian.riamessenger.AddNewRoomActivity;
 import ru.rian.riamessenger.R;
-import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
 import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
 import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -80,7 +79,7 @@ public class RoomsFragment extends BaseTabFragment {
 
         buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
-        roomsAdapter = new RoomsAdapter(getActivity(), null, userAppPreference.getJidStringKey(), roomsListClickListener, onLongClickListener);
+        roomsAdapter = new RoomsAdapter(getActivity(), null, userAppPreference.getUserStringKey(), roomsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(roomsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());

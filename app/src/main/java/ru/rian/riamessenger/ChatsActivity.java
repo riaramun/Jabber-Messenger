@@ -134,12 +134,12 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     protected void onResume() {
         super.onResume();
         if (!NetworkStateManager.isNetworkAvailable(this)) {
-            NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getJidStringKey());
+            NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
         } else {
             EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
         }
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_TO_JID, userAppPreference.getJidStringKey());
+        bundle.putString(ARG_TO_JID, userAppPreference.getUserStringKey());
         initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
 
         progressBar.setVisibility(!userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
@@ -239,7 +239,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         switch (xmppErrorEvent.state) {
             case EAuthenticated:
-                NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getJidStringKey());
+                NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getUserStringKey());
                 break;
             case EAuthenticationFailed:
                 Intent intent = new Intent(this, LoginActivity.class);

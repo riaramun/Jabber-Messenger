@@ -93,7 +93,7 @@ public class LoginActivity extends RiaBaseActivity {
     @Override
     public void onStart() {
         super.onStart();
-        String token = userAppPreference.getJidStringKey();
+        String token = userAppPreference.getUserStringKey();
         String login = userAppPreference.getLoginStringKey();
         String pass = userAppPreference.getPassStringKey();
         if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(login) && !TextUtils.isEmpty(pass)) {

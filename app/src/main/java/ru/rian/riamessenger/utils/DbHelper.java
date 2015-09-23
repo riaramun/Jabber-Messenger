@@ -124,14 +124,46 @@ public class DbHelper {
         return messageContainers;
     }
 
-
-    public static MessageContainer addMessageToDb(Message message, int chatType, String messageId, boolean isRead) {
+    /*public static MessageContainer addGroupMessageToDb(Message message, int chatType, String messageId, String from, String to, boolean isRead) {
         MessageContainer messageContainer = new MessageContainer(chatType);
         messageContainer.body = message.getBody();
         messageContainer.stanzaID = message.getStanzaId();
-        messageContainer.toJid = message.getTo().asEntityBareJidIfPossible().toString();
-        messageContainer.fromJid = message.getFrom().asEntityBareJidIfPossible().toString();
+        messageContainer.toJid = to;
+        messageContainer.fromJid = from;
         messageContainer.threadID = messageId;// message.getThread();
+        messageContainer.created = new Date();
+        messageContainer.isRead = isRead;
+        messageContainer.stanzaID = message.getStanzaId();
+        messageContainer.save();
+        return messageContainer;
+    }*/
+
+    public static MessageContainer addMessageToDb(Message message, int chatType, String messageId, boolean isRead) {
+        int slashInd;
+        String msgId;
+        String from;
+        String to;
+        //from cijcjcjc@conference.kis-jabber/skurzhansky
+        //to lebedenko@kis-jabber/ria_mobile
+
+        slashInd = messageId.indexOf('/');
+        msgId = slashInd > 0 ? messageId.substring(0, slashInd) : messageId;
+
+        slashInd = message.getTo().indexOf('/');
+        to = slashInd > 0 ? message.getTo().substring(0, slashInd) : message.getTo();
+
+        slashInd = message.getFrom().indexOf('/');
+        if (chatType == MessageContainer.CHAT_SIMPLE) {
+            from = slashInd > 0 ? message.getFrom().substring(0, slashInd) : message.getFrom();
+        } else {
+            from = slashInd > 0 ? message.getFrom().substring(slashInd) : message.getFrom();
+        }
+        MessageContainer messageContainer = new MessageContainer(chatType);
+        messageContainer.body = message.getBody();
+        messageContainer.stanzaID = message.getStanzaId();
+        messageContainer.toJid = to;
+        messageContainer.fromJid = from;
+        messageContainer.threadID = msgId;// message.getThread();
         messageContainer.created = new Date();
         messageContainer.isRead = isRead;
         messageContainer.stanzaID = message.getStanzaId();

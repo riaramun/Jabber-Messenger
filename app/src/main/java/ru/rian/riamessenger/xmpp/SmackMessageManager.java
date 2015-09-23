@@ -15,22 +15,20 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
-import org.jxmpp.jid.EntityJid;
-import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
 import ru.rian.riamessenger.BuildConfig;
+import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.SysUtils;
+import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by grigoriy on 29.06.15.
@@ -64,7 +62,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
 
 
     public void sendAllNotSentMessages() {
-        List<MessageContainer> messages = DbHelper.getAllNotSentMessages(userAppPreference.getJidStringKey());
+        List<MessageContainer> messages = DbHelper.getAllNotSentMessages(userAppPreference.getUserStringKey());
         for (final MessageContainer messageContainer : messages) {
             new Thread(new Runnable() {
                 @Override
@@ -88,15 +86,11 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
     Message createMessage(MessageContainer messageContainer) {
-        EntityJid entityJidTo = null;
-        EntityJid entityJidFrom = null;
-        try {
-            entityJidTo = JidCreate.bareFrom(messageContainer.toJid).asEntityJidIfPossible();
-            entityJidFrom = JidCreate.bareFrom(messageContainer.fromJid).asEntityJidIfPossible();
-            ;
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        }
+        String entityJidTo = null;
+        String entityJidFrom = null;
+        entityJidTo = (messageContainer.toJid);
+        entityJidFrom = (messageContainer.fromJid);
+
         Message message = new Message();
         message.setBody(messageContainer.body);
         message.setFrom(entityJidFrom);
@@ -107,14 +101,11 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
     Message createMessage(String jidTo, String messageText) {
-        EntityJid entityJidTo = null;
-        EntityJid entityJidFrom = null;
-        try {
-            entityJidTo = JidCreate.bareFrom(jidTo).asEntityJidIfPossible();
-            entityJidFrom = JidCreate.bareFrom(userAppPreference.getJidStringKey()).asEntityJidIfPossible();
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        }
+        String entityJidTo = null;
+        String entityJidFrom = null;
+        entityJidTo = jidTo;
+        entityJidFrom = (userAppPreference.getUserStringKey());
+
         Message message = new Message();
         message.setBody(messageText);
         message.setFrom(entityJidFrom);
@@ -126,7 +117,8 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
 
     private void doSendMessage(Message message) {
         try {
-            final String jidTo = message.getTo().asEntityBareJidIfPossible().toString();
+            final String jidFrom = message.getFrom();
+            final String jidTo = message.getTo();
             //TODO remove it after debug
 
             if (BuildConfig.DEBUG && (jidTo.contains("lebedenko")
@@ -135,12 +127,12 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                     || jidTo.contains("skurzhansky")
                     || jidTo.contains("pronkin"))) {
                 DeliveryReceiptRequest.addTo(message);
+                message.setTo(XmppUtils.entityJidWithRes(jidTo));
+                message.setFrom(XmppUtils.entityJidWithRes(jidFrom));
                 xmppConnection.sendStanza(message);
                 Log.i(TAG, "send msg id = " + message.getStanzaId());
             }
         } catch (SmackException.NotConnectedException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -179,7 +171,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
     @Override
-    public void onReceiptReceived(Jid fromJid, Jid toJid, String receiptId, Stanza receipt) {
+    public void onReceiptReceived(String fromJid, String toJid, String receiptId, Stanza receipt) {
         Log.i(TAG, "on chat created receiptId = " + receiptId + " receipt = " + receipt.toString());
         MessageContainer messageContainer = DbHelper.getMessageByReceiptId(receiptId);
         if (messageContainer != null) {
@@ -189,7 +181,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
     @Override
-    public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+    public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
         final Message message = (Message) packet;
         // store message to DB
         if (!TextUtils.isEmpty(message.getBody())) {
@@ -197,8 +189,9 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
             Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
+                    MessageContainer messageContainer = null;
                     int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
-                    MessageContainer messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom().asEntityBareJidIfPossible().toString(), false);
+                    messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), false);
                     if (SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
                     } else {
@@ -210,8 +203,10 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
             });
         } else {
             Log.i(TAG, "on null message from chat id = " + message.getThread()
-                    + " from " + message.getFrom().asEntityBareJidIfPossible().toString()
-                    + " to " + message.getTo().asEntityBareJidIfPossible().toString());
+                    + " from " + message.getFrom()
+                    + " to " + message.getTo());
         }
     }
+
+
 }

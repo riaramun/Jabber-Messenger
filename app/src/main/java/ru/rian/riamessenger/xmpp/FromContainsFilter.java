@@ -50,7 +50,7 @@ public class FromContainsFilter implements PacketFilter {
         if (stanza.getFrom() == null) {
             return false;
         } else {
-            return stanza.getFrom().asEntityBareJidIfPossible().toString().toLowerCase().indexOf(from) != -1;
+            return stanza.getFrom().toLowerCase().indexOf(from) != -1;
         }
     }
 }

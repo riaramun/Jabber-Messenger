@@ -126,7 +126,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         String jid_to = getExtraJid(ARG_TO_JID);
         if (!TextUtils.isEmpty(jid_to)) {
             bundle.putString(ARG_TO_JID, jid_to);
-            bundle.putString(ARG_FROM_JID, userAppPreference.getJidStringKey());
+            bundle.putString(ARG_FROM_JID, userAppPreference.getUserStringKey());
             initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
             initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
         } else {

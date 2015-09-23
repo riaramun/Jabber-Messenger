@@ -13,8 +13,8 @@ import ru.rian.riamessenger.common.DbColumns;
 @Table(name = "MessageContainer", id = BaseColumns._ID)
 public class MessageContainer extends Model {
 
-    public static int CHAT_SIMPLE = 0;
-    public static int CHAT_GROUP = 1;
+    public static final int CHAT_SIMPLE = 0;
+    public static final int CHAT_GROUP = 1;
 
     public MessageContainer() {
         super();

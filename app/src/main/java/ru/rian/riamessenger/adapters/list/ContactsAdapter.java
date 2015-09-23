@@ -100,7 +100,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                         if (selectedUsersJidMap.containsKey(pos)) {
                             selectedUsersJidMap.remove(pos);
                         } else {
-                            String jid = getJid(pos);
+                            String jid = getUser(pos);
                             selectedUsersJidMap.put(pos, jid);
                         }
                         contactsListClickListener.onClick(ContactsAdapter.this, v);
@@ -199,7 +199,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     }
 
     @Override
-    public String getJid(int index) {
+    public String getUser(int index) {
         String jid = null;
         if (entries != null && entries.size() > index) {
             long id = entries.get(index).modelId;

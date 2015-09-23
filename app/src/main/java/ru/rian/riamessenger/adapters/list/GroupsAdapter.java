@@ -48,7 +48,7 @@ public class GroupsAdapter
     final ContactsListClickListener contactsListClickListener;
 
     @Override
-    public String getJid(int index) {
+    public String getUser(int index) {
         return null;
     }
 

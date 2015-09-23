@@ -10,6 +10,7 @@ import com.activeandroid.ActiveAndroid;
 
 import org.jivesoftware.smack.packet.Presence;
 
+import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.model.RosterEntryModel;
 
 public class NetworkStateManager {
@@ -36,7 +37,7 @@ public class NetworkStateManager {
     public static void setCurrentUserPresence(Presence presence, String bareJid) {
 
         RosterEntryModel rosterEntryModel = new RosterEntryModel();
-        rosterEntryModel.bareJid = bareJid;
+        rosterEntryModel.bareJid = XmppUtils.entityJidWithRes(bareJid);
         rosterEntryModel.setPresence(presence);
         try {
             ActiveAndroid.beginTransaction();

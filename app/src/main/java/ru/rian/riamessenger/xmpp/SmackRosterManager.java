@@ -19,7 +19,7 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.roster.RosterLoadedListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jxmpp.jid.Jid;
+
 
 import java.util.Collection;
 import java.util.Locale;
@@ -36,6 +36,7 @@ import ru.rian.riamessenger.model.RosterGroupModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by Roman on 8/10/2015.
@@ -78,7 +79,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     }
 
     public boolean tryGetRosterFromServer() {
-        if (roster != null && DbHelper.rosterTableIsNotEmpty()/*&& roster.getEntryCount() > 0 || */) {
+        if (roster != null && roster.isLoaded() &&  DbHelper.rosterTableIsNotEmpty()/*&& roster.getEntryCount() > 0 || */) {
             return true;
         } else {
             if (xmppConnection.isAuthenticated()) {
@@ -88,8 +89,6 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
                 } catch (SmackException.NotLoggedInException e) {
                     e.printStackTrace();
                 } catch (SmackException.NotConnectedException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -130,7 +129,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
 
                 for (RosterEntry rosterEntry : rosterGroup.getEntries()) {
                     RosterEntryModel rosterEntryModel = new RosterEntryModel();
-                    rosterEntryModel.bareJid = rosterEntry.getJid().toString();
+                    rosterEntryModel.bareJid = rosterEntry.getUser();
 
                     if (rosterGroupModel.name.equals(context.getString(R.string.robots))) {
                         rosterEntryModel.name = rosterEntry.getName();
@@ -139,13 +138,13 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
                     }
 
                     rosterEntryModel.rosterGroupModel = rosterGroupModel;
-                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getJid()));
+                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getUser()));
                     rosterEntryModel.save();
                 }
             }
             //add current user entry to track his presence via loader
             RosterEntryModel rosterEntryModel = new RosterEntryModel();
-            rosterEntryModel.bareJid = userAppPreference.getJidStringKey();
+            rosterEntryModel.bareJid = userAppPreference.getUserStringKey();
             rosterEntryModel.setPresence(new Presence(Presence.Type.available));
             rosterEntryModel.save();
 
@@ -156,27 +155,13 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         Log.i("RiaService", "doSaveRosterToDb e");
     }
 
-    @Override
-    public void entriesAdded(Collection<Jid> addresses) {
-
-    }
 
     @Override
-    public void entriesUpdated(Collection<Jid> addresses) {
-
-    }
-
-    @Override
-    public void entriesDeleted(Collection<Jid> addresses) {
-
-    }
-
-    @Override
-    public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+    public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
         Presence presence = (Presence) packet;
         if (presence != null && presence.getFrom() != null) {
-            //Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom().asEntityBareJidIfPossible().toString());
-            String bareJid = presence.getFrom().asEntityBareJidIfPossible().toString();
+            //Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom());
+            String bareJid = XmppUtils.entityJid(presence.getFrom());
             if (!TextUtils.isEmpty(bareJid)) {
                 RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
                 if (rosterEntryModel != null) {
@@ -189,6 +174,21 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
                 }
             }
         }
+    }
+
+    @Override
+    public void entriesAdded(Collection<String> addresses) {
+
+    }
+
+    @Override
+    public void entriesUpdated(Collection<String> addresses) {
+
+    }
+
+    @Override
+    public void entriesDeleted(Collection<String> addresses) {
+
     }
 
     @Override
