@@ -15,12 +15,6 @@ import ru.rian.riamessenger.utils.SysUtils;
  */
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
 
-    enum State {
-        EIdle,
-        EConnected,
-        EDisconnected
-    }
-
     State state = State.EIdle;
 
     @Override
@@ -34,5 +28,11 @@ public class ConnectionBroadcastReceiver extends BroadcastReceiver {
             context.startService(new Intent(context, RiaXmppService.class));
         }
         this.state = state;
+    }
+
+    enum State {
+        EIdle,
+        EConnected,
+        EDisconnected
     }
 }

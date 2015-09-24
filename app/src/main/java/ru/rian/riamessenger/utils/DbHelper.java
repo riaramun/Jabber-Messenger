@@ -156,14 +156,14 @@ public class DbHelper {
         if (chatType == MessageContainer.CHAT_SIMPLE) {
             from = slashInd > 0 ? message.getFrom().substring(0, slashInd) : message.getFrom();
         } else {
-            from = slashInd > 0 ? message.getFrom().substring(slashInd) : message.getFrom();
+            from = slashInd > 0 ? message.getFrom().substring(slashInd+1) : message.getFrom();
         }
         MessageContainer messageContainer = new MessageContainer(chatType);
         messageContainer.body = message.getBody();
         messageContainer.stanzaID = message.getStanzaId();
         messageContainer.toJid = to;
         messageContainer.fromJid = from;
-        messageContainer.threadID = msgId;// message.getThread();
+        messageContainer.threadID = msgId.toLowerCase();// message.getThread();
         messageContainer.created = new Date();
         messageContainer.isRead = isRead;
         messageContainer.stanzaID = message.getStanzaId();

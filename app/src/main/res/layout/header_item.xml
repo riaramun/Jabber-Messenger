@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <com.devspark.robototextview.widget.RobotoTextView
-    android:id="@id/contact_name"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/contact_name"
     android:layout_width="60dp"
     android:layout_height="wrap_content"
     android:gravity="start"
-    android:padding="14dp"
-    app:fontFamily="roboto"
-    app:textWeight="normal"
-    android:textColor="#FF9C01"
     android:layoutDirection="locale"
+    android:padding="14dp"
+    android:textColor="#FF9C01"
     android:textDirection="locale"
     android:textSize="22sp"
+    app:fontFamily="roboto"
     app:slm_headerDisplay="inline|sticky"
     app:slm_isHeader="true"
     app:slm_section_headerMarginStart="56dp"
-    tools:text="Header Item"
-    /><!--app:slm_headerEndMargin="56dip"-->
+    app:textWeight="normal"
+    tools:text="Header Item" /><!--app:slm_headerEndMargin="56dip"-->

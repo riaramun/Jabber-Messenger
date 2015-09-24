@@ -61,13 +61,14 @@ public class ContactsActivity extends TabsRiaBaseActivity {
     }
 
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         return true;
-    }
+    } */
 
     private void logout(boolean clean) {
         if (clean) {
@@ -94,6 +95,33 @@ public class ContactsActivity extends TabsRiaBaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public int getIdByTabIndex(int tabIndex) {
+        return fragmentsIds[tabIndex].ordinal();
+    }
+
+    @Override
+    public String getTagByTabIndex(int tabIndex) {
+        return fragmentsTags[tabIndex];
+    }
+
+    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        switch (xmppErrorEvent.state) {
+            case EDbUpdating:
+            case EDbUpdated:
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
+                    }
+                });
+                break;
+            default:
+                super.onEvent(xmppErrorEvent);
+                break;
+        }
     }
 
     public class SamplePagerAdapter extends FragmentPagerAdapter {
@@ -131,34 +159,6 @@ public class ContactsActivity extends TabsRiaBaseActivity {
                 }
             }
             return fragment;
-        }
-    }
-
-    @Override
-    public int getIdByTabIndex(int tabIndex) {
-        return fragmentsIds[tabIndex].ordinal();
-    }
-
-    @Override
-    public String getTagByTabIndex(int tabIndex) {
-        return fragmentsTags[tabIndex];
-    }
-
-
-    public void onEvent(final XmppErrorEvent xmppErrorEvent) {
-        switch (xmppErrorEvent.state) {
-            case EDbUpdating:
-            case EDbUpdated:
-                this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(xmppErrorEvent.state == XmppErrorEvent.State.EDbUpdated ? View.GONE : View.VISIBLE);
-                    }
-                });
-                break;
-            default:
-                super.onEvent(xmppErrorEvent);
-                break;
         }
     }
 

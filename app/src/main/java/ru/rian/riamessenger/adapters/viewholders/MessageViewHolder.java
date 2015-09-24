@@ -18,13 +18,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView messageTextView;
     public TextView dateTextView;
     public TextView messageTodayDate;
-
+    public TextView authorTextView;
     public MessageViewHolder(View itemView) {
         super(itemView);
         messageTodayDate = (TextView) itemView.findViewById(R.id.message_today_date);
         messageSentIcon = (IconTextView) itemView.findViewById(R.id.message_sent_icon);
         messageTextView = (TextView) itemView.findViewById(R.id.message_text);
         dateTextView = (TextView) itemView.findViewById(R.id.message_created_date);
+        authorTextView = (TextView) itemView.findViewById(R.id.message_author);
     }
 
 }

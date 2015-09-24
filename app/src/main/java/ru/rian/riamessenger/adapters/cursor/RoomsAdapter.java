@@ -13,17 +13,16 @@ import android.view.ViewGroup;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
 import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
 import ru.rian.riamessenger.adapters.viewholders.ChatViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.BaseRiaListClickListener;
-import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
+import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by Roman on 6/30/2015.
@@ -34,8 +33,9 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     final String currentJid;
     final BaseRiaListClickListener roomsListClickListener;
     final View.OnLongClickListener onLongClickListener;
-    //final int EMPTY_VIEW_ITEM_TYPE = 2;
+
     private static final int LIST_EMPTY_ITEMS_COUNT = 1;
+    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public RoomsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener roomsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, cursor);
@@ -66,43 +66,35 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
             case VIEW_TYPE_EMPTY_ITEM:
                 break;
             case VIEW_TYPE_CONTENT:
-                final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+                final MessageContainer messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
                 if (messageContainer != null) {
-                    final val contactViewHolder = (ChatViewHolder) viewHolder;
-
-                    ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(messageContainer.threadID);
-                    if (chatRoomModel != null) {
-                        String titleToSet;
-                        titleToSet = RiaTextUtils.capFirst(chatRoomModel.name);
-                        contactViewHolder.contactName.setText(titleToSet);
-                        int unread = DbHelper.getUnReadMessagesNum(messageContainer.threadID);
-                        if (unread != 0) {
-                            contactViewHolder.onlineStatus.setText("" + unread);
-                        } else {
-                            contactViewHolder.onlineStatus.setText("");
-                        }
+                    final ChatViewHolder contactViewHolder = (ChatViewHolder) viewHolder;
+                    String titleToSet = RiaTextUtils.capFirst(XmppUtils.roomNameFromJid(messageContainer.threadID));
+                    contactViewHolder.contactName.setText(titleToSet);
+                    int unread = DbHelper.getUnReadMessagesNum(messageContainer.threadID);
+                    if (unread != 0) {
+                        contactViewHolder.onlineStatus.setText("" + unread);
+                    } else {
+                        contactViewHolder.onlineStatus.setText("");
                     }
                     String bodyToSet = messageContainer.body;
-
                     if (messageContainer.fromJid.equals(currentJid)) {
                         String youStr = mContext.getResources().getString(R.string.you);
                         bodyToSet = youStr + bodyToSet;
                         SpannableString spannableString = new SpannableString(bodyToSet);
                         ForegroundColorSpan span = new ForegroundColorSpan(mContext.getResources().getColor(R.color.inserted_text));
                         spannableString.setSpan(span, 0, youStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
                         contactViewHolder.messageTextView.setText(spannableString);
                     } else {
                         contactViewHolder.messageTextView.setText(bodyToSet);
                     }
-
                     contactViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
                 }
                 break;
         }
     }
 
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
 
     @Override
     public int getItemViewType(int position) {

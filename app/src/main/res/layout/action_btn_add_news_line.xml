@@ -5,9 +5,9 @@
     android:gravity="center">
 
     <com.malinskiy.materialicons.widget.IconTextView
-        android:layout_marginRight="10dp"
         android:id="@+id/add_news_line_icon_text_view"
         style="@style/LoginViewIconImage"
+        android:layout_marginRight="10dp"
         android:enabled="false"
         android:text="{zmdi-check}"
         android:textColor="@drawable/menu_text_color_selector"

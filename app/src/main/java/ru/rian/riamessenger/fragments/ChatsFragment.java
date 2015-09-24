@@ -125,8 +125,8 @@ public class ChatsFragment extends BaseTabFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_chats, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
-        setSearchViewListenersAndStyle(searchView);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
+  //      setSearchViewListenersAndStyle(searchView);
     }
 
     @Override

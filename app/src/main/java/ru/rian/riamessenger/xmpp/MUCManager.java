@@ -4,11 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
+import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
@@ -42,17 +44,19 @@ public class MUCManager implements InvitationListener {
     public void init() {
         manager = MultiUserChatManager.getInstanceFor(connection);
         manager.addInvitationListener(this);
-        updateRoomsInDb();
     }
 
     public void updateRoomsInDb() {
-        for (String entityBareJid : manager.getJoinedRooms()) {
-            try {
-                // RoomInfo roomInfo = manager.getRoomInfo(entityBareJid);
-                addRoomByJidToDb(entityBareJid);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            for (HostedRoom entityBareJid : manager.getHostedRooms(RiaConstants.XMPP_SERVICE_NAME)) {
+                //addRoomByJidToDb(entityBareJid);
             }
+        } catch (SmackException.NoResponseException e) {
+            e.printStackTrace();
+        } catch (XMPPException.XMPPErrorException e) {
+            e.printStackTrace();
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -120,14 +124,7 @@ public class MUCManager implements InvitationListener {
             Log.i(RiaXmppService.TAG, e.getMessage());
         }
         addRoomByJidToDb(roomBareJid);
-        room.addMessageListener(new MessageListener() {
-            @Override
-            public void processMessage(Message message) {
-                //String entityJidFrom = (userAppPreference.getUserStringKey());
-                //Message message = createMessage(bareJid, entityJidFrom, messageText);
 
-            }
-        });
     }
 
     Message createMessage(String entityJidTo, String entityJidFrom, String messageText) {
@@ -153,9 +150,9 @@ public class MUCManager implements InvitationListener {
                 try {
                     //String bareJid = JidCreate.entityBareFrom(roomJid);
                     MultiUserChat muc = manager.getMultiUserChat(roomJid);
-                    String entityJidFrom = (userAppPreference.getUserStringKey());
-                    Message message = createMessage(roomJid, entityJidFrom, messageText);
-                    DbHelper.addMessageToDb(message, MessageContainer.CHAT_GROUP, roomJid, true);
+                    //String entityJidFrom = (userAppPreference.getUserStringKey());
+                    //Message message = createMessage(roomJid, entityJidFrom, messageText);
+                    //DbHelper.addMessageToDb(message, MessageContainer.CHAT_GROUP, roomJid, true);
                     muc.sendMessage(messageText);
                 } catch (Exception e) {
                     e.printStackTrace();

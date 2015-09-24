@@ -68,8 +68,8 @@
         <activity
             android:name=".AddNewRoomActivity"
             android:configChanges="orientation"
-            android:noHistory="true"
             android:label=""
+            android:noHistory="true"
             android:parentActivityName=".ChatsActivity"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">

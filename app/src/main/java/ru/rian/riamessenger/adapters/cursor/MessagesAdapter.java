@@ -58,28 +58,40 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                     cursor.moveToNext();
                 }
                 final MessageViewHolder messageViewHolder = (MessageViewHolder) viewHolder;
-                if (messageContainer != null) {
-                    if (isFirstDayVideo) {
-                        if (DateUtils.isToday(messageContainer.created.getTime())) {
-                            messageViewHolder.messageTodayDate.setText(mContext.getText(R.string.today));
-                        } else {
-                            messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
-                        }
-                        //messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
-                        messageViewHolder.messageTodayDate.setVisibility(View.VISIBLE);
+
+                if (isFirstDayVideo) {
+                    if (DateUtils.isToday(messageContainer.created.getTime())) {
+                        messageViewHolder.messageTodayDate.setText(mContext.getText(R.string.today));
                     } else {
-                        messageViewHolder.messageTodayDate.setVisibility(View.INVISIBLE);
+                        messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
                     }
-                    messageViewHolder.messageTextView.setText(messageContainer.body);
-                    messageViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
-                    if (viewHolder.getItemViewType() == VIEW_TYPE_CONTENT_OUTCOME_MSG) {
-                        messageViewHolder.messageSentIcon.setVisibility(messageContainer.isSent ? View.VISIBLE : View.GONE);
+                    //messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
+                    messageViewHolder.messageTodayDate.setVisibility(View.VISIBLE);
+                } else {
+                    messageViewHolder.messageTodayDate.setVisibility(View.INVISIBLE);
+                }
+                messageViewHolder.messageTextView.setText(messageContainer.body);
+                messageViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
+                if (viewHolder.getItemViewType() == VIEW_TYPE_CONTENT_OUTCOME_MSG) {
+                    messageViewHolder.messageSentIcon.setVisibility(messageContainer.isSent ? View.VISIBLE : View.GONE);
+                    messageViewHolder.authorTextView.setVisibility(View.GONE);
+                } else {
+                    if (messageContainer.chatType == MessageContainer.CHAT_SIMPLE) {
+                        messageViewHolder.authorTextView.setVisibility(View.GONE);
                     } else {
-                        if (!messageContainer.isRead) {
-                            messageContainer.isRead = true;
-                            messageContainer.save();
-                        }
+                        messageViewHolder.authorTextView.setVisibility(View.VISIBLE);
+                        messageViewHolder.authorTextView.setText(messageContainer.fromJid);
                     }
+                }
+                if (!messageContainer.isRead) {
+                    messageContainer.isRead = true;
+                    messageContainer.save();
+                }
+                if (messageContainer.chatType == MessageContainer.CHAT_SIMPLE) {
+                    messageViewHolder.authorTextView.setVisibility(View.GONE);
+                } else {
+                    messageViewHolder.authorTextView.setVisibility(View.VISIBLE);
+                    messageViewHolder.authorTextView.setText(messageContainer.fromJid);
                 }
             }
             break;

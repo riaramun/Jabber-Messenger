@@ -35,14 +35,29 @@
             app:fontFamily="roboto"
             app:textWeight="light" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
-            android:id="@+id/message_text"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bubble_green"
-            android:padding="@dimen/list_item_message_text_padding"
-            app:fontFamily="roboto"
-            app:textWeight="light" />
+            android:layout_height="wrap_content">
+
+            <com.devspark.robototextview.widget.RobotoTextView
+                android:id="@+id/message_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_blue"
+                app:fontFamily="roboto"
+                app:textWeight="light" />
+
+            <com.devspark.robototextview.widget.RobotoTextView
+                android:id="@+id/message_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bubble_green"
+                android:padding="@dimen/list_item_message_text_padding"
+                app:fontFamily="roboto"
+                app:textWeight="light" />
+        </LinearLayout>
+
 
     </LinearLayout>
 

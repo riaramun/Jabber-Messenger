@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Cache;
+import com.activeandroid.content.ContentProvider;
 
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -17,22 +18,17 @@ import ru.rian.riamessenger.model.MessageContainer;
 
 public class RoomsListenerLoader extends CursorRiaLoader {
 
-
     public RoomsListenerLoader(Context context) {
         super(context);
+        setSubscription(ContentProvider.createUri(MessageContainer.class, null));
     }
 
     @Override
     protected Cursor loadCursor() throws Exception {
-        //Log.i("RiaService", "chats base loads cursor");
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
                 + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
         Cursor resultCursor = Cache.openDatabase().rawQuery(req, null);
-        /*boolean isMoved = resultCursor.moveToPosition(0);
-        int count = resultCursor.getCount();*/
-
         return resultCursor;
     }
-
 }

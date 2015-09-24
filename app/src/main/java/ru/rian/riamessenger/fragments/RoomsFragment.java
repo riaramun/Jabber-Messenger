@@ -32,16 +32,23 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.activeandroid.Cache;
+import com.activeandroid.util.SQLiteUtils;
 import com.gc.materialdesign.views.ButtonFloat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.AddNewRoomActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
+import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.MessageContainer;
+import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class RoomsFragment extends BaseTabFragment {
     protected LinearLayoutManager linearLayoutManager;
@@ -58,15 +65,22 @@ public class RoomsFragment extends BaseTabFragment {
         Intent intent = new Intent(getActivity(), AddNewRoomActivity.class);
         getActivity().startActivity(intent);
     }
-
+    public void onEvent(ChatEvents chatEvents) {
+        switch (chatEvents.getChatEventId()) {
+            case ChatEvents.DO_REMOVE_CHAT:
+                String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
+                SQLiteUtils.execSql("DELETE FROM " + tableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
+                initOrRestartLoader(tabId, getBundle(), this);
+                break;
+        }
+    }
     View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            /*int childPosition = recyclerView.getChildAdapterPosition(v);
+            int childPosition = recyclerView.getChildAdapterPosition(v);
             MessageContainer messageContainer = roomsAdapter.getItem(childPosition);
             if (messageContainer != null)
                 EventBus.getDefault().post(new ChatEvents(ChatEvents.SHOW_REMOVE_DIALOG, messageContainer.threadID));
-            */
             return true;
         }
     };
@@ -102,13 +116,15 @@ public class RoomsFragment extends BaseTabFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_rooms, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
-        setSearchViewListenersAndStyle(searchView);
+        //SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
+       // setSearchViewListenersAndStyle(searchView);
     }
 
     public void onResume() {
         super.onResume();
         buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
+        int loaderId = FragIds.ROOMS_FRAGMENT.ordinal();
+        initOrRestartLoader(loaderId, getBundle(), this);
     }
 
 
@@ -118,6 +134,8 @@ public class RoomsFragment extends BaseTabFragment {
         switch (fragIds) {
             case ROOMS_FRAGMENT:
                 return new RoomsListenerLoader(getActivity());
+           /* case CHAT_USER_STATUS_LOADER_ID:
+                return new ChatsOnlineStatesLoader(getActivity(), args);*/
         }
         return null;
     }

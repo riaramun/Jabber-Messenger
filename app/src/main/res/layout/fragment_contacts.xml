@@ -13,9 +13,9 @@
         android:id="@+id/fastscroller"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignTop="@id/recycler_view"
         android:layout_alignBottom="@id/recycler_view"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        tools:ignore="RtlCompat"/>
+        android:layout_alignTop="@id/recycler_view"
+        tools:ignore="RtlCompat" />
 </RelativeLayout>

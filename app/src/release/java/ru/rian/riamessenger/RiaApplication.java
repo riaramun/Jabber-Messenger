@@ -26,6 +26,10 @@ import ru.rian.riamessenger.di.AppSystemModule;
 public class RiaApplication extends Application {
   private AppComponent component;
 
+  public static AppComponent component(Context context) {
+    return ((RiaBaseApplication) context.getApplicationContext()).component;
+  }
+
   @Override
   public void onCreate() {
     super.onCreate();
@@ -34,10 +38,6 @@ public class RiaApplication extends Application {
 
   public void buildComponentAndInject() {
     component = DaggerComponentInitializer.init(this);
-  }
-
-  public static AppComponent component(Context context) {
-    return ((RiaBaseApplication) context.getApplicationContext()).component;
   }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)

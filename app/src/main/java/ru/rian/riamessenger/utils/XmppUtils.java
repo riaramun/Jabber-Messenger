@@ -26,6 +26,11 @@ public class XmppUtils {
         }
     }
 
+    public static String roomNameFromJid(String jidWithRes) {
+        int atInd = jidWithRes.indexOf('@');
+        return atInd > 0 ? jidWithRes.substring(0, atInd) : jidWithRes;
+    }
+
     public static String entityJid(String jidWithRes) {
         int slashInd = jidWithRes.indexOf('/');
         return slashInd > 0 ? jidWithRes.substring(0, slashInd) : jidWithRes;

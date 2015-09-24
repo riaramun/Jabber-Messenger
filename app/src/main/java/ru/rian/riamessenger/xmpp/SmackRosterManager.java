@@ -79,7 +79,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     }
 
     public boolean tryGetRosterFromServer() {
-        if (roster != null && roster.isLoaded() &&  DbHelper.rosterTableIsNotEmpty()/*&& roster.getEntryCount() > 0 || */) {
+        if (roster != null && /*roster.isLoaded() &&*/  DbHelper.rosterTableIsNotEmpty()/*&& roster.getEntryCount() > 0 || */) {
             return true;
         } else {
             if (xmppConnection.isAuthenticated()) {

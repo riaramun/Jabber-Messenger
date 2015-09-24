@@ -157,7 +157,9 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (FragIds.values()[tabId] == FragIds.CHATS_FRAGMENT || FragIds.values()[tabId] == FragIds.ROBOTS_FRAGMENT) {
+                        if (FragIds.values()[tabId] == FragIds.CHATS_FRAGMENT
+                                || FragIds.values()[tabId] == FragIds.ROBOTS_FRAGMENT
+                                || FragIds.values()[tabId] == FragIds.ROOMS_FRAGMENT) {
                             initOrRestartLoader(tabId, getBundle(), BaseTabFragment.this);
                         }
                     }

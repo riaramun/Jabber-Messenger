@@ -38,6 +38,7 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
     final View.OnLongClickListener onLongClickListener;
     //final int EMPTY_VIEW_ITEM_TYPE = 2;
     private static final int LIST_EMPTY_ITEMS_COUNT = 1;
+    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public ChatsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, cursor);
@@ -68,9 +69,9 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
             case VIEW_TYPE_EMPTY_ITEM:
                 break;
             case VIEW_TYPE_CONTENT:
-                final val messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+                final MessageContainer messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
                 if (messageContainer != null) {
-                    final val contactViewHolder = (ChatViewHolder) viewHolder;
+                    final ChatViewHolder contactViewHolder = (ChatViewHolder) viewHolder;
 
                     RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(messageContainer.threadID);
                     if (rosterEntryModel != null) {
@@ -117,7 +118,7 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
         }
     }
 
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
 
     @Override
     public int getItemViewType(int position) {

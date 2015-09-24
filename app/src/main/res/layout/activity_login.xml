@@ -44,8 +44,8 @@
                 android:orientation="horizontal">
 
                 <com.malinskiy.materialicons.widget.IconTextView
-                style="@style/LoginViewIconImage"
-                android:text="{zmdi-face}" />
+                    style="@style/LoginViewIconImage"
+                    android:text="{zmdi-face}" />
 
                 <EditText
                     android:id="@+id/name_edit_text"
@@ -71,6 +71,7 @@
                     android:id="@+id/login_edit_text"
                     style="@style/CredentialsEditText"
                     android:hint="@string/enter">
+
                     <requestFocus />
                 </EditText>
             </LinearLayout>
@@ -131,8 +132,6 @@
 
 
     </ScrollView>
-
-
 
 
     <RelativeLayout style="@style/AppMessageView" />

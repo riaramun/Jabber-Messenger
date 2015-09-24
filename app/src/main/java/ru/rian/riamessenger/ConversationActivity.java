@@ -42,6 +42,7 @@ import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ScreenUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
+import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by Roman on 7/21/2015.
@@ -65,6 +66,8 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     @Bind(R.id.message_edit_text)
     EditText messageEditText;
+    MessagesAdapter messagesAdapter;
+    LinearLayoutManager linearLayoutManager;
 
     @OnTextChanged(R.id.message_edit_text)
     void onTextChanged(CharSequence text) {
@@ -84,9 +87,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         ScreenUtils.hideKeyboard(ConversationActivity.this);
         messageEditText.setText("");
     }
-
-    MessagesAdapter messagesAdapter;
-    LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,7 +196,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
             RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_to);
             if (rosterEntryModel != null) {
                 progressBar.setVisibility(View.GONE);
-
                 if (rosterEntryModel.rosterGroupModel != null &&
                         rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
                     titleToSet = rosterEntryModel.name;
@@ -211,8 +210,11 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         } else {
             jid_to = getExtraJid(ARG_ROOM_JID);
             ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(jid_to);
-            if(chatRoomModel != null)
-            titleToSet = RiaTextUtils.capFirst(chatRoomModel.name);
+            if (chatRoomModel != null)
+                titleToSet = RiaTextUtils.capFirst(chatRoomModel.name);
+            else {
+                titleToSet = RiaTextUtils.capFirst(XmppUtils.roomNameFromJid(jid_to));
+            }
         }
         ((TextView) findViewById(R.id.action_bar_title)).setText(titleToSet);
     }

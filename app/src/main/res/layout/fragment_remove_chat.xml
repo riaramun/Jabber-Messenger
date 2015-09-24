@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
+    android:background="@android:drawable/screen_background_dark_transparent"
     android:clickable="false"
-    android:background="@android:drawable/screen_background_dark_transparent">
+    android:focusable="true">
 
     <RelativeLayout
         android:id="@+id/chat_remove_buttton"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:clickable="true"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/list_item_bg_selector">
+        android:background="@drawable/list_item_bg_selector"
+        android:clickable="true">
 
         <LinearLayout
             android:layout_width="wrap_content"

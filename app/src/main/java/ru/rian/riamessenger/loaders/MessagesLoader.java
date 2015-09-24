@@ -43,7 +43,7 @@ public class MessagesLoader extends CursorRiaLoader {
                                     DbColumns.FromJidCol + "='" + jid_to + "' and " + DbColumns.ToJidCol + "='" + jid_from + "'"
                     ).orderBy(DbColumns.CreatedCol).toSql();
         } else {
-            select = new Select().from(MessageContainer.class).where(DbColumns.ThreadIdCol + "='" + jid_room + "'")
+            select = new Select().from(MessageContainer.class).where(DbColumns.ThreadIdCol + "='" + jid_room.toLowerCase() + "'")
                     .orderBy(DbColumns.CreatedCol).toSql();
         }
         Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);

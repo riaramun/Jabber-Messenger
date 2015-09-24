@@ -250,6 +250,7 @@ public class RiaXmppService extends Service {
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
                             connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         } else {
+                            mucManager.updateRoomsInDb();
                             Log.i(TAG, "everything is ok, we've got roster!!!");
                             setConnectingState(false);
                         }

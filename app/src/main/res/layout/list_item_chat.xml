@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/list_item_message_margin"
-    tools:context=".ChatsActivity$ChatsFragment"
+    android:background="@drawable/list_item_bg_selector"
     android:longClickable="true"
+    android:orientation="vertical"
+    android:padding="@dimen/list_item_message_margin"
 
-    android:background="@drawable/list_item_bg_selector">
+    tools:context=".ChatsActivity$ChatsFragment">
 
     <RelativeLayout
         android:id="@+id/msg_from_container"
-        android:clickable="false"
-        android:longClickable="false"
-        android:layout_marginBottom="@dimen/list_item_message_text_padding"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/list_item_message_text_padding"
+        android:clickable="false"
+        android:longClickable="false">
 
         <com.devspark.robototextview.widget.RobotoTextView
             style="@style/MessageCreatedDateStyle"
@@ -29,38 +29,38 @@
 
         <com.devspark.robototextview.widget.RobotoTextView
             android:id="@+id/message_from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBaseline="@id/message_created_date"
             android:layout_alignParentLeft="true"
             android:maxWidth="250dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             app:fontFamily="roboto"
             app:textWeight="bold" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_below="@+id/msg_from_container"
-        android:longClickable="false"
-        android:clickable="false"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/msg_from_container"
+        android:clickable="false"
+        android:longClickable="false">
 
         <com.devspark.robototextview.widget.RobotoTextView
             style="@style/UserOnlineStatusStyle"
             android:layout_alignParentRight="true"
             android:layout_margin="0dp"
             app:fontFamily="roboto"
-            app:textWeight="normal"/>
+            app:textWeight="normal" />
 
         <com.devspark.robototextview.widget.RobotoTextView
             android:id="@+id/message_text"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_alignBaseline="@id/user_online_status"
-            android:layout_alignParentLeft="true"
-            android:maxWidth="250dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/user_online_status"
+            android:layout_alignParentLeft="true"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:maxWidth="250dp"
             app:fontFamily="roboto"
             app:textWeight="normal" />
     </RelativeLayout>

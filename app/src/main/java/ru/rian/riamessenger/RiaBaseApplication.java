@@ -15,9 +15,12 @@ import ru.rian.riamessenger.di.DaggerAppComponent;
 
 public abstract class RiaBaseApplication extends Application {
 
+    private static Context mContext = null;
     private AppComponent appComponent;
 
-    private static Context mContext = null;
+    public static AppComponent component() {
+        return ((RiaBaseApplication) mContext).appComponent;
+    }
 
     @Override
     public void onCreate() {
@@ -27,11 +30,6 @@ public abstract class RiaBaseApplication extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appSystemModule(new AppSystemModule(this))
                 .build();
-    }
-
-
-    public static AppComponent component() {
-        return ((RiaBaseApplication) mContext).appComponent;
     }
 
     @Override

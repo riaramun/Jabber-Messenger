@@ -13,8 +13,7 @@
        See the License for the specific language governing permissions and
        limitations under the License.
 --><!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -43,8 +42,8 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
 
-        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="16dp"
         android:background="@null"
         android:enabled="false"

@@ -11,6 +11,6 @@
 
     <com.gc.materialdesign.views.ButtonFloat
         style="@style/ButtonFloatNewChat"
-        materialdesign:animate="true"/>
+        materialdesign:animate="true" />
 
 </RelativeLayout>

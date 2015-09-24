@@ -118,7 +118,6 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     }*/
 
     private void logout(boolean clean) {
-
         userAppPreference.setLoginStringKey("");
         userAppPreference.setPassStringKey("");
         DbHelper.clearDb();
@@ -167,45 +166,6 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
         return super.onOptionsItemSelected(item);
     }
-
-    public class SamplePagerAdapter extends FragmentPagerAdapter {
-
-        private final String[] TITLES = {getString(R.string.chats), getString(R.string.rooms)};
-
-        private final ArrayList<String> mTitles;
-
-        public SamplePagerAdapter(FragmentManager fm, int numberOfTabs) {
-            super(fm);
-            mTitles = new ArrayList<>();
-            for (int i = 0; i < numberOfTabs; i++) {
-                mTitles.add(TITLES[i]);
-            }
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mTitles.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mTitles.size();
-        }
-
-        @Override
-        public Fragment getItem(int tabIndex) {
-            String tag = getTagByTabIndex(tabIndex);
-            Fragment fragment = null;
-            if (tag != null) {
-                fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment == null /*|| !fragment.isVisible()*/) {
-                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabIndex));
-                }
-            }
-            return fragment;
-        }
-    }
-
 
     void addFragment(Fragment aFragment, String tag, int aContainerId, boolean addToBackStack) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -286,5 +246,43 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
 
+    }
+
+    public class SamplePagerAdapter extends FragmentPagerAdapter {
+
+        private final String[] TITLES = {getString(R.string.chats), getString(R.string.rooms)};
+
+        private final ArrayList<String> mTitles;
+
+        public SamplePagerAdapter(FragmentManager fm, int numberOfTabs) {
+            super(fm);
+            mTitles = new ArrayList<>();
+            for (int i = 0; i < numberOfTabs; i++) {
+                mTitles.add(TITLES[i]);
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitles.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mTitles.size();
+        }
+
+        @Override
+        public Fragment getItem(int tabIndex) {
+            String tag = getTagByTabIndex(tabIndex);
+            Fragment fragment = null;
+            if (tag != null) {
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment == null /*|| !fragment.isVisible()*/) {
+                    fragment = BaseTabFragment.newInstance(getIdByTabIndex(tabIndex));
+                }
+            }
+            return fragment;
+        }
     }
 }

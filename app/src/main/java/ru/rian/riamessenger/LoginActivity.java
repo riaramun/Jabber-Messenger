@@ -32,19 +32,15 @@ import ru.rian.riamessenger.utils.SysUtils;
 public class LoginActivity extends RiaBaseActivity {
 
 
+    protected MenuItem mActionOkMenuItem;
     @Inject
     UserAppPreference userAppPreference;
-
-
     @Bind(R.id.name_edit_text)
     EditText nameEditText;
-
     @Bind(R.id.login_edit_text)
     EditText loginEditText;
-
     @Bind(R.id.password_edit_text)
     EditText passwordEditText;
-
     @Bind(R.id.progress_bar)
     ProgressBarCircularIndeterminate progressBar;
 
@@ -89,7 +85,6 @@ public class LoginActivity extends RiaBaseActivity {
         passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -121,8 +116,6 @@ public class LoginActivity extends RiaBaseActivity {
             }
         }
     }
-
-    protected MenuItem mActionOkMenuItem;
 
     protected boolean IsFieldNotEmpty(EditText aEditText) {
         return !aEditText.getText().toString().isEmpty();
