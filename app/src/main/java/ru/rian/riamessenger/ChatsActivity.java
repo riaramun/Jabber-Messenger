@@ -46,10 +46,11 @@ import ru.rian.riamessenger.utils.ViewUtils;
 public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
 
-    BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.CHATS_FRAGMENT, BaseTabFragment.FragIds.ROOMS_FRAGMENT};
-    String[] fragmentsTags = {BaseTabFragment.CHATS_FRAGMENT_TAG, BaseTabFragment.ROOMS_FRAGMENT_TAG};
+    final BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.CHATS_FRAGMENT, BaseTabFragment.FragIds.ROOMS_FRAGMENT};
+    final String[] fragmentsTags = {BaseTabFragment.CHATS_FRAGMENT_TAG, BaseTabFragment.ROOMS_FRAGMENT_TAG};
 
     @Inject
+    public
     UserAppPreference userAppPreference;
 
     @Bind(R.id.material_tabs)
@@ -74,6 +75,9 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
+        int resId  = R.drawable.action_bar_status_offline;;
+        getSupportActionBar().setHomeAsUpIndicator(resId);
+
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
         viewPager.setAdapter(adapter);
@@ -85,7 +89,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
             @Override
             public void onPageSelected(int position) {
-                removeFragment(ChatRemoveDialogFragment.TAG);
+                removeFragment();
             }
 
             @Override
@@ -104,7 +108,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
                 Bundle bundle = new Bundle();
                 bundle.putString(ChatRemoveDialogFragment.ARG_REMOVE_CHAT, chatEvents.getChatThreadId());
                 chatRemoveDialogFragment.setArguments(bundle);
-                addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container, true);
+                addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container);
                 break;
         }
     }
@@ -117,7 +121,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         return true;
     }*/
 
-    private void logout(boolean clean) {
+    void logout() {
         userAppPreference.setLoginStringKey("");
         userAppPreference.setPassStringKey("");
         DbHelper.clearDb();
@@ -160,39 +164,43 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_exit) {
-            logout(true);
+            logout();
+            return true;
+        }
+        if (id == android.R.id.home) {
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    void addFragment(Fragment aFragment, String tag, int aContainerId, boolean addToBackStack) {
+    void addFragment(Fragment aFragment, String tag, int aContainerId) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(ChatRemoveDialogFragment.TAG);
         if (fragment == null || !fragment.isVisible()) {
-            if (addToBackStack) {
-                fragmentTransaction = fragmentTransaction.addToBackStack(tag);
+            if (true) {
+                fragmentTransaction = fragmentTransaction.addToBackStack(ChatRemoveDialogFragment.TAG);
             }
-            fragmentTransaction.replace(aContainerId, aFragment, tag).commit();
+            fragmentTransaction.replace(R.id.container, aFragment, ChatRemoveDialogFragment.TAG).commit();
         }
     }
 
-    void removeFragment(String tag) {
+    void removeFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(ChatRemoveDialogFragment.TAG);
         if (fragment != null) {
             fragmentTransaction.remove(fragment).commit();
         }
     }
 
     @Override
-    public int getIdByTabIndex(int tabIndex) {
+    protected int getIdByTabIndex(int tabIndex) {
         return fragmentsIds[tabIndex].ordinal();
     }
 
     @Override
-    public String getTagByTabIndex(int tabIndex) {
+    protected String getTagByTabIndex(int tabIndex) {
         return fragmentsTags[tabIndex];
     }
 
@@ -250,9 +258,9 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
     public class SamplePagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {getString(R.string.chats), getString(R.string.rooms)};
+        final String[] TITLES = {getString(R.string.chats), getString(R.string.rooms)};
 
-        private final ArrayList<String> mTitles;
+        final ArrayList<String> mTitles;
 
         public SamplePagerAdapter(FragmentManager fm, int numberOfTabs) {
             super(fm);

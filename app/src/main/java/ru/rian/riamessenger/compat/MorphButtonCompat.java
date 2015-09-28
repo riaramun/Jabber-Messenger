@@ -15,7 +15,7 @@ public class MorphButtonCompat {
         public abstract void setState(View v, MorphButton.MorphState state, boolean animate);
     }
 
-    private static final Impl IMPL;
+     static final Impl IMPL;
 
     static {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -25,7 +25,7 @@ public class MorphButtonCompat {
         }
     }
 
-    View mView;
+     final View mView;
 
     public MorphButtonCompat(View v) {
         mView = v;
@@ -42,12 +42,6 @@ public class MorphButtonCompat {
     public void setState(MorphButton.MorphState state) {
         if (mView != null) {
             IMPL.setState(mView, state);
-        }
-    }
-
-    public void setState(MorphButton.MorphState state, boolean animate) {
-        if (mView != null) {
-            IMPL.setState(mView, state, animate);
         }
     }
 }

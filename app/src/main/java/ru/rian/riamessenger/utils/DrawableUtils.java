@@ -5,8 +5,8 @@ import android.graphics.drawable.Drawable;
 /**
  * Created by hasegawa on 6/17/15.
  */
-public class DrawableUtils {
-    private static final int[] EMPTY_STATE = new int[] {};
+class DrawableUtils {
+     static final int[] EMPTY_STATE = new int[] {};
 
     public static void clearState(Drawable drawable) {
         if (drawable != null) {

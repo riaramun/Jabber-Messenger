@@ -6,14 +6,16 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import lombok.val;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.CursorRecyclerViewAdapter;
 import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
@@ -32,16 +34,16 @@ import ru.rian.riamessenger.utils.ViewUtils;
  */
 public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
 
-    private boolean mListIsEmpty = false;
+    boolean mListIsEmpty = false;
     final String currentJid;
     final BaseRiaListClickListener contactsListClickListener;
     final View.OnLongClickListener onLongClickListener;
     //final int EMPTY_VIEW_ITEM_TYPE = 2;
-    private static final int LIST_EMPTY_ITEMS_COUNT = 1;
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    static final int LIST_EMPTY_ITEMS_COUNT = 1;
+    static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-    public ChatsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
-        super(context, cursor);
+    public ChatsAdapter(Context context, String currentJid, BaseRiaListClickListener contactsListClickListener, View.OnLongClickListener onLongClickListener) {
+        super(context, null);
         this.currentJid = currentJid;
         this.contactsListClickListener = contactsListClickListener;
         this.onLongClickListener = onLongClickListener;
@@ -117,7 +119,6 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 break;
         }
     }
-
 
 
     @Override

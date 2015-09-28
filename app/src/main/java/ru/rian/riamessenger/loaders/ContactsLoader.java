@@ -33,8 +33,8 @@ import ru.rian.riamessenger.model.RosterGroupModel;
 
 public class ContactsLoader extends CursorRiaLoader {
 
-    int tabIdloader = -1;
-    String title_to_search = null;
+     int tabIdloader = -1;
+     String title_to_search = null;
 
     public ContactsLoader(Context ctx, Bundle args) {
         super(ctx);
@@ -57,7 +57,7 @@ public class ContactsLoader extends CursorRiaLoader {
     }
 
 
-    Cursor retrieveDataFromRoster() {
+     Cursor retrieveDataFromRoster() {
 
         String resultRecords;
         Cursor resultCursor = null;
@@ -141,7 +141,7 @@ public class ContactsLoader extends CursorRiaLoader {
         return retrieveDataFromRoster();
     }
 
-    class EntrySortBasedOnName implements Comparator {
+     class EntrySortBasedOnName implements Comparator {
         public int compare(Object o1, Object o2) {
             val dd1 = (RosterEntry) o1;// where FBFriends_Obj is your object class
             val dd2 = (RosterEntry) o2;
@@ -149,7 +149,7 @@ public class ContactsLoader extends CursorRiaLoader {
         }
     }
 
-    class GroupSortBasedOnName implements Comparator {
+     class GroupSortBasedOnName implements Comparator {
         public int compare(Object o1, Object o2) {
             val dd1 = (RosterGroup) o1;// where FBFriends_Obj is your object class
             val dd2 = (RosterGroup) o2;

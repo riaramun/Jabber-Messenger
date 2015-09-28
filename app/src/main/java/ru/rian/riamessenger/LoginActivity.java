@@ -32,16 +32,21 @@ import ru.rian.riamessenger.utils.SysUtils;
 public class LoginActivity extends RiaBaseActivity {
 
 
-    protected MenuItem mActionOkMenuItem;
+     MenuItem mActionOkMenuItem;
     @Inject
+    public
     UserAppPreference userAppPreference;
     @Bind(R.id.name_edit_text)
+
     EditText nameEditText;
     @Bind(R.id.login_edit_text)
+
     EditText loginEditText;
     @Bind(R.id.password_edit_text)
+
     EditText passwordEditText;
     @Bind(R.id.progress_bar)
+
     ProgressBarCircularIndeterminate progressBar;
 
     @OnTextChanged({R.id.login_edit_text, R.id.password_edit_text})
@@ -81,8 +86,8 @@ public class LoginActivity extends RiaBaseActivity {
         loginEditText.setText(login);
         passwordEditText.setText(pass);
 
-        loginEditText.setText(RiaConstants.XMPP_LOGIN);
-        passwordEditText.setText(RiaConstants.XMPP_PASS);
+       // loginEditText.setText(RiaConstants.XMPP_LOGIN);
+       // passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
 
     @Override
@@ -98,7 +103,7 @@ public class LoginActivity extends RiaBaseActivity {
         }
     }
 
-    private void requestLogin() {
+     void requestLogin() {
         ScreenUtils.hideKeyboard(this);
         if (progressBar.getVisibility() != View.VISIBLE) {
             progressBar.setVisibility(View.VISIBLE);
@@ -117,11 +122,11 @@ public class LoginActivity extends RiaBaseActivity {
         }
     }
 
-    protected boolean IsFieldNotEmpty(EditText aEditText) {
+     boolean IsFieldNotEmpty(EditText aEditText) {
         return !aEditText.getText().toString().isEmpty();
     }
 
-    protected void changeOkButtonVisibility() {
+     void changeOkButtonVisibility() {
         boolean allFieldsNotEmpty = IsFieldNotEmpty(loginEditText) &
                 IsFieldNotEmpty(passwordEditText);
         if (mActionOkMenuItem != null) {

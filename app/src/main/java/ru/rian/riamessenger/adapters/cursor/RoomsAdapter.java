@@ -20,8 +20,11 @@ import ru.rian.riamessenger.adapters.viewholders.ChatViewHolder;
 import ru.rian.riamessenger.adapters.viewholders.EmptyViewHolder;
 import ru.rian.riamessenger.listeners.BaseRiaListClickListener;
 import ru.rian.riamessenger.model.MessageContainer;
+import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
+import ru.rian.riamessenger.utils.ViewUtils;
 import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
@@ -29,16 +32,16 @@ import ru.rian.riamessenger.utils.XmppUtils;
  */
 public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
 
-    private boolean mListIsEmpty = false;
-    final String currentJid;
-    final BaseRiaListClickListener roomsListClickListener;
-    final View.OnLongClickListener onLongClickListener;
+     boolean mListIsEmpty = false;
+     final String currentJid;
+     final BaseRiaListClickListener roomsListClickListener;
+     final View.OnLongClickListener onLongClickListener;
 
-    private static final int LIST_EMPTY_ITEMS_COUNT = 1;
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+     static final int LIST_EMPTY_ITEMS_COUNT = 1;
+     static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-    public RoomsAdapter(Context context, Cursor cursor, String currentJid, BaseRiaListClickListener roomsListClickListener, View.OnLongClickListener onLongClickListener) {
-        super(context, cursor);
+    public RoomsAdapter(Context context, String currentJid, BaseRiaListClickListener roomsListClickListener, View.OnLongClickListener onLongClickListener) {
+        super(context, null);
         this.currentJid = currentJid;
         this.roomsListClickListener = roomsListClickListener;
         this.onLongClickListener = onLongClickListener;
@@ -89,6 +92,11 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                         contactViewHolder.messageTextView.setText(bodyToSet);
                     }
                     contactViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
+                    if (NetworkStateManager.isNetworkAvailable(mContext)) {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_AVAILIBLE.ordinal());
+                    } else {
+                        ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
+                    }
                 }
                 break;
         }

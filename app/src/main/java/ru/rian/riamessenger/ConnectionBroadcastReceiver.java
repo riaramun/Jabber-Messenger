@@ -15,7 +15,7 @@ import ru.rian.riamessenger.utils.SysUtils;
  */
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
 
-    State state = State.EIdle;
+     State state = State.EIdle;
 
     @Override
     public void onReceive(Context context, Intent intent) {

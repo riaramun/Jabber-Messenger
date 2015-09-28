@@ -20,7 +20,7 @@ import ru.rian.riamessenger.model.RosterEntryModel;
 
 public class UserOnlineStatusLoader extends CursorRiaLoader {
 
-    String user_jid = null;
+     String user_jid = null;
 
     public UserOnlineStatusLoader(Context ctx, Bundle args) {
         super(ctx);

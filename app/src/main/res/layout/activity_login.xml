@@ -70,7 +70,7 @@
                 <EditText
                     android:id="@+id/login_edit_text"
                     style="@style/CredentialsEditText"
-                    android:hint="@string/enter">
+                    android:hint="@string/login">
 
                     <requestFocus />
                 </EditText>

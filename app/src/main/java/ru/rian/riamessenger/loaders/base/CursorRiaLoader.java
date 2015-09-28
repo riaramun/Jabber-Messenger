@@ -15,10 +15,10 @@ import android.net.Uri;
  */
 public abstract class CursorRiaLoader extends BaseCursorRiaLoader<Cursor> {
 
-    private Uri mSubscription;
-    private Context mContext;
+     Uri mSubscription;
+     final Context mContext;
 
-    public CursorRiaLoader(Context context) {
+    protected CursorRiaLoader(Context context) {
         super(context);
         setUpdateThrottle(1000);
         mContext = context;
@@ -43,7 +43,7 @@ public abstract class CursorRiaLoader extends BaseCursorRiaLoader<Cursor> {
 
     protected abstract Cursor loadCursor() throws Exception;
 
-    public void setSubscription(Uri subscription) {
+    protected void setSubscription(Uri subscription) {
         mSubscription = subscription;
     }
 }

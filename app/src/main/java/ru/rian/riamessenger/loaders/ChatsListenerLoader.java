@@ -17,7 +17,7 @@ public class ChatsListenerLoader extends ChatsBaseLoader {
 
 
     //String jid_to_exclude;
-    int tabIdloader = -1;
+     int tabIdloader = -1;
     public ChatsListenerLoader(Context ctx, Bundle args) {
         super(ctx);
         setSubscription(ContentProvider.createUri(MessageContainer.class, null));

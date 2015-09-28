@@ -15,8 +15,8 @@ import ru.rian.riamessenger.di.DaggerAppComponent;
 
 public abstract class RiaBaseApplication extends Application {
 
-    private static Context mContext = null;
-    private AppComponent appComponent;
+     static Context mContext = null;
+     AppComponent appComponent;
 
     public static AppComponent component() {
         return ((RiaBaseApplication) mContext).appComponent;

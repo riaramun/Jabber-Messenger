@@ -19,16 +19,16 @@ import ru.rian.riamessenger.R;
 import static android.support.v7.widget.RecyclerView.OnScrollListener;
 
 public class FastScroller extends LinearLayout {
-  private static final int BUBBLE_ANIMATION_DURATION=100;
-  private static final int TRACK_SNAP_RANGE=5;
+   static final int BUBBLE_ANIMATION_DURATION=100;
+   static final int TRACK_SNAP_RANGE=5;
 
-  private TextView bubble;
-  private View handle;
-  private RecyclerView recyclerView;
-  private final ScrollListener scrollListener=new ScrollListener();
-  private int height;
+   TextView bubble;
+   View handle;
+   RecyclerView recyclerView;
+   final ScrollListener scrollListener=new ScrollListener();
+   int height;
 
-  private ObjectAnimator currentAnimator=null;
+   ObjectAnimator currentAnimator=null;
 
   public FastScroller(final Context context,final AttributeSet attrs,final int defStyleAttr)
     {
@@ -48,7 +48,7 @@ public class FastScroller extends LinearLayout {
     initialise(context);
     }
 
-  private void initialise(Context context)
+   void initialise(Context context)
     {
     setOrientation(HORIZONTAL);
     setClipChildren(false);
@@ -100,7 +100,7 @@ public class FastScroller extends LinearLayout {
     recyclerView.setOnScrollListener(scrollListener);
     }
 
-  private void setRecyclerViewPosition(float y)
+   void setRecyclerViewPosition(float y)
     {
     if(recyclerView!=null)
       {
@@ -112,7 +112,7 @@ public class FastScroller extends LinearLayout {
         proportion=1f;
       else
         proportion=y/(float)height;
-      int targetPos=getValueInRange(0,itemCount-1,(int)(proportion*(float)itemCount));
+      int targetPos=getValueInRange(itemCount-1,(int)(proportion*(float)itemCount));
       recyclerView.getLayoutManager().scrollToPosition(targetPos);
 //      recyclerView.oPositionWithOffset(targetPos);
       String bubbleText=((BubbleTextGetter)recyclerView.getAdapter()).getTextToShowInBubble(targetPos);
@@ -120,21 +120,21 @@ public class FastScroller extends LinearLayout {
       }
     }
 
-  private int getValueInRange(int min,int max,int value)
+   int getValueInRange(int max, int value)
     {
-    int minimum= Math.max(min, value);
+    int minimum= Math.max(0, value);
     return Math.min(minimum, max);
     }
 
-  private void setBubbleAndHandlePosition(float y)
+   void setBubbleAndHandlePosition(float y)
     {
     int bubbleHeight=bubble.getHeight();
     int handleHeight=handle.getHeight();
-    handle.setY(getValueInRange(0,height-handleHeight,(int)(y-handleHeight/2)));
-    bubble.setY(getValueInRange(0,height-bubbleHeight-handleHeight/2,(int)(y-bubbleHeight)));
+    handle.setY(getValueInRange(height-handleHeight,(int)(y-handleHeight/2)));
+    bubble.setY(getValueInRange(height-bubbleHeight-handleHeight/2,(int)(y-bubbleHeight)));
     }
 
-  private void showBubble()
+   void showBubble()
     {
     AnimatorSet animatorSet=new AnimatorSet();
     bubble.setVisibility(VISIBLE);
@@ -144,7 +144,7 @@ public class FastScroller extends LinearLayout {
     currentAnimator.start();
     }
 
-  private void hideBubble()
+   void hideBubble()
     {
     if(currentAnimator!=null)
       currentAnimator.cancel();
@@ -169,7 +169,7 @@ public class FastScroller extends LinearLayout {
     currentAnimator.start();
     }
 
-  private class ScrollListener extends OnScrollListener {
+   class ScrollListener extends OnScrollListener {
     @Override
     public void onScrolled(RecyclerView rv,int dx,int dy)
       {

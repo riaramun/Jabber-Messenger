@@ -9,7 +9,7 @@ import ru.rian.riamessenger.model.RosterGroupModel;
  */
 public class RosterItemGroupData extends AbstractExpandableDataProvider.GroupData {
 
-    RosterGroupModel rosterGroup;
+     final RosterGroupModel rosterGroup;
 
     public RosterItemGroupData(RosterGroupModel rosterGroup) {
         this.rosterGroup = rosterGroup;

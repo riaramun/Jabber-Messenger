@@ -29,9 +29,9 @@ import org.jivesoftware.smack.packet.Stanza;
  *
  * @author Matt Tucker
  */
-public class FromContainsFilter implements PacketFilter {
+class FromContainsFilter implements PacketFilter {
 
-    private String from;
+     String from;
 
     /**
      * Creates a "from" contains filter using the "from" field part.
@@ -47,10 +47,6 @@ public class FromContainsFilter implements PacketFilter {
 
     @Override
     public boolean accept(Stanza stanza) {
-        if (stanza.getFrom() == null) {
-            return false;
-        } else {
-            return stanza.getFrom().toLowerCase().indexOf(from) != -1;
-        }
+        return stanza.getFrom() != null && stanza.getFrom().toLowerCase().indexOf(from) != -1;
     }
 }

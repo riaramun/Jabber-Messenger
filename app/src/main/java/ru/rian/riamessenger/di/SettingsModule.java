@@ -10,7 +10,7 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
  * Created by Roman on 6/19/2015.
  */
 @Module
-public class SettingsModule {
+class SettingsModule {
     @Provides
     @Singleton
     UserAppPreference provideUserAppPreference() {

@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
-import ru.rian.riamessenger.BuildConfig;
-import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -36,11 +34,11 @@ import ru.rian.riamessenger.utils.XmppUtils;
 public class SmackMessageManager implements ReceiptReceivedListener, StanzaListener {
 
     static final String TAG = "RiaService";
-    AbstractXMPPConnection xmppConnection;
+    final AbstractXMPPConnection xmppConnection;
     final Context context;
-    UserAppPreference userAppPreference;
-    SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
-    DeliveryReceiptManager deliveryReceiptManager;
+    final UserAppPreference userAppPreference;
+    final SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
+    final DeliveryReceiptManager deliveryReceiptManager;
 
     public SmackMessageManager(Context context, AbstractXMPPConnection connection, SendMsgBroadcastReceiver sendMsgBroadcastReceiver, UserAppPreference userAppPreference) {
         xmppConnection = connection;
@@ -115,17 +113,18 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         return message;
     }
 
-    private void doSendMessage(Message message) {
+    void doSendMessage(Message message) {
         try {
             final String jidFrom = message.getFrom();
             final String jidTo = message.getTo();
             //TODO remove it after debug
 
-            if (BuildConfig.DEBUG && (jidTo.contains("lebedenko")
+            /*if (BuildConfig.DEBUG && (jidTo.contains("lebedenko")
                     || jidTo.contains("sazonov")
                     || jidTo.contains("koltsov")
                     || jidTo.contains("skurzhansky")
-                    || jidTo.contains("pronkin"))) {
+                    || jidTo.contains("pronkin"))) */
+            {
                 DeliveryReceiptRequest.addTo(message);
                 message.setTo(XmppUtils.entityJidWithRes(jidTo));
                 message.setFrom(XmppUtils.entityJidWithRes(jidFrom));
@@ -189,9 +188,18 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
             Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
+
+                    Boolean isRead = false;
+
+                    MessageContainer messageInDb = DbHelper.getMessageByReceiptId(message.getStanzaId());
+
+                    if (messageInDb != null) {
+                        isRead = messageInDb.isRead;
+                    }
+
                     MessageContainer messageContainer = null;
                     int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
-                    messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), false);
+                    messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), isRead);
                     if (SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
                     } else {

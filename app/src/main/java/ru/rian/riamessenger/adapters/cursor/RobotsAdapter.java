@@ -23,10 +23,10 @@ import ru.rian.riamessenger.utils.ViewUtils;
  */
 public class RobotsAdapter extends CursorRecyclerViewAdapter {
 
-   final ContactsListClickListener contactsListClickListener;
+    final ContactsListClickListener contactsListClickListener;
 
-    public RobotsAdapter(Context context, Cursor cursor, ContactsListClickListener contactsListClickListener) {
-        super(context, cursor);
+    public RobotsAdapter(Context context, ContactsListClickListener contactsListClickListener) {
+        super(context, null);
         this.contactsListClickListener = contactsListClickListener;
     }
 

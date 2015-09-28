@@ -44,8 +44,8 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
     public static final String ARG_TO_JID = "to_jid";
     public static final String ARG_ROOM_JID = "room_jid";
 
-    public final int MESSAGES_LOADER_ID = 100;
-    public final int USER_STATUS_LOADER_ID = 200;
+    protected final int MESSAGES_LOADER_ID = 100;
+    protected final int USER_STATUS_LOADER_ID = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +102,7 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         }
     }
 
-    public static void showAppMsgInView(Context aContext, String aMsg) {
+    protected static void showAppMsgInView(Context aContext, String aMsg) {
 
         AppMsg.Style style = new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.app_msg_bg);
         AppMsg appMsg = AppMsg.makeText((Activity) aContext, aMsg, style, R.layout.app_msg);

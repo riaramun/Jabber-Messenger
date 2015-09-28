@@ -50,24 +50,29 @@ import ru.rian.riamessenger.utils.XmppUtils;
 public class ConversationActivity extends RiaBaseActivity implements LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> {
 
     @Bind(R.id.progress_bar)
+
     ProgressBarCircularIndeterminate progressBar;
 
     @Inject
+    public
     UserAppPreference userAppPreference;
 
     @Bind(R.id.container)
     RelativeLayout relativeLayoutContainer;
 
     @Bind(R.id.send_icon_text_view)
+
     IconTextView sendIconTextView;
 
     @Bind(R.id.recycler_view)
+
     RecyclerView recyclerView;
 
     @Bind(R.id.message_edit_text)
+
     EditText messageEditText;
-    MessagesAdapter messagesAdapter;
-    LinearLayoutManager linearLayoutManager;
+     MessagesAdapter messagesAdapter;
+     LinearLayoutManager linearLayoutManager;
 
     @OnTextChanged(R.id.message_edit_text)
     void onTextChanged(CharSequence text) {
@@ -119,29 +124,26 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        messagesAdapter = new MessagesAdapter(this, null, userAppPreference.getLoginStringKey());
-        recyclerView.setAdapter(messagesAdapter);
-
         Bundle bundle = new Bundle();
         String jid_to = getExtraJid(ARG_TO_JID);
         if (!TextUtils.isEmpty(jid_to)) {
+            messagesAdapter = new MessagesAdapter(this, userAppPreference.getLoginStringKey());
             bundle.putString(ARG_TO_JID, jid_to);
             bundle.putString(ARG_FROM_JID, userAppPreference.getUserStringKey());
             initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
             initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
         } else {
+            messagesAdapter = new MessagesAdapter(this, userAppPreference.getFirstSecondName());
             bundle.putString(ARG_ROOM_JID, getExtraJid(ARG_ROOM_JID));
             initOrRestartLoader(MESSAGES_LOADER_ID, bundle, this);
         }
-
-
+        recyclerView.setAdapter(messagesAdapter);
     }
 
-    String getExtraJid(String arg_jid) {
+     String getExtraJid(String arg_jid) {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        String arg_to_jid = bundle.getString(arg_jid);
-        return arg_to_jid;
+        return bundle.getString(arg_jid);
     }
 
 
@@ -171,7 +173,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
                 if (data.result != null) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
                     int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
-                    ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
+                    ((ImageView) findViewById(R.id.user_online_status_img)).setImageResource(resId);
                 }
             }
             break;
@@ -189,7 +191,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
     }
 
-    void updateStatusBar() {
+     void updateStatusBar() {
         String jid_to = getExtraJid(ARG_TO_JID);
         String titleToSet = "";
         if (!TextUtils.isEmpty(jid_to)) {
@@ -203,7 +205,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
                     titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
                 }
                 int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
-                ((ImageView) findViewById(R.id.user_online_status)).setImageResource(resId);
+                ((ImageView) findViewById(R.id.user_online_status_img)).setImageResource(resId);
             } else {
                 progressBar.setVisibility(View.VISIBLE);
             }

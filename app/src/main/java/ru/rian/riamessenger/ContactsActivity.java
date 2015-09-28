@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -28,19 +27,23 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
     //public static final String ARG_USER_ID = "userId";
 
-    BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.ROBOTS_FRAGMENT, BaseTabFragment.FragIds.GROUPS_FRAGMENT, BaseTabFragment.FragIds.CONTACTS_FRAGMENT};
-    String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
+     final BaseTabFragment.FragIds[] fragmentsIds = {BaseTabFragment.FragIds.ROBOTS_FRAGMENT, BaseTabFragment.FragIds.GROUPS_FRAGMENT, BaseTabFragment.FragIds.CONTACTS_FRAGMENT};
+     final String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
 
     @Bind(R.id.progress_bar)
+
     ProgressBarCircularIndeterminate progressBar;
 
     @Inject
+    public
     UserAppPreference userAppPreference;
 
     @Bind(R.id.material_tabs)
+
     MaterialTabs contactsMaterialTabs;
 
     @Bind(R.id.view_pager)
+
     ViewPager viewPager;
 
     @Override
@@ -70,8 +73,8 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         return true;
     } */
 
-    private void logout(boolean clean) {
-        if (clean) {
+     void logout() {
+        if (true) {
             userAppPreference.setLoginStringKey("");
             userAppPreference.setPassStringKey("");
         }
@@ -91,19 +94,19 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_exit:
-                logout(true);
+                logout();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public int getIdByTabIndex(int tabIndex) {
+    protected int getIdByTabIndex(int tabIndex) {
         return fragmentsIds[tabIndex].ordinal();
     }
 
     @Override
-    public String getTagByTabIndex(int tabIndex) {
+    protected String getTagByTabIndex(int tabIndex) {
         return fragmentsTags[tabIndex];
     }
 
@@ -126,9 +129,9 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
     public class SamplePagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {getString(R.string.robots), getString(R.string.groups), getString(R.string.contacts)};
+         final String[] TITLES = {getString(R.string.robots), getString(R.string.groups), getString(R.string.contacts)};
 
-        private final ArrayList<String> mTitles;
+         final ArrayList<String> mTitles;
 
         public SamplePagerAdapter(FragmentManager fm, int numberOfTabs) {
             super(fm);

@@ -49,7 +49,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
     //because the actual message being stored could be from ourselves TO the person
     //we are chatting with.  This info is not stored with the message, it is tracked
     //by who the chat session is with, so using a simple class to track this
-    //  private HashMap<String, List<JmMessage>> mQueuedMessages = new HashMap<String, List<JmMessage>>();
+    //   HashMap<String, List<JmMessage>> mQueuedMessages = new HashMap<String, List<JmMessage>>();
 
     final Context context;
 
@@ -59,10 +59,16 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
             try {
                 //JmMessage message = null;
                 Bundle bundle = intent.getExtras();
+
                 String jid_from = bundle.getString(ConversationActivity.ARG_FROM_JID);
+
                 String jid_to = bundle.getString(ConversationActivity.ARG_TO_JID);
+
                 MessageContainer messageContainer = DbHelper.getLastMessageFrom(jid_from, jid_to);
-                RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
+
+                final RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
+                final String senderName = rosterEntryModel!= null ? rosterEntryModel.name : jid_from;
+
                 String messageFromPref = arg0.getString(R.string.message_from);
                 //  queueMessage(messageFrom, message);
                 String messageText = messageContainer.body;
@@ -73,7 +79,13 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                 CharSequence contentText = messageText.subSequence(0, messageLength);
 
                 Intent resultIntent = new Intent(arg0, ConversationActivity.class);
-                resultIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
+
+                if(messageContainer.chatType == MessageContainer.CHAT_SIMPLE) {
+                    resultIntent.putExtra(ConversationActivity.ARG_TO_JID, messageContainer.fromJid);
+                } else {
+                    resultIntent.putExtra(ConversationActivity.ARG_ROOM_JID, messageContainer.threadID);
+                }
+
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(arg0);
                 stackBuilder.addParentStack(ConversationActivity.class);
                 stackBuilder.addNextIntent(resultIntent);
@@ -87,7 +99,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                 NotificationManager mNotificationManager =
                         (NotificationManager) arg0.getSystemService(Context.NOTIFICATION_SERVICE);
                 Notification notification = new NotificationCompat.Builder(arg0)
-                        .setContentTitle(messageFromPref + RiaTextUtils.capFirst(rosterEntryModel.name))
+                        .setContentTitle(messageFromPref + RiaTextUtils.capFirst(senderName))
                         .setContentText(contentText)
                         .setTicker(arg0.getString(R.string.new_message))
                         .setWhen(System.currentTimeMillis())
@@ -103,7 +115,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    /*private void queueMessage(String user, JmMessage message) {
+    /* void queueMessage(String user, JmMessage message) {
         if (!mQueuedMessages.containsKey(user)) {
             mQueuedMessages.put(user, new ArrayList<JmMessage>());
         }

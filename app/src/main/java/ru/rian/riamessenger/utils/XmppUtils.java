@@ -16,7 +16,7 @@ public class XmppUtils {
         changeCurrentUserPresenceOnServer(presence, xmppConnection);
     }
 
-    static void changeCurrentUserPresenceOnServer(Presence presence, XMPPConnection xmppConnection) {
+     static void changeCurrentUserPresenceOnServer(Presence presence, XMPPConnection xmppConnection) {
         if (xmppConnection != null) {
             try {
                 xmppConnection.sendStanza(presence);

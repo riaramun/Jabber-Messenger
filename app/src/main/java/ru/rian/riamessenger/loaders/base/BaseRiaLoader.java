@@ -14,7 +14,7 @@ import java.util.List;
 public abstract class BaseRiaLoader extends AsyncTaskLoader<List<?>> {
 
     // We hold a reference to the Loader’s data here.
-    private List<?> mData;
+     List<?> mData;
 
 
     public BaseRiaLoader(Context ctx) {
@@ -122,7 +122,7 @@ public abstract class BaseRiaLoader extends AsyncTaskLoader<List<?>> {
         releaseResources(data);
     }
 
-    private void releaseResources(List<?> data) {
+     void releaseResources(List<?> data) {
         // For a simple List, there is nothing to do. For something like a Cursor, we 
         // would close it in this method. All resources associated with the Loader
         // should be released here.
@@ -143,5 +143,5 @@ public abstract class BaseRiaLoader extends AsyncTaskLoader<List<?>> {
     // ACTION_PACKAGE_ADDED intent, and calls onContentChanged() on the particular 
     // Loader whenever the receiver detects that a new application has been installed.
     // Please don’t hesitate to leave a comment if you still find this confusing! :)
-   // private SampleObserver mObserver;
+   //  SampleObserver mObserver;
 }

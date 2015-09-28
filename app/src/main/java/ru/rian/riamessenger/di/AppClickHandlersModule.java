@@ -9,7 +9,7 @@ import ru.rian.riamessenger.listeners.RoomsListClickListener;
  * Created by Roman on 7/21/2015.
  */
 @Module
-public class AppClickHandlersModule {
+class AppClickHandlersModule {
 
     @Provides
     ContactsListClickListener provideContactsListClickListener() {

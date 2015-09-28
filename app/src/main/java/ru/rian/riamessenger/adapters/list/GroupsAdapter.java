@@ -42,10 +42,10 @@ import ru.rian.riamessenger.utils.ViewUtils;
 public class GroupsAdapter
         extends AbstractExpandableItemAdapter<GroupsAdapter.MyGroupViewHolder, ContactViewHolder>
         implements RosterEntryIdGetter {
-    private static final String TAG = "GroupsAdapter";
+     static final String TAG = "GroupsAdapter";
 
-    private AbstractExpandableDataProvider mProvider;
-    final ContactsListClickListener contactsListClickListener;
+     AbstractExpandableDataProvider mProvider;
+     final ContactsListClickListener contactsListClickListener;
 
     @Override
     public String getUser(int index) {
@@ -53,8 +53,8 @@ public class GroupsAdapter
     }
 
     public static abstract class MyBaseViewHolder extends AbstractExpandableItemViewHolder {
-        public RelativeLayout mContainer;
-        public TextView mTextView;
+        public final RelativeLayout mContainer;
+        public final TextView mTextView;
 
         public MyBaseViewHolder(View v) {
             super(v);
@@ -64,7 +64,7 @@ public class GroupsAdapter
     }
 
     public static class MyGroupViewHolder extends MyBaseViewHolder {
-        public MorphButtonCompat mMorphButton;
+        public final MorphButtonCompat mMorphButton;
 
         public MyGroupViewHolder(View v) {
             super(v);
@@ -78,7 +78,7 @@ public class GroupsAdapter
         }
     }*/
 
-    Context context;
+     final Context context;
     public GroupsAdapter(Context context, AbstractExpandableDataProvider dataProvider,ContactsListClickListener contactsListClickListener) {
         this.context = context;
         mProvider = dataProvider;
@@ -170,7 +170,7 @@ public class GroupsAdapter
             holder.mContainer.setBackgroundResource(bgResId);
 
             if (holder.mMorphButton.getState() != indicatorState) {
-                holder.mMorphButton.setState(indicatorState, true);
+                holder.mMorphButton.setState(indicatorState);
             }
         }
     }

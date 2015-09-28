@@ -26,14 +26,14 @@ import ru.rian.riamessenger.utils.DbHelper;
  */
 public class MessagesAdapter extends CursorRecyclerViewAdapter {
 
-    protected static final int VIEW_TYPE_CONTENT_OUTCOME_MSG = 0x04;
-    protected static final int VIEW_TYPE_CONTENT_INCOME_MSG = 0x05;
+     static final int VIEW_TYPE_CONTENT_OUTCOME_MSG = 0x04;
+     static final int VIEW_TYPE_CONTENT_INCOME_MSG = 0x05;
 
-    EmptyViewHolder emptyViewHolder;
-    final String currentJid;
+     EmptyViewHolder emptyViewHolder;
+     final String currentJid;
 
-    public MessagesAdapter(Context context, Cursor cursor, String currentJid) {
-        super(context, cursor);
+    public MessagesAdapter(Context context, String currentJid) {
+        super(context, null);
         this.currentJid = currentJid;
     }
 
@@ -98,8 +98,8 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         }
     }
 
-    private static final DateFormat dateFormat = new SimpleDateFormat("dd.mm.yy");
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+     static final DateFormat dateFormat = new SimpleDateFormat("dd.mm.yy");
+     static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @Override
     public int getItemViewType(int position) {
@@ -146,7 +146,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         return vh;
     }
 
-    boolean areTheDatesAtTheSameDay(Date aPreviousDate, Date aCurrentDate) {
+     boolean areTheDatesAtTheSameDay(Date aPreviousDate, Date aCurrentDate) {
 
         final Calendar calInst = Calendar.getInstance();
         calInst.setTime(aPreviousDate);
@@ -158,5 +158,5 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         return aCurrentDate.getTime() - aPreviousDate.getTime() < MILLI_SEC_IN_DAY && currDay == prevDay;
     }
 
-    final long MILLI_SEC_IN_DAY = 24 * 60 * 60 * 1000; //millisecond per 24 hours
+     final long MILLI_SEC_IN_DAY = 24 * 60 * 60 * 1000; //millisecond per 24 hours
 }

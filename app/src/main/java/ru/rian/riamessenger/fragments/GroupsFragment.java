@@ -41,13 +41,13 @@ import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 
 public class GroupsFragment extends BaseTabFragment {
-    private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
+     static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
+     RecyclerView mRecyclerView;
+     RecyclerView.LayoutManager mLayoutManager;
 
-    private RecyclerView.Adapter mWrappedAdapter;
-    private RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
+     RecyclerView.Adapter mWrappedAdapter;
+     RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
 
     public GroupsFragment() {
         super();
@@ -133,7 +133,7 @@ public class GroupsFragment extends BaseTabFragment {
         super.onDestroyView();
     }
 
-    private boolean supportsViewElevation() {
+     boolean supportsViewElevation() {
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
     }
 
@@ -150,7 +150,7 @@ public class GroupsFragment extends BaseTabFragment {
         return new ContactsLoader(getActivity(), args);
     }
 
-    GroupsAdapter groupsAdapter;
+     GroupsAdapter groupsAdapter;
 
     @Override
     protected void rosterLoaded(boolean isLoaded) {

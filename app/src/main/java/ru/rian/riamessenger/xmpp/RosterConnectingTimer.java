@@ -8,9 +8,9 @@ import ru.rian.riamessenger.common.RiaConstants;
 /**
  * Created by Roman on 7/13/2015.
  */
-public class RosterConnectingTimer extends Timer {
+class RosterConnectingTimer extends Timer {
 
-    TimerTask timerTask;
+     TimerTask timerTask;
     public void schedule(TimerTask timerTask) {
 
         this.timerTask = timerTask;

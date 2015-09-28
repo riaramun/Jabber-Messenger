@@ -9,7 +9,7 @@ import ru.rian.riamessenger.model.RosterEntryModel;
  */
 public class RosterItemChildData extends AbstractExpandableDataProvider.ChildData {
 
-    RosterEntryModel rosterEntry;
+     final RosterEntryModel rosterEntry;
 
     public RosterItemChildData(RosterEntryModel rosterEntry) {
         this.rosterEntry = rosterEntry;

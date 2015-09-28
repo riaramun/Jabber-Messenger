@@ -12,7 +12,7 @@ import ru.rian.riamessenger.utils.DbHelper;
  */
 public class GroupsDataProvider extends AbstractExpandableDataProvider {
 
-    Cursor rosterGroupModelsCursor;
+     final Cursor rosterGroupModelsCursor;
 
     public GroupsDataProvider(Cursor rosterGroups) {
         this.rosterGroupModelsCursor = rosterGroups;

@@ -12,6 +12,7 @@ import com.activeandroid.util.SQLiteUtils;
 
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -78,18 +79,15 @@ public class DbHelper {
     }
 
     static public ChatRoomModel getChatRoomByJid(String bareJid) {
-        ChatRoomModel chatRoomModel = new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + bareJid + "'").executeSingle();
-        return chatRoomModel;
+        return new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + bareJid + "'").executeSingle();
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
-        RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
-        return rosterEntryModel;
+        return new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
     }
 
     static public RosterEntryModel getRosterEntryById(long id) {
-        RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(BaseColumns._ID + "=" + id).executeSingle();
-        return rosterEntryModel;
+        return new Select().from(RosterEntryModel.class).where(BaseColumns._ID + "=" + id).executeSingle();
     }
 
     public static MessageContainer getLastMessageFrom(String jidFrom, String jidTo) {
@@ -102,26 +100,22 @@ public class DbHelper {
 
     public static MessageContainer getMessageByReceiptId(String stanzaId) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.StanzaIdCol + "='" + stanzaId + "'").toSql();
-        MessageContainer messageContainer = SQLiteUtils.rawQuerySingle(MessageContainer.class, select, null);
-        return messageContainer;
+        return SQLiteUtils.rawQuerySingle(MessageContainer.class, select, null);
     }
 
     public static int getUnReadMessagesNum(String messageThreadId) {
         List<MessageContainer> messageContainers = getUnReadMessages(messageThreadId);
-        int num = messageContainers == null ? 0 : messageContainers.size();
-        return num;
+        return messageContainers == null ? 0 : messageContainers.size();
     }
 
-    public static List<MessageContainer> getUnReadMessages(String messageThreadId) {
+    static List<MessageContainer> getUnReadMessages(String messageThreadId) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.ReadFlagIdCol + "=0 and " + DbColumns.ThreadIdCol + "='" + messageThreadId + "'").toSql();
-        List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
-        return messageContainers;
+        return SQLiteUtils.rawQuery(MessageContainer.class, select, null);
     }
 
     public static List<MessageContainer> getAllNotSentMessages(String currentUserJid) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.SentFlagIdCol + "=0 and " + DbColumns.FromJidCol + "='" + currentUserJid + "'").toSql();
-        List<MessageContainer> messageContainers = SQLiteUtils.rawQuery(MessageContainer.class, select, null);
-        return messageContainers;
+        return SQLiteUtils.rawQuery(MessageContainer.class, select, null);
     }
 
     /*public static MessageContainer addGroupMessageToDb(Message message, int chatType, String messageId, String from, String to, boolean isRead) {
@@ -156,7 +150,7 @@ public class DbHelper {
         if (chatType == MessageContainer.CHAT_SIMPLE) {
             from = slashInd > 0 ? message.getFrom().substring(0, slashInd) : message.getFrom();
         } else {
-            from = slashInd > 0 ? message.getFrom().substring(slashInd+1) : message.getFrom();
+            from = slashInd > 0 ? message.getFrom().substring(slashInd + 1) : message.getFrom();
         }
         MessageContainer messageContainer = new MessageContainer(chatType);
         messageContainer.body = message.getBody();
@@ -169,5 +163,19 @@ public class DbHelper {
         messageContainer.stanzaID = message.getStanzaId();
         messageContainer.save();
         return messageContainer;
+    }
+
+    public static List<String> getRoomsJidFromDb() {
+        String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
+        String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
+                + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
+        Cursor cursor = Cache.openDatabase().rawQuery(req, null);
+        List<MessageContainer> roomsLastMessages = SQLiteUtils.processCursor(MessageContainer.class, cursor);
+        List<String> roomsJids = new ArrayList<String>();
+        for (MessageContainer messageContainer : roomsLastMessages) {
+            roomsJids.add(messageContainer.threadID);
+        }
+        cursor.close();
+        return roomsJids;
     }
 }

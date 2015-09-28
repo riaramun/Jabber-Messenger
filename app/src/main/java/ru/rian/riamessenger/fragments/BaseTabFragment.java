@@ -54,7 +54,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     static public final String GROUPS_FRAGMENT_TAG = GroupsFragment.class.getSimpleName();
     static public final String CONTACTS_FRAGMENT_TAG = ContactsFragment.class.getSimpleName();
 
-    protected int tabId = 0;
+    int tabId = 0;
 
     public enum FragIds {
         ROBOTS_FRAGMENT,
@@ -117,7 +117,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         }
     }
 
-    protected Bundle getBundle() {
+    Bundle getBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_TAB_ID, tabId);
         return bundle;
@@ -170,9 +170,9 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         }
     }
 
-    protected String title_to_search = null;
+    String title_to_search = null;
 
-    protected void setSearchViewListenersAndStyle(SearchView searchView) {
+    void setSearchViewListenersAndStyle(SearchView searchView) {
 
         ScreenUtils.styleSearchView(searchView, title_to_search, getActivity());
 
@@ -195,7 +195,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
         });
     }
 
-    protected void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
+    void initOrRestartLoader(int loaderId, Bundle bundle, LoaderManager.LoaderCallbacks<CursorRiaLoader.LoaderResult<Cursor>> callback) {
         if (getLoaderManager().getLoader(loaderId) == null) {
             getLoaderManager().initLoader(loaderId, bundle, callback);
         } else {

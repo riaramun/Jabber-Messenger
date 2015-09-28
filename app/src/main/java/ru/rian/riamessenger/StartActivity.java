@@ -23,9 +23,11 @@ import ru.rian.riamessenger.utils.SysUtils;
 public class StartActivity extends RiaBaseActivity {
 
     @Inject
+    public
     UserAppPreference userAppPreference;
 
     @Bind(R.id.progress_bar)
+
     ProgressBarCircularIndeterminate progressBar;
 
     @Override
@@ -57,7 +59,7 @@ public class StartActivity extends RiaBaseActivity {
         launchNextActivity(event.isAuth());
     }*/
 
-    void launchNextActivity(boolean isAuth) {
+     void launchNextActivity(boolean isAuth) {
         Class<?> cl = null;
         if (isAuth) {
             cl = ChatsActivity.class;
@@ -68,7 +70,7 @@ public class StartActivity extends RiaBaseActivity {
         startActivity(intent);
     }
 
-    void createRosterStoreFile() {
+     void createRosterStoreFile() {
         String path = getCacheDir().getAbsolutePath();
         userAppPreference.setRosterPathStringKey(path);
     }

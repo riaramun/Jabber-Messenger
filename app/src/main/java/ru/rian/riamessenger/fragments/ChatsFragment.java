@@ -25,7 +25,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,12 +52,14 @@ import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class ChatsFragment extends BaseTabFragment {
 
-    protected LinearLayoutManager linearLayoutManager;
+     LinearLayoutManager linearLayoutManager;
 
     @Bind(R.id.recycler_view)
+
     RecyclerView recyclerView;
 
     @Bind(R.id.buttonFloat)
+
     ButtonFloat buttonFloat;
 
     @OnClick(R.id.buttonFloat)
@@ -67,9 +68,9 @@ public class ChatsFragment extends BaseTabFragment {
         getActivity().startActivity(intent);
     }
 
-    ChatsAdapter chatsAdapter;
+     ChatsAdapter chatsAdapter;
 
-    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+     final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             int childPosition = recyclerView.getChildAdapterPosition(v);
@@ -106,7 +107,7 @@ public class ChatsFragment extends BaseTabFragment {
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
 
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        chatsAdapter = new ChatsAdapter(getActivity(), null, userAppPreference.getUserStringKey(), contactsListClickListener, onLongClickListener);
+        chatsAdapter = new ChatsAdapter(getActivity(), userAppPreference.getUserStringKey(), contactsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(chatsAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -173,5 +174,5 @@ public class ChatsFragment extends BaseTabFragment {
     }
 
 
-    public static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
+     static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
 }

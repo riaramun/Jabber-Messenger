@@ -54,7 +54,7 @@
 
         <activity
             android:name=".ChatsActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout"
+            android:configChanges="keyboard|keyboardHidden|screenLayout"
             android:label="@string/mia_chat"
             android:launchMode="singleTask"
             android:theme="@style/CustomActionBarTheme"

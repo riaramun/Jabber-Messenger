@@ -13,9 +13,9 @@ import ru.rian.riamessenger.R;
 
 public class ContactViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView contactName;
-    public TextView onlineStatus;
-    public CheckBox contactSelected;
+    public final TextView contactName;
+    public final TextView onlineStatus;
+    public final CheckBox contactSelected;
     public ContactViewHolder(View itemView) {
         super(itemView);
         contactName = (TextView) itemView.findViewById(R.id.contact_name);

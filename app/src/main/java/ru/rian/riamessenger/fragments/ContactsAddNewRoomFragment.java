@@ -53,7 +53,7 @@ import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScrol
  */
 public class ContactsAddNewRoomFragment extends BaseTabFragment {
 
-    ContactsListClickListener contactsListClickListener = new ContactsListClickListener() {
+    final ContactsListClickListener contactsListClickListener = new ContactsListClickListener() {
         public int onClick(RosterEntryIdGetter rosterEntryIdGetter, View v) {
             //  CheckBox checkBox = (CheckBox) v.findViewById(R.id.contact_selected);
             //checkBox.setChecked(!checkBox.isChecked());
@@ -74,29 +74,31 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 textToSet += ";\t";
             }
             participantsTextView.setText(textToSet);
+            if (addButton != null && roomEditText != null)
+                addButton.setVisibility((roomEditText.getText().length() > 3 && !TextUtils.isEmpty(participantsTextView.getText())) ? View.VISIBLE : View.INVISIBLE);
             return childPosition;
         }
     };
 
-    private static final String KEY_HEADER_POSITIONING = "key_header_mode";
+    static final String KEY_HEADER_POSITIONING = "key_header_mode";
 
-    private static final String KEY_MARGINS_FIXED = "key_margins_fixed";
+    static final String KEY_MARGINS_FIXED = "key_margins_fixed";
 
-    private ViewHolder mViews;
+    ViewHolder mViews;
 
-    private ContactsAdapter mAdapter;
+    ContactsAdapter mAdapter;
 
-    private int mHeaderDisplay;
+    int mHeaderDisplay;
 
-    private boolean mAreMarginsFixed;
+    boolean mAreMarginsFixed;
 
-    private Random mRng = new Random();
+    final Random mRng = new Random();
 
-    private Toast mToast = null;
+    Toast mToast = null;
 
-    // private GridSLM mGridSLM;
+    //  GridSLM mGridSLM;
 
-    // private SectionLayoutManager mLinearSectionLayoutManager;
+    //  SectionLayoutManager mLinearSectionLayoutManager;
 
     public boolean areHeadersOverlaid() {
         return (mHeaderDisplay & LayoutManager.LayoutParams.HEADER_OVERLAY) != 0;
@@ -210,9 +212,9 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         mViews.smoothScrollToPosition(position);
     }
 
-    private static class ViewHolder {
+    static class ViewHolder {
 
-        private final RecyclerView mRecyclerView;
+        final RecyclerView mRecyclerView;
 
         VerticalRecyclerViewFastScroller fastScroller;
 
@@ -272,22 +274,25 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         return objectArrayList;
     }
 
+    EditText roomEditText;
+    IconTextView addButton;
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         /** Create an option menu from res/menu/items.xml */
         inflater.inflate(R.menu.menu_add_new_line, menu);
         RelativeLayout relativeLayout = (RelativeLayout) menu.findItem(R.id.add_new_line_edit).getActionView();
-        final EditText roomEditText = (EditText) relativeLayout.findViewById(R.id.edit_query);
+        roomEditText = (EditText) relativeLayout.findViewById(R.id.edit_query);
         roomEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-        final IconTextView addButton = (IconTextView) relativeLayout.findViewById(R.id.add_news_line_icon_text_view);
+        addButton = (IconTextView) relativeLayout.findViewById(R.id.add_news_line_icon_text_view);
         roomEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    ScreenUtils.hideKeyboard(getContext());
                     addNewRoom(roomEditText);
-
                 }
                 return true;
             }
@@ -300,7 +305,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                addButton.setVisibility(roomEditText.getText().length() > 3 ? View.VISIBLE : View.INVISIBLE);
+                addButton.setVisibility((roomEditText.getText().length() > 3 && !TextUtils.isEmpty(participantsTextView.getText())) ? View.VISIBLE : View.INVISIBLE);
             }
 
             @Override
@@ -311,23 +316,24 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ScreenUtils.hideKeyboard(getContext());
                 addNewRoom(roomEditText);
             }
         });
     }
 
     void addNewRoom(EditText editText) {
-        if (editText.getText().length() > 3) {
-            ScreenUtils.hideKeyboard(getContext());
+        if (editText.getText().length() > 3 && !TextUtils.isEmpty(participantsTextView.getText())) {
             ArrayList<String> participantsArrayList = new ArrayList<>();
             for (String value : mAdapter.getSelectedUsersJidMap().values()) {
                 participantsArrayList.add(value);
             }
             String roomName = editText.getText().toString();
+            roomName = roomName.replaceAll(" ","_");
             EventBus.getDefault().post(new RoomCreateEvent(roomName, participantsArrayList));
             String bareJid = (roomName + "@" + RiaConstants.ROOM_DOMAIN);
             Intent intent = new Intent(getActivity(), ConversationActivity.class);
-            intent.putExtra(RiaBaseActivity.ARG_ROOM_JID, bareJid.toString());
+            intent.putExtra(RiaBaseActivity.ARG_ROOM_JID, bareJid);
             getActivity().startActivity(intent);
 
             getActivity().onBackPressed();

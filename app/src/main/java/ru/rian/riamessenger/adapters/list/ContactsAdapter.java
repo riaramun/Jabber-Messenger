@@ -35,17 +35,18 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     }
 
     @Getter
+    final
     HashMap<Integer, String> selectedUsersJidMap = new HashMap<Integer, String>();
 
-    ListItemMode listItemMode;
+     final ListItemMode listItemMode;
 
-    private int mHeaderDisplay;
+     int mHeaderDisplay;
 
-    private boolean mMarginsFixed;
+     boolean mMarginsFixed;
 
-    private final Context mContext;
+     final Context mContext;
 
-    final ContactsListClickListener contactsListClickListener;
+     final ContactsListClickListener contactsListClickListener;
 
     @Override
     public String getTextToShowInBubble(final int pos) {
@@ -187,7 +188,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
         notifyHeaderChanges();
     }
 
-    private void notifyHeaderChanges() {
+     void notifyHeaderChanges() {
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
                 LineItem item = entries.get(i);

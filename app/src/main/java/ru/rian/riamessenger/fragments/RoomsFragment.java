@@ -25,7 +25,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,21 +43,22 @@ import ru.rian.riamessenger.AddNewRoomActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
 import ru.rian.riamessenger.common.DbColumns;
-import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class RoomsFragment extends BaseTabFragment {
-    protected LinearLayoutManager linearLayoutManager;
+     LinearLayoutManager linearLayoutManager;
 
     @Bind(R.id.recycler_view)
+
     RecyclerView recyclerView;
 
     @Bind(R.id.buttonFloat)
+
     ButtonFloat buttonFloat;
-    RoomsAdapter roomsAdapter;
+     RoomsAdapter roomsAdapter;
 
     @OnClick(R.id.buttonFloat)
     void onClick() {
@@ -74,7 +74,7 @@ public class RoomsFragment extends BaseTabFragment {
                 break;
         }
     }
-    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+     final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             int childPosition = recyclerView.getChildAdapterPosition(v);
@@ -93,7 +93,7 @@ public class RoomsFragment extends BaseTabFragment {
 
         buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
-        roomsAdapter = new RoomsAdapter(getActivity(), null, userAppPreference.getUserStringKey(), roomsListClickListener, onLongClickListener);
+        roomsAdapter = new RoomsAdapter(getActivity(), userAppPreference.getUserStringKey(), roomsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(roomsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());

@@ -15,10 +15,10 @@ import android.support.v4.content.AsyncTaskLoader;
  */
 public abstract class BaseCursorRiaLoader<T> extends AsyncTaskLoader<BaseCursorRiaLoader.LoaderResult<T>> {
 
-    protected ForceLoadContentObserver mContentObserver;
-    private   LoaderResult<T>          mData;
+    final ForceLoadContentObserver mContentObserver;
+       LoaderResult<T>          mData;
 
-    public BaseCursorRiaLoader(Context context) {
+    BaseCursorRiaLoader(Context context) {
         super(context);
         mContentObserver = new ForceLoadContentObserver();
     }

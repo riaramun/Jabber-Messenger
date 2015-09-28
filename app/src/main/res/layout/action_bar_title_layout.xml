@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/user_online_status"
+        android:layout_toLeftOf="@+id/user_online_status_img"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/white"
@@ -19,7 +19,7 @@
         app:textWeight="normal" />
 
     <ImageView
-        android:id="@+id/user_online_status"
+        android:id="@+id/user_online_status_img"
         android:layout_width="@dimen/action_bar_status_img_width"
         android:layout_height="@dimen/action_bar_status_img_height"
         android:layout_alignParentRight="true"

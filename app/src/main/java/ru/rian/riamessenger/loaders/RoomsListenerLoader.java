@@ -28,7 +28,6 @@ public class RoomsListenerLoader extends CursorRiaLoader {
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
                 + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
-        Cursor resultCursor = Cache.openDatabase().rawQuery(req, null);
-        return resultCursor;
+        return Cache.openDatabase().rawQuery(req, null);
     }
 }

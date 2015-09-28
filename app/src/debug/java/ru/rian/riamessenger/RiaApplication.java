@@ -14,7 +14,7 @@ public class RiaApplication extends RiaBaseApplication {
         mContext = getApplicationContext();
     }
 
-    private void configureStrictMode() {
+     void configureStrictMode() {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeathOnNetwork().build());
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().detectLeakedClosableObjects().detectActivityLeaks().penaltyLog().build());
     }

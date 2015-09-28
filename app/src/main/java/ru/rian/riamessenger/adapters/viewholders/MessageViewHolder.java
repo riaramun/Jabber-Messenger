@@ -14,11 +14,11 @@ import ru.rian.riamessenger.R;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
 
-    public IconTextView messageSentIcon;
-    public TextView messageTextView;
-    public TextView dateTextView;
-    public TextView messageTodayDate;
-    public TextView authorTextView;
+    public final IconTextView messageSentIcon;
+    public final TextView messageTextView;
+    public final TextView dateTextView;
+    public final TextView messageTodayDate;
+    public final TextView authorTextView;
     public MessageViewHolder(View itemView) {
         super(itemView);
         messageTodayDate = (TextView) itemView.findViewById(R.id.message_today_date);

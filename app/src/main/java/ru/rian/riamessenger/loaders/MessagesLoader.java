@@ -21,9 +21,9 @@ import ru.rian.riamessenger.model.MessageContainer;
 
 public class MessagesLoader extends CursorRiaLoader {
 
-    String jid_room = null;
-    String jid_to = null;
-    String jid_from = null;
+     String jid_room = null;
+     String jid_to = null;
+     String jid_from = null;
 
     public MessagesLoader(Context ctx, Bundle args) {
         super(ctx);
@@ -46,8 +46,7 @@ public class MessagesLoader extends CursorRiaLoader {
             select = new Select().from(MessageContainer.class).where(DbColumns.ThreadIdCol + "='" + jid_room.toLowerCase() + "'")
                     .orderBy(DbColumns.CreatedCol).toSql();
         }
-        Cursor msgCursor = Cache.openDatabase().rawQuery(select, null);
-        return msgCursor;
+        return Cache.openDatabase().rawQuery(select, null);
     }
 
 }

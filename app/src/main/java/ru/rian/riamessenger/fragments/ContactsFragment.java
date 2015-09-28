@@ -35,27 +35,27 @@ import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScrol
  */
 public class ContactsFragment extends BaseTabFragment {
 
-    private static final String KEY_HEADER_POSITIONING = "key_header_mode";
+     static final String KEY_HEADER_POSITIONING = "key_header_mode";
 
-    private static final String KEY_MARGINS_FIXED = "key_margins_fixed";
+     static final String KEY_MARGINS_FIXED = "key_margins_fixed";
 
-    private ViewHolder mViews;
+     ViewHolder mViews;
 
-    private ContactsAdapter mAdapter;
+     ContactsAdapter mAdapter;
 
-    private int mHeaderDisplay;
+     int mHeaderDisplay;
 
-    private boolean mAreMarginsFixed;
+     boolean mAreMarginsFixed;
 
-    private Random mRng = new Random();
+     final Random mRng = new Random();
 
-    private Toast mToast = null;
+     Toast mToast = null;
 
 
 
-    // private GridSLM mGridSLM;
+    //  GridSLM mGridSLM;
 
-    // private SectionLayoutManager mLinearSectionLayoutManager;
+    //  SectionLayoutManager mLinearSectionLayoutManager;
 
     public boolean areHeadersOverlaid() {
         return (mHeaderDisplay & LayoutManager.LayoutParams.HEADER_OVERLAY) != 0;
@@ -165,9 +165,9 @@ public class ContactsFragment extends BaseTabFragment {
         mViews.smoothScrollToPosition(position);
     }
 
-    private static class ViewHolder {
+     static class ViewHolder {
 
-        private final RecyclerView mRecyclerView;
+         final RecyclerView mRecyclerView;
 
         VerticalRecyclerViewFastScroller fastScroller;
 
@@ -203,7 +203,7 @@ public class ContactsFragment extends BaseTabFragment {
         mAdapter.updateEntries(objectArrayList);
     }
 
-    ArrayList<ContactsAdapter.LineItem> getContactsList(List<RosterEntryModel> usersNames) {
+     ArrayList<ContactsAdapter.LineItem> getContactsList(List<RosterEntryModel> usersNames) {
         val objectArrayList = new ArrayList<ContactsAdapter.LineItem>();
         //Insert headers into list of items.
         String lastHeader = "";

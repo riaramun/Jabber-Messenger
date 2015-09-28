@@ -32,17 +32,17 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     protected static final int VIEW_TYPE_HEADER = 0x02;
     protected static final int VIEW_TYPE_CONTENT = 0x03;
 
-    protected Context mContext;
+    protected final Context mContext;
 
-    private Cursor mCursor;
+     Cursor mCursor;
 
-    private boolean mDataValid;
+     boolean mDataValid;
 
-    private int mRowIdColumn;
+     int mRowIdColumn;
 
-    private DataSetObserver mDataSetObserver;
+     final DataSetObserver mDataSetObserver;
 
-    public CursorRecyclerViewAdapter(Context context, Cursor cursor) {
+    protected CursorRecyclerViewAdapter(Context context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
         mDataValid = cursor != null;
@@ -53,7 +53,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         }
     }
 
-    public Cursor getCursor() {
+    protected Cursor getCursor() {
         return mCursor;
     }
 
@@ -78,7 +78,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         super.setHasStableIds(true);
     }
 
-    public abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
+    protected abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
 
     @Override
     public void onBindViewHolder(VH viewHolder, int position) {
@@ -108,7 +108,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
      * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
      * closed.
      */
-    public Cursor swapCursor(Cursor newCursor) {
+     Cursor swapCursor(Cursor newCursor) {
         if (newCursor == mCursor) {
             return null;
         }
@@ -133,7 +133,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         return oldCursor;
     }
 
-    private class NotifyingDataSetObserver extends DataSetObserver {
+     class NotifyingDataSetObserver extends DataSetObserver {
         @Override
         public void onChanged() {
             super.onChanged();

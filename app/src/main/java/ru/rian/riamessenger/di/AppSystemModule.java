@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AppSystemModule {
 
-    private final Application application;
+     final Application application;
 
     @Provides
     Context provideContext(){

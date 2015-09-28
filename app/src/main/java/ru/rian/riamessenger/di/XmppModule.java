@@ -5,8 +5,7 @@ package ru.rian.riamessenger.di;
  */
 
 
-
-public class XmppModule {
+class XmppModule {
 /*
     final Context context;
     final UserAppPreference userAppPreference;

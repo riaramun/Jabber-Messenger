@@ -2,6 +2,7 @@ package ru.rian.riamessenger.prefs;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.text.TextUtils;
 
 import javax.inject.Inject;
 
@@ -9,19 +10,20 @@ import ru.rian.riamessenger.RiaApplication;
 
 
 public class UserAppPreference {
-    private static final String FIRST_SECOND_NAME = "FIRST_SECOND_NAME";
-    private static final String PASS_STRING_KEY = "PASS_STRING_KEY";
-    private static final String ROSTER_STRING_KEY = "ROSTER_STRING_KEY";
-    private static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
-    private static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
-    private static final String CONNECTING_STATE_BOOL_KEY = "CONNECTING_STATE_BOOL_KEY";
-    private static final String AUTH_STATE_BOOL_KEY = "AUTH_STATE_BOOL_KEY";
+    static final String FIRST_SECOND_NAME = "FIRST_SECOND_NAME";
+    static final String PASS_STRING_KEY = "PASS_STRING_KEY";
+    static final String ROSTER_STRING_KEY = "ROSTER_STRING_KEY";
+    static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
+    static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
+    static final String CONNECTING_STATE_BOOL_KEY = "CONNECTING_STATE_BOOL_KEY";
+    static final String AUTH_STATE_BOOL_KEY = "AUTH_STATE_BOOL_KEY";
 
-    private static Editor mEditor;
+    static Editor mEditor;
 
     @Inject
+    public
     SharedPreferences sharedPreferences;
-    
+
     @Inject
     public UserAppPreference() {
         RiaApplication.component().inject(this);
@@ -30,8 +32,9 @@ public class UserAppPreference {
     }
 
     public String getFirstSecondName() {
-        return "Ô_È_Î";
-        //return sharedPreferences.getString(FIRST_SECOND_NAME, "Ô_È_Î");
+        String ret = sharedPreferences.getString(FIRST_SECOND_NAME, "");
+        if (TextUtils.isEmpty(ret)) ret = getLoginStringKey();
+        return ret;
     }
 
     public void setFirstSecondName(String value) {

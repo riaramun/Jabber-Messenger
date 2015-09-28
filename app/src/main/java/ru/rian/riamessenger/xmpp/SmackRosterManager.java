@@ -44,11 +44,12 @@ import ru.rian.riamessenger.utils.XmppUtils;
 public class SmackRosterManager implements RosterLoadedListener, RosterListener, StanzaListener {
 
     @Getter
+    final
     Roster roster;
 
-    XMPPTCPConnection xmppConnection;
-    Context context;
-    UserAppPreference userAppPreference;
+     final XMPPTCPConnection xmppConnection;
+     final Context context;
+     final UserAppPreference userAppPreference;
 
     public SmackRosterManager(Context context, UserAppPreference userAppPreference, XMPPTCPConnection xmppConnection) {
         this.xmppConnection = xmppConnection;
@@ -101,7 +102,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         saveRosterToDb(roster);
     }
 
-    public void saveRosterToDb(final Roster roster) {
+     void saveRosterToDb(final Roster roster) {
         Task.callInBackground(new Callable<Object>() {
             @Override
             public Object call() {
@@ -117,7 +118,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         }, Task.UI_THREAD_EXECUTOR);
     }
 
-    void doSaveRosterToDb(final Roster roster) {
+     void doSaveRosterToDb(final Roster roster) {
         if (ActiveAndroid.inTransaction()) return;
         Log.i("RiaService", "doSaveRosterToDb b");
         try {
