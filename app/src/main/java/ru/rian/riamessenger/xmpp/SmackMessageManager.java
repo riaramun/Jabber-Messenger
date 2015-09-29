@@ -190,9 +190,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                 public Object call() throws Exception {
 
                     Boolean isRead = false;
-
                     MessageContainer messageInDb = DbHelper.getMessageByReceiptId(message.getStanzaId());
-
                     if (messageInDb != null) {
                         isRead = messageInDb.isRead;
                     }
@@ -200,7 +198,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                     MessageContainer messageContainer = null;
                     int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
                     messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), isRead);
-                    if (SysUtils.isApplicationBroughtToBackground(context)) {
+                    if (!isRead && SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
                     } else {
                         //Message loader is not restarted immediately for unknown reason, so we do it by this event

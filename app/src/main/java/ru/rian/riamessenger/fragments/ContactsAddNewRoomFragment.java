@@ -328,7 +328,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             for (String value : mAdapter.getSelectedUsersJidMap().values()) {
                 participantsArrayList.add(value);
             }
-            String roomName = editText.getText().toString();
+            String roomName = editText.getText().toString().trim();
             roomName = roomName.replaceAll(" ","_");
             EventBus.getDefault().post(new RoomCreateEvent(roomName, participantsArrayList));
             String bareJid = (roomName + "@" + RiaConstants.ROOM_DOMAIN);

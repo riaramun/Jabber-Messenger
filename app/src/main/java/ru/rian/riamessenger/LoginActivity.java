@@ -7,9 +7,11 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.devspark.robototextview.widget.RobotoButton;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import javax.inject.Inject;
@@ -20,7 +22,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import ru.rian.riamessenger.common.RiaBaseActivity;
-import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
@@ -32,24 +33,26 @@ import ru.rian.riamessenger.utils.SysUtils;
 public class LoginActivity extends RiaBaseActivity {
 
 
-     MenuItem mActionOkMenuItem;
+
     @Inject
-    public
-    UserAppPreference userAppPreference;
+    public UserAppPreference userAppPreference;
+
+    @Bind(R.id.enter_button)
+    RobotoButton enterButton;
+
     @Bind(R.id.name_edit_text)
-
     EditText nameEditText;
+
     @Bind(R.id.login_edit_text)
-
     EditText loginEditText;
+
     @Bind(R.id.password_edit_text)
-
     EditText passwordEditText;
-    @Bind(R.id.progress_bar)
 
+    @Bind(R.id.progress_bar)
     ProgressBarCircularIndeterminate progressBar;
 
-    @OnTextChanged({R.id.login_edit_text, R.id.password_edit_text})
+    @OnTextChanged({R.id.login_edit_text, R.id.password_edit_text, R.id.name_edit_text})
     void onTextChanged(CharSequence text) {
         changeOkButtonVisibility();
     }
@@ -86,8 +89,8 @@ public class LoginActivity extends RiaBaseActivity {
         loginEditText.setText(login);
         passwordEditText.setText(pass);
 
-       // loginEditText.setText(RiaConstants.XMPP_LOGIN);
-       // passwordEditText.setText(RiaConstants.XMPP_PASS);
+        // loginEditText.setText(RiaConstants.XMPP_LOGIN);
+        // passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
 
     @Override
@@ -103,12 +106,12 @@ public class LoginActivity extends RiaBaseActivity {
         }
     }
 
-     void requestLogin() {
+    void requestLogin() {
         ScreenUtils.hideKeyboard(this);
-        if (progressBar.getVisibility() != View.VISIBLE) {
+        if (progressBar.getVisibility() != View.VISIBLE && enterButton.isEnabled()) {
             progressBar.setVisibility(View.VISIBLE);
 
-            userAppPreference.setFirstSecondName(nameEditText.getText().toString());
+            userAppPreference.setFirstSecondName(nameEditText.getText().toString().trim());
             userAppPreference.setLoginStringKey(loginEditText.getText().toString());
             userAppPreference.setPassStringKey(passwordEditText.getText().toString());
 
@@ -122,16 +125,15 @@ public class LoginActivity extends RiaBaseActivity {
         }
     }
 
-     boolean IsFieldNotEmpty(EditText aEditText) {
-        return !aEditText.getText().toString().isEmpty();
+    boolean IsFieldNotEmpty(EditText aEditText) {
+        String editText = aEditText.getText().toString().trim();
+        return !TextUtils.isEmpty(editText);
     }
 
-     void changeOkButtonVisibility() {
-        boolean allFieldsNotEmpty = IsFieldNotEmpty(loginEditText) &
+    void changeOkButtonVisibility() {
+        boolean allFieldsNotEmpty = IsFieldNotEmpty(loginEditText) & IsFieldNotEmpty(nameEditText) &
                 IsFieldNotEmpty(passwordEditText);
-        if (mActionOkMenuItem != null) {
-            mActionOkMenuItem.setVisible(allFieldsNotEmpty);
-        }
+        enterButton.setEnabled(allFieldsNotEmpty);
     }
 
 
@@ -156,18 +158,4 @@ public class LoginActivity extends RiaBaseActivity {
             }
         });
     }
-    /*@Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        inflater.inflate(R.menu.menu_login, menu);
-        mActionOkMenuItem = menu.findItem(R.id.action_ok);
-        mActionOkMenuItem.setVisible(false);
-        MenuItemCompat.getActionView(mActionOkMenuItem).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestLogin();
-            }
-        });
-    }*/
 }

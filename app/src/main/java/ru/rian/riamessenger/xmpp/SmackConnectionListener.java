@@ -109,16 +109,11 @@ public class SmackConnectionListener implements ConnectionListener {
                         if (messages.size() > 0) {
                             Log.i(RiaXmppService.TAG, "offline messages = " + messages.size());
                             for (Message msg : messages) {
-                               // int msgType = MessageContainer.CHAT_SIMPLE;
                                 int msgType = msg.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
-                                /*String msgId;
-                                if(msgType == MessageContainer.CHAT_SIMPLE) {
-                                    msgId = msg.getFrom();
+                                messageContainer = DbHelper.getMessageByReceiptId(msg.getStanzaId());
+                                if (messageContainer == null) {
+                                    messageContainer = DbHelper.addMessageToDb(msg, msgType, msg.getFrom(), false);
                                 }
-                                else {
-                                    msgId = msg.getThread()
-                                }*/
-                                messageContainer = DbHelper.addMessageToDb(msg, msgType, msg.getFrom(), false);
                             }
                         }
                         ActiveAndroid.setTransactionSuccessful();

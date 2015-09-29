@@ -50,6 +50,7 @@
                 <EditText
                     android:id="@+id/name_edit_text"
                     style="@style/CredentialsEditText"
+                    android:inputType="textCapWords"
                     android:hint="@string/fio">
 
                     <requestFocus />
@@ -118,6 +119,7 @@
 
             <com.devspark.robototextview.widget.RobotoButton
                 android:id="@+id/enter_button"
+                android:enabled="false"
                 android:layout_width="@dimen/enter_button_width"
                 android:layout_height="@dimen/enter_button_height"
                 android:layout_centerHorizontal="true"

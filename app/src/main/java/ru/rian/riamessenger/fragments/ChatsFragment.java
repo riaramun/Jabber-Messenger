@@ -161,6 +161,7 @@ public class ChatsFragment extends BaseTabFragment {
 
     public void onResume() {
         super.onResume();
+        if(buttonFloat != null)
         buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
@@ -168,6 +169,7 @@ public class ChatsFragment extends BaseTabFragment {
 
     @Override
     protected void rosterLoaded(boolean isLoaded) {
+        if(buttonFloat != null)
         buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
