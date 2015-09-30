@@ -105,7 +105,7 @@
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
-            android:authorities="com.example"
+            android:authorities="ru.rian.riamessenger"
             android:exported="false" />
         <receiver android:name=".ConnectionBroadcastReceiver">
             <intent-filter>
