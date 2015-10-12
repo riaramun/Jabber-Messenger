@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#00000000"
-            android:hint="@string/message_hint"
+            android:hint=""
             android:paddingRight="48dp">
 
             <requestFocus />

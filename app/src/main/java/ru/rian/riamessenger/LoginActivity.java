@@ -1,6 +1,7 @@
 package ru.rian.riamessenger;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -27,6 +28,7 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.ScreenUtils;
 import ru.rian.riamessenger.utils.SysUtils;
 
@@ -80,7 +82,7 @@ public class LoginActivity extends RiaBaseActivity {
         ButterKnife.bind(this);
 
 
-        passwordEditText.setImeActionLabel(getString(R.string.enter), EditorInfo.IME_ACTION_DONE);
+        passwordEditText.setImeActionLabel(getString(R.string.Sign_in), EditorInfo.IME_ACTION_DONE);
 
         String login = userAppPreference.getLoginStringKey();
         String pass = userAppPreference.getPassStringKey();
@@ -92,7 +94,14 @@ public class LoginActivity extends RiaBaseActivity {
         // loginEditText.setText(RiaConstants.XMPP_LOGIN);
         // passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
-
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        RiaBaseApplication.component().inject(this);
+        setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
+    }*/
     @Override
     public void onStart() {
         super.onStart();
@@ -108,21 +117,26 @@ public class LoginActivity extends RiaBaseActivity {
 
     void requestLogin() {
         ScreenUtils.hideKeyboard(this);
-        if (progressBar.getVisibility() != View.VISIBLE && enterButton.isEnabled()) {
-            progressBar.setVisibility(View.VISIBLE);
+        if(NetworkStateManager.isNetworkAvailable(this)) {
+            if (progressBar.getVisibility() != View.VISIBLE && enterButton.isEnabled()) {
+                progressBar.setVisibility(View.VISIBLE);
 
-            userAppPreference.setFirstSecondName(nameEditText.getText().toString().trim());
-            userAppPreference.setLoginStringKey(loginEditText.getText().toString());
-            userAppPreference.setPassStringKey(passwordEditText.getText().toString());
+                userAppPreference.setFirstSecondName(nameEditText.getText().toString().trim());
+                userAppPreference.setLoginStringKey(loginEditText.getText().toString());
+                userAppPreference.setPassStringKey(passwordEditText.getText().toString());
 
 
-            if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
-                RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
-            } else {
-                Intent intent = new Intent(this, RiaXmppService.class);
-                startService(intent);
+                if (SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
+                    RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
+                } else {
+                    Intent intent = new Intent(this, RiaXmppService.class);
+                    startService(intent);
+                }
             }
+        } else {
+            showAppMsgInView(LoginActivity.this, getString(R.string.connectionFailure));
         }
+
     }
 
     boolean IsFieldNotEmpty(EditText aEditText) {
@@ -149,7 +163,7 @@ public class LoginActivity extends RiaBaseActivity {
                         break;
                     case EAuthenticationFailed:
                         progressBar.setVisibility(View.INVISIBLE);
-                        showAppMsgInView(LoginActivity.this, getString(R.string.sign_in_error));
+                        showAppMsgInView(LoginActivity.this, getString(R.string.authorizationFailure));
                         break;
                     default:
                         LoginActivity.super.onEvent(xmppErrorEvent);

@@ -31,13 +31,13 @@
         <LinearLayout
             android:id="@+id/edit_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="64dp"
             android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_marginTop="64dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -51,7 +51,7 @@
                     android:id="@+id/name_edit_text"
                     style="@style/CredentialsEditText"
                     android:inputType="textCapWords"
-                    android:hint="@string/fio">
+                    android:hint="@string/nicknamePrompt">
 
                     <requestFocus />
                 </EditText>
@@ -71,7 +71,7 @@
                 <EditText
                     android:id="@+id/login_edit_text"
                     style="@style/CredentialsEditText"
-                    android:hint="@string/login">
+                    android:hint="@string/loginPrompt">
 
                     <requestFocus />
                 </EditText>
@@ -91,8 +91,8 @@
                 <EditText
                     android:id="@+id/password_edit_text"
                     style="@style/CredentialsEditText"
-                    android:hint="@string/password"
-                    android:imeActionLabel="@string/enter"
+                    android:hint="@string/passwordPrompt"
+                    android:imeActionLabel="@string/Sign_in"
                     android:inputType="textPassword" />
 
             </LinearLayout>
@@ -114,7 +114,7 @@
 
                 <com.devspark.robototextview.widget.RobotoTextView
                     style="@style/CredentialsText"
-                    android:text="@string/short_description" />
+                    android:text="@string/authorizationFormMessage" />
             </LinearLayout>
 
             <com.devspark.robototextview.widget.RobotoButton
@@ -126,7 +126,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/btn_bg_selector"
                 android:gravity="center"
-                android:text="@string/enter"
+                android:text="@string/Sign_in"
                 android:textColor="@color/white"
                 android:textSize="@dimen/top_bar_button_text_size" />
 

@@ -332,11 +332,12 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             roomName = roomName.replaceAll(" ","_");
             EventBus.getDefault().post(new RoomCreateEvent(roomName, participantsArrayList));
             String bareJid = (roomName + "@" + RiaConstants.ROOM_DOMAIN);
+
             Intent intent = new Intent(getActivity(), ConversationActivity.class);
             intent.putExtra(RiaBaseActivity.ARG_ROOM_JID, bareJid);
             getActivity().startActivity(intent);
 
-            getActivity().onBackPressed();
+            getActivity().finish();
         }
     }
 

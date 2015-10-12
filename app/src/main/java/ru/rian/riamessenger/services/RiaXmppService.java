@@ -44,16 +44,19 @@ import ru.rian.riamessenger.xmpp.SmackXmppConnection;
 
 
 public class RiaXmppService extends Service {
-     final SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
 
-     XMPPTCPConnection xmppConnection;
-     SmackXmppConnection smackXmppConnection;
-     SmackMessageManager xmppMessageManager;
-     SmackRosterManager smackRosterManager;
-     MUCManager mucManager;
+    public static boolean IS_STARTED = false;
+
+    final SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
+
+    XMPPTCPConnection xmppConnection;
+    SmackXmppConnection smackXmppConnection;
+    SmackMessageManager xmppMessageManager;
+    SmackRosterManager smackRosterManager;
+    MUCManager mucManager;
 
     public static final String TAG = "Service";
-    
+
     @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
@@ -72,7 +75,7 @@ public class RiaXmppService extends Service {
         initSmackModules();
     }
 
-     void initSmackModules() {
+    void initSmackModules() {
         xmppConnection = new XMPPTCPConnection(SmackXmppConnection.getConfig(userAppPreference));
         xmppConnection.addConnectionListener(new SmackConnectionListener(this, userAppPreference, sendMsgBroadcastReceiver));
         xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
@@ -96,11 +99,11 @@ public class RiaXmppService extends Service {
     UserAppPreference userAppPreference;
 
 
-     final Handler connectionHandler = new Handler();
+    final Handler connectionHandler = new Handler();
     /*
     This runnable tests are we connected, signed in, and got the roster
     */
-     final Runnable connectionRunnable = new Runnable() {
+    final Runnable connectionRunnable = new Runnable() {
         @Override
         public void run() {
             setConnectingState(false);
@@ -110,7 +113,7 @@ public class RiaXmppService extends Service {
 
     //OfflineMessageManager offlineMessageManager;
 
-     boolean doLoginAndPassExist() {
+    boolean doLoginAndPassExist() {
         return !TextUtils.isEmpty(userAppPreference.getLoginStringKey()) && !TextUtils.isEmpty(userAppPreference.getPassStringKey());
     }
 
@@ -181,7 +184,7 @@ public class RiaXmppService extends Service {
     }*/
 
 
-     static final int NOTIFICATION_CONNECTION_STATUS = 1;
+    static final int NOTIFICATION_CONNECTION_STATUS = 1;
     //   int mClientCount = 0;
 
 
@@ -211,9 +214,10 @@ public class RiaXmppService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+        IS_STARTED = true;
         Log.i(TAG, "onStartCommand()");
         onStartService();
-        return START_STICKY_COMPATIBILITY;
+        return START_STICKY;
     }
 
     /**
@@ -221,15 +225,15 @@ public class RiaXmppService extends Service {
      * The method checks login and password. If login and password exist it starts connecting ,
      * if it is not - it sends auth event to client (probably we don't need it)
      */
-     void setConnectingState(boolean isConnecting) {
+    void setConnectingState(boolean isConnecting) {
         this.isConnecting = isConnecting;
         userAppPreference.setConnectingStateKey(isConnecting);
         RiaEventBus.post(isConnecting ? XmppErrorEvent.State.EConnecting : XmppErrorEvent.State.ENotConnecting);
     }
 
-     boolean isConnecting = false;
+    boolean isConnecting = false;
 
-     void onStartService() {
+    void onStartService() {
 
         Presence.Type presenceType = Presence.Type.available;
         if (!smackXmppConnection.isAuthenticated()) {
@@ -276,6 +280,7 @@ public class RiaXmppService extends Service {
 
     @Override
     public void onDestroy() {
+        IS_STARTED = false;
         Log.i(TAG, "onDestroy");
         EventBus.getDefault().unregister(this);
         //  mContext = null;

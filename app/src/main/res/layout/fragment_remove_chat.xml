@@ -29,8 +29,8 @@
             <com.devspark.robototextview.widget.RobotoTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/remove_chat"
-                android:textSize="18dp"
+                android:text="@string/destroyRoomAlertMsg"
+                android:textSize="18sp"
                 app:fontFamily="roboto"
                 app:textWeight="bold" />
 

@@ -35,7 +35,6 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     }
 
     @Getter
-    final
     HashMap<Integer, String> selectedUsersJidMap = new HashMap<Integer, String>();
 
      final ListItemMode listItemMode;

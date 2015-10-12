@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_exit">Logout</string>
+    <string name="app_name">RiaMessenger</string>
+    <string name="new_message">New message</string>
+    <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>
+    <string name="robots">!Загрузка!</string>
+    <string name="fullNamePrompt">Nombre y apellido</string>
+    <string name="nicknamePrompt">Alias</string>
+    <string name="destroyChatAlertTitle">Удалить чат и историю переписки?</string>
+    <string name="emptyRoomHistoryMessage">Список доступных комнат пуст</string>
+    <!-- Комната используется в том же смысле, что и комната в помещении. При переводе примера псевдонима использовать устоявщиеся формы примеров имен для каждого языка, например, для английского, это может быть John Smith или John Doe. -->
+    <string name="nicknameHint">Este campo aparecerá en chat de varios usuarios (salas). Le recomendamos insistentemente usar su verdadero nombre y apellido para que otros participantes de la sala sepan quién es, por ejemplo, Juan García o J. García</string>
+    <string name="loginPrompt">Usuario</string>
+    <string name="passwordPrompt">Contraseña</string>
+    <string name="authorizationFormMessage">Correo interno especializado asequible solo para empleados de Rossiya Segodnya</string>
+    <string name="Sign_in">Entrar</string>
+    <string name="chats">Chats</string>
+    <string name="rooms">Salas</string>
+    <string name="groups">Grupos</string>
+    <string name="contacts">Contactos</string>
+    <string name="rosterUpdateMessage">Se actualiza la lista</string>
+    <string name="emptyChatHistoryMessage">Historial ausente</string>
+    <!-- Warning: Empty value for "destroyChatAlertTitle" -->
+
+    <string name="destroyAlertCancel">No</string>
+    <string name="destroyAlertConfirm">Sí</string>
+    <!-- Warning: Empty value for "emptyRoomHistoryMessage" -->
+
+    <string name="lastRoomMessageFromYou">Tú</string>
+    <string name="multiuserRoom">Chat en grupo</string>
+    <string name="InviteToMUC">Invitar a la sala de chat</string>
+    <string name="mucRoomName">Nombre de nueva sala</string>
+    <string name="roomCreationMessage">Creación nueva sala</string>
+    <string name="roomCreationError">Error al crear sala</string>
+    <string name="editMucRoom">Redacción de sala</string>
+    <string name="destroyRoom">Eliminar sala</string>
+    <string name="destroyRoomAlertTitle">Eliminación de sala</string>
+    <string name="destroyRoomAlertMsg">La sala será eliminada completamente. ¿Continuar?</string>
+    <string name="dataLossAlertTitle">Los datos se perderán</string>
+    <string name="dataLossAlertMessage">¿Pasar al mensaje?</string>
+    <string name="dataLossAlertCancel">No</string>
+    <string name="dataLossAlertConfirm">Sí</string>
+    <string name="authorizationInProgress">Se realiza autorización</string>
+    <string name="connectionFailure">No se ha podido contectar al servidor. Revise su conexión de red e intente nuevamente.</string>
+    <string name="authorizationFailure">Error de autorización. Intente nuevamente.</string>
+</resources>

@@ -69,7 +69,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                 final RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
                 final String senderName = rosterEntryModel!= null ? rosterEntryModel.name : jid_from;
 
-                String messageFromPref = arg0.getString(R.string.message_from);
+                String messageFromPref = arg0.getString(R.string.lastRoomMessageFromYou) + ": ";
                 //  queueMessage(messageFrom, message);
                 String messageText = messageContainer.body;
                 int messageLength = NOTIFICATION_MAX_LENGTH;

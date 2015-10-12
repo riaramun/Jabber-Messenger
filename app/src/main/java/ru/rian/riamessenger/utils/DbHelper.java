@@ -171,7 +171,7 @@ public class DbHelper {
                 + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
         Cursor cursor = Cache.openDatabase().rawQuery(req, null);
         List<MessageContainer> roomsLastMessages = SQLiteUtils.processCursor(MessageContainer.class, cursor);
-        List<String> roomsJids = new ArrayList<String>();
+        List<String> roomsJids = new ArrayList<>();
         for (MessageContainer messageContainer : roomsLastMessages) {
             roomsJids.add(messageContainer.threadID);
         }

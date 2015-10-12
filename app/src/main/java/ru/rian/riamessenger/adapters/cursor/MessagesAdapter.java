@@ -60,9 +60,9 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                 final MessageViewHolder messageViewHolder = (MessageViewHolder) viewHolder;
 
                 if (isFirstDayVideo) {
-                    if (DateUtils.isToday(messageContainer.created.getTime())) {
+                   /* if (DateUtils.isToday(messageContainer.created.getTime())) {
                         messageViewHolder.messageTodayDate.setText(mContext.getText(R.string.today));
-                    } else {
+                    } else */{
                         messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));
                     }
                     //messageViewHolder.messageTodayDate.setText(dateFormat.format(messageContainer.created.getTime()));

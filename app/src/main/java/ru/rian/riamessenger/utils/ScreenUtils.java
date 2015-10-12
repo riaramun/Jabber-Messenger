@@ -29,7 +29,7 @@ public class ScreenUtils {
 
     public static void styleSearchView(@NonNull SearchView searchView, String title_to_search, @NonNull Context context) {
         searchView.setQuery("", true);
-        searchView.setQueryHint(context.getString(R.string.search_hint));
+        //searchView.setQueryHint(context.getString(R.string.search_hint));
         int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
         View searchPlate = searchView.findViewById(searchPlateId);
         if (searchPlate != null) {

@@ -1,5 +1,6 @@
 package ru.rian.riamessenger.riaevents.ui;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +8,7 @@ import lombok.RequiredArgsConstructor;
  * Created by Roman on 7/30/2015.
  */
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ChatEvents {
 
     @Getter

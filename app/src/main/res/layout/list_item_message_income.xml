@@ -11,7 +11,7 @@
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/message_today_date"
         style="@style/MessageTodayTomorrowDateStyle"
-        android:text="@string/today"
+        android:text=""
         app:fontFamily="roboto"
         app:textWeight="light" />
 

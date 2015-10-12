@@ -103,8 +103,8 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                     String bodyToSet = messageContainer.body;
 
                     if (messageContainer.fromJid.equals(currentJid)) {
-                        String youStr = mContext.getResources().getString(R.string.you);
-                        bodyToSet = youStr + bodyToSet;
+                        String youStr = mContext.getResources().getString(R.string.lastRoomMessageFromYou);
+                        bodyToSet = youStr +": " + bodyToSet;
                         SpannableString spannableString = new SpannableString(bodyToSet);
                         ForegroundColorSpan span = new ForegroundColorSpan(mContext.getResources().getColor(R.color.inserted_text));
                         spannableString.setSpan(span, 0, youStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

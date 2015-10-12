@@ -10,7 +10,7 @@
         android:layout_toLeftOf="@+id/add_news_line_icon_text_view"
         android:background="@null"
         android:gravity="center|left"
-        android:hint="@string/new_room_hint"
+        android:hint="@string/mucRoomName"
         android:inputType="textCapWords"
         android:textColor="@color/white"
         app:textWeight="normal">
@@ -30,6 +30,6 @@
         android:gravity="center"
         android:text="{zmdi-check}"
         android:textColor="@drawable/menu_text_color_selector"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:visibility="invisible" />
 </RelativeLayout>

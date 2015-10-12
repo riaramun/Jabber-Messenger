@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="robots">!Загрузка!</string>
+    <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>
+    <string name="new_message">New message</string>
+    <string name="action_exit">Logout</string>
+    <string name="app_name">RiaMessenger</string>
+    <string name="fullNamePrompt">Full Name</string>
+    <string name="nicknamePrompt">Nickname</string>
+    <!-- Комната используется в том же смысле, что и комната в помещении. При переводе примера псевдонима использовать устоявщиеся формы примеров имен для каждого языка, например, для английского, это может быть John Smith или John Doe. -->
+    <string name="nicknameHint">This field will appear in multi-user chat (rooms). We strongly recommend that you use your real name and surname, so that the other users can recognize you, for example, John Smith.</string>
+    <string name="loginPrompt">Login</string>
+    <string name="passwordPrompt">Password</string>
+    <string name="authorizationFormMessage">A specialized internal messenger, accessible only to employees of MIA Rossiya Segodnya</string>
+    <string name="Sign_in">Enter</string>
+    <string name="chats">Chats</string>
+    <string name="rooms">Rooms</string>
+    <string name="groups">Groups</string>
+    <string name="contacts">Address Book</string>
+    <string name="rosterUpdateMessage">Updating…</string>
+    <string name="emptyChatHistoryMessage">There is no chat history</string>
+    <!-- Warning: Empty value for "destroyChatAlertTitle" -->
+    <string name="destroyChatAlertTitle">Удалить чат и историю переписки?</string>
+    <string name="destroyAlertCancel">Yes</string>
+    <string name="destroyAlertConfirm">No</string>
+    <!-- Warning: Empty value for "emptyRoomHistoryMessage" -->
+    <string name="emptyRoomHistoryMessage">Список доступных комнат пуст</string>
+    <string name="lastRoomMessageFromYou">You</string>
+    <string name="multiuserRoom">Group Chat</string>
+    <string name="InviteToMUC">Invite someone to chat</string>
+    <string name="mucRoomName">Name of new chatroom</string>
+    <string name="roomCreationMessage">Chatroom initializing…</string>
+    <string name="roomCreationError">Error in creating room</string>
+    <string name="editMucRoom">Edit chatroom</string>
+    <string name="destroyRoom">Delete chatroom</string>
+    <string name="destroyRoomAlertTitle">Deleting chatroom</string>
+    <string name="destroyRoomAlertMsg">The chatroom will be deleted. Do you wish to continue?</string>
+    <string name="dataLossAlertTitle">Any unsaved data will be lost</string>
+    <string name="dataLossAlertMessage">Open the message?</string>
+    <string name="dataLossAlertCancel">Yes</string>
+    <string name="dataLossAlertConfirm">No</string>
+    <string name="authorizationInProgress">Authorizing…</string>
+    <string name="connectionFailure">Unable to connect to the server. Please check your Internet connection and try again.</string>
+    <string name="authorizationFailure">Authorization error. Please try again.</string>
+</resources>

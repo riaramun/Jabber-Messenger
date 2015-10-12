@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_exit">Logout</string>
+    <string name="app_name">RiaMessenger</string>
+    <string name="new_message">New message</string>
+    <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>
+    <string name="robots">!Загрузка!</string>
+    <string name="fullNamePrompt">الاسم بالكامل</string>
+    <string name="nicknamePrompt">الاسم المستعار</string>
+    <!-- Комната используется в том же смысле, что и комната в помещении. При переводе примера псевдонима использовать устоявщиеся формы примеров имен для каждого языка, например, для английского, это может быть John Smith или John Doe. -->
+    <string name="nicknameHint">ستستخدم هذه الخانة في غرفة الدردشة المتعددة المستخدمين. نرجو منكم استخدام أسماءكم وأسماء عائلاتكم الحقيقية حتى يعرف المشاركون في الدردشة، من أنتم، مثلا، إيفانوف إيفان أو إيفانوف إ.إ.</string>
+    <string name="loginPrompt">اسم المستخدم</string>
+    <string name="passwordPrompt">كلمة السر</string>
+    <string name="authorizationFormMessage">مسينجر داخلي متخصص لموظفي وكالة الأنباء الدولية &quot;روسيا سيغودنيا&quot; فقط</string>
+    <string name="Sign_in">دخول</string>
+    <string name="chats">دردشات</string>
+    <string name="rooms">غرف</string>
+    <string name="groups">مجموعات</string>
+    <string name="contacts">دفتر العناوين</string>
+    <string name="rosterUpdateMessage">يجري تجديد القائمة</string>
+    <string name="emptyChatHistoryMessage">لا يوجد تاريخ المراسلات</string>
+    <string name="destroyChatAlertTitle">هل تريدون حذف الدردشة وأرشيف المراسلات</string>
+    <string name="destroyAlertCancel">نعم</string>
+    <string name="destroyAlertConfirm">لا</string>
+    <string name="emptyRoomHistoryMessage">قائمة الغرف المتاحة خالية</string>
+    <string name="lastRoomMessageFromYou">أنت</string>
+    <string name="multiuserRoom">الدردرشة الجماعية</string>
+    <string name="InviteToMUC">الدعوة إلى الدردشة</string>
+    <string name="mucRoomName">اسم غرفة الدردشة</string>
+    <string name="roomCreationMessage">إنشاء غرفة الدردشة</string>
+    <string name="roomCreationError">خطأ عند إنشاء غرفة الدردشة</string>
+    <string name="editMucRoom">تعديل غرفة الدردشة</string>
+    <string name="destroyRoom">حذف غرفة الدردشة</string>
+    <string name="destroyRoomAlertTitle">جاري حذف الدردشة</string>
+    <string name="destroyRoomAlertMsg">سيتم مسح غرفة الدردشة. هل تريدون المواصلة؟</string>
+    <string name="dataLossAlertTitle">أي بيانات لم يتم حفظها، ستففد</string>
+    <string name="dataLossAlertMessage">هل تريدون فتح الرسالة؟</string>
+    <string name="dataLossAlertCancel">نعم</string>
+    <string name="dataLossAlertConfirm">لا</string>
+    <string name="authorizationInProgress">جاري تسجيل الدخول</string>
+    <string name="connectionFailure">فشل الاتصال بالخادم، تأكدوا من وجود اتصال وعاود المحاولة</string>
+    <string name="authorizationFailure">خطأ التسجيل، عاود المحاولة</string>
+</resources>

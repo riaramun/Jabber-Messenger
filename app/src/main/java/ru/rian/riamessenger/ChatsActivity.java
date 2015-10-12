@@ -75,7 +75,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        int resId  = R.drawable.action_bar_status_offline;;
+        int resId  = R.drawable.action_bar_status_offline;
         getSupportActionBar().setHomeAsUpIndicator(resId);
 
         final int numberOfTabs = fragmentsIds.length;
@@ -179,9 +179,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(ChatRemoveDialogFragment.TAG);
         if (fragment == null || !fragment.isVisible()) {
-            if (true) {
-                fragmentTransaction = fragmentTransaction.addToBackStack(ChatRemoveDialogFragment.TAG);
-            }
+            fragmentTransaction = fragmentTransaction.addToBackStack(ChatRemoveDialogFragment.TAG);
             fragmentTransaction.replace(R.id.container, aFragment, ChatRemoveDialogFragment.TAG).commit();
         }
     }

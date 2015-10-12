@@ -48,6 +48,7 @@ public class StartActivity extends RiaBaseActivity {
     protected void onResume() {
         super.onResume();
         final String password = userAppPreference.getPassStringKey();
+
         if (!TextUtils.isEmpty(password) && SysUtils.isMyServiceRunning(RiaXmppService.class, this)) {
             RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_IN);
         }

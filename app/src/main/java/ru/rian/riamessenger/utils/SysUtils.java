@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.util.List;
 
+import ru.rian.riamessenger.services.RiaXmppService;
+
 /**
  * Created by Roman on 7/9/2015.
  */
@@ -25,7 +27,8 @@ public class SysUtils {
     }
 
     static public boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
-        boolean isRunning = false;
+        return RiaXmppService.IS_STARTED;
+        /*boolean isRunning = false;
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -34,5 +37,6 @@ public class SysUtils {
         }
         Log.i("RiaService", "isRunning = " + isRunning);
         return isRunning;
+        */
     }
 }
