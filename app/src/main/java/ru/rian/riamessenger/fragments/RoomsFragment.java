@@ -93,7 +93,7 @@ public class RoomsFragment extends BaseTabFragment {
 
         buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
         buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
-        roomsAdapter = new RoomsAdapter(getActivity(), userAppPreference.getUserStringKey(), roomsListClickListener, onLongClickListener);
+        roomsAdapter = new RoomsAdapter(getActivity(), userAppPreference.getFirstSecondName(), roomsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(roomsAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());

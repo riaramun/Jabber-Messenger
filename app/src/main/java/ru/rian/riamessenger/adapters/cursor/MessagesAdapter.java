@@ -47,6 +47,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
             case VIEW_TYPE_CONTENT_INCOME_MSG: {
                 boolean isFirstDayVideo = false;
                 final MessageContainer messageContainer = DbHelper.getModelByCursor(cursor, MessageContainer.class);
+                if(messageContainer == null) return;
                 if (cursor.isFirst()) {
                     isFirstDayVideo = true;
                 } else {

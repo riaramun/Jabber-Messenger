@@ -67,9 +67,10 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                 MessageContainer messageContainer = DbHelper.getLastMessageFrom(jid_from, jid_to);
 
                 final RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(jid_from);
+
                 final String senderName = rosterEntryModel!= null ? rosterEntryModel.name : jid_from;
 
-                String messageFromPref = arg0.getString(R.string.lastRoomMessageFromYou) + ": ";
+                //String messageFromPref = arg0.getString(R.string.lastRoomMessageFromYou) + ": ";
                 //  queueMessage(messageFrom, message);
                 String messageText = messageContainer.body;
                 int messageLength = NOTIFICATION_MAX_LENGTH;
@@ -99,7 +100,7 @@ public class SendMsgBroadcastReceiver extends BroadcastReceiver {
                 NotificationManager mNotificationManager =
                         (NotificationManager) arg0.getSystemService(Context.NOTIFICATION_SERVICE);
                 Notification notification = new NotificationCompat.Builder(arg0)
-                        .setContentTitle(messageFromPref + RiaTextUtils.capFirst(senderName))
+                        .setContentTitle(RiaTextUtils.capFirst(senderName + ": "))
                         .setContentText(contentText)
                         .setTicker(arg0.getString(R.string.new_message))
                         .setWhen(System.currentTimeMillis())

@@ -32,13 +32,13 @@ import ru.rian.riamessenger.utils.XmppUtils;
  */
 public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEntryIdGetter {
 
-     boolean mListIsEmpty = false;
-     final String currentJid;
-     final BaseRiaListClickListener roomsListClickListener;
-     final View.OnLongClickListener onLongClickListener;
+    boolean mListIsEmpty = false;
+    final String currentJid;
+    final BaseRiaListClickListener roomsListClickListener;
+    final View.OnLongClickListener onLongClickListener;
 
-     static final int LIST_EMPTY_ITEMS_COUNT = 1;
-     static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    static final int LIST_EMPTY_ITEMS_COUNT = 1;
+    static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public RoomsAdapter(Context context, String currentJid, BaseRiaListClickListener roomsListClickListener, View.OnLongClickListener onLongClickListener) {
         super(context, null);
@@ -81,16 +81,20 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                         contactViewHolder.onlineStatus.setText("");
                     }
                     String bodyToSet = messageContainer.body;
+                    String youStr = "";
                     if (messageContainer.fromJid.equals(currentJid)) {
-                        String youStr = mContext.getResources().getString(R.string.lastRoomMessageFromYou);
-                        bodyToSet = youStr + ": " + bodyToSet;
-                        SpannableString spannableString = new SpannableString(bodyToSet);
-                        ForegroundColorSpan span = new ForegroundColorSpan(mContext.getResources().getColor(R.color.inserted_text));
-                        spannableString.setSpan(span, 0, youStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        contactViewHolder.messageTextView.setText(spannableString);
+                        youStr = mContext.getResources().getString(R.string.lastRoomMessageFromYou);
+
                     } else {
-                        contactViewHolder.messageTextView.setText(bodyToSet);
+                        youStr = messageContainer.fromJid;
                     }
+                    bodyToSet = youStr + ": " + bodyToSet;
+
+                    SpannableString spannableString = new SpannableString(bodyToSet);
+                    ForegroundColorSpan span = new ForegroundColorSpan(mContext.getResources().getColor(R.color.inserted_text));
+                    spannableString.setSpan(span, 0, youStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    contactViewHolder.messageTextView.setText(spannableString);
+
                     contactViewHolder.dateTextView.setText(timeFormat.format(messageContainer.created));
                     if (NetworkStateManager.isNetworkAvailable(mContext)) {
                         ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_AVAILIBLE.ordinal());
@@ -101,7 +105,6 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 break;
         }
     }
-
 
 
     @Override
