@@ -49,7 +49,7 @@ public class SmackConnectionListener implements ConnectionListener {
         Log.i(RiaXmppService.TAG, "EAuthenticated");
         //add current user entry to track his presence via loader
         userAppPreference.setAuthStateKey(true);
-        userAppPreference.setJidStringKey(XmppUtils.entityJid(connection.getUser()));
+        userAppPreference.setJidStringKey(connection.getUser());
         try {
             handleOfflineMessages(connection);
         } catch (Exception e) {

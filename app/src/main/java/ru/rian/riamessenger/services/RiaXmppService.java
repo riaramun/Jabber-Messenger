@@ -16,6 +16,8 @@ import android.util.Log;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.concurrent.Callable;
 
@@ -124,7 +126,11 @@ public class RiaXmppService extends Service {
 
     public void onEvent(ChatMessageEvent event) {
         if (xmppMessageManager != null) {
-            xmppMessageManager.sendMessageToServer(event.getJid(), event.getMessage());
+            try {
+                xmppMessageManager.sendMessageToServer(JidCreate.from(event.getJid()), event.getMessage());
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
+            }
         }
     }
 

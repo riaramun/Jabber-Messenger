@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
 
+import org.jxmpp.jid.EntityFullJid;
+
 import javax.inject.Inject;
 
 import ru.rian.riamessenger.RiaApplication;
@@ -45,8 +47,8 @@ public class UserAppPreference {
         return sharedPreferences.getString(CURRENT_JID_STRING_KEY, "");
     }
 
-    public void setJidStringKey(String value) {
-        mEditor.putString(CURRENT_JID_STRING_KEY, value).apply();
+    public void setJidStringKey(EntityFullJid value) {
+        mEditor.putString(CURRENT_JID_STRING_KEY, value.asEntityBareJidString()).apply();
     }
 
     public boolean getConnectingStateKey() {

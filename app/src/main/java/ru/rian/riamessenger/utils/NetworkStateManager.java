@@ -37,7 +37,7 @@ public class NetworkStateManager {
     public static void setCurrentUserPresence(Presence presence, String bareJid) {
 
         RosterEntryModel rosterEntryModel = new RosterEntryModel();
-        rosterEntryModel.bareJid = XmppUtils.entityJidWithRes(bareJid);
+        rosterEntryModel.bareJid = bareJid;//XmppUtils.entityJidWithRes(bareJid);
         rosterEntryModel.setPresence(presence);
         try {
             ActiveAndroid.beginTransaction();

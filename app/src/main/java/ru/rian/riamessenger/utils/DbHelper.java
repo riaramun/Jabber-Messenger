@@ -11,6 +11,11 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
 import org.jivesoftware.smack.packet.Message;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -132,7 +137,7 @@ public class DbHelper {
         return messageContainer;
     }*/
 
-    public static MessageContainer addMessageToDb(Message message, int chatType, String messageId, boolean isRead) {
+    public static MessageContainer addMessageToDb(Message message, int chatType, Jid messageId, boolean isRead) {
         int slashInd;
         String msgId;
         String from;
@@ -140,10 +145,10 @@ public class DbHelper {
         //from cijcjcjc@conference.kis-jabber/skurzhansky
         //to lebedenko@kis-jabber/ria_mobile
 
-        slashInd = messageId.indexOf('/');
-        msgId = slashInd > 0 ? messageId.substring(0, slashInd) : messageId;
+       // slashInd = messageId.indexOf('/');
+        msgId = messageId.asBareJid().toString();//slashInd > 0 ? messageId.substring(0, slashInd) : messageId;
 
-        slashInd = message.getTo().indexOf('/');
+        /*slashInd = message.getTo().indexOf('/');
         to = slashInd > 0 ? message.getTo().substring(0, slashInd) : message.getTo();
 
         slashInd = message.getFrom().indexOf('/');
@@ -151,7 +156,15 @@ public class DbHelper {
             from = slashInd > 0 ? message.getFrom().substring(0, slashInd) : message.getFrom();
         } else {
             from = slashInd > 0 ? message.getFrom().substring(slashInd + 1) : message.getFrom();
+        }*/
+        if (chatType == MessageContainer.CHAT_SIMPLE) {
+            from = message.getFrom().asBareJid().toString();
+        } else {
+            from = message.getFrom().getResourceOrNull().toString();
         }
+
+        to = message.getTo().asBareJid().toString();
+
         MessageContainer messageContainer = new MessageContainer(chatType);
         messageContainer.body = message.getBody();
         messageContainer.stanzaID = message.getStanzaId();
@@ -165,15 +178,19 @@ public class DbHelper {
         return messageContainer;
     }
 
-    public static List<String> getRoomsJidFromDb() {
+    public static List<EntityBareJid> getRoomsJidFromDb() {
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
                 + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
         Cursor cursor = Cache.openDatabase().rawQuery(req, null);
         List<MessageContainer> roomsLastMessages = SQLiteUtils.processCursor(MessageContainer.class, cursor);
-        List<String> roomsJids = new ArrayList<>();
+        List<EntityBareJid> roomsJids = new ArrayList<>();
         for (MessageContainer messageContainer : roomsLastMessages) {
-            roomsJids.add(messageContainer.threadID);
+            try {
+                roomsJids.add(JidCreate.entityBareFrom(messageContainer.threadID));
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
+            }
         }
         cursor.close();
         return roomsJids;

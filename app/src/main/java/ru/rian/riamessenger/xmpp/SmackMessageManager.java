@@ -15,6 +15,9 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -72,7 +75,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         }
     }
 
-    public void sendMessageToServer(final String jidTo, final String messageText) {
+    public void sendMessageToServer(final Jid jidTo, final String messageText) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -98,16 +101,20 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         return message;
     }
 
-    Message createMessage(String jidTo, String messageText) {
-        String entityJidTo = null;
+    Message createMessage(Jid jidTo, String messageText) {
+     //  String entityJidTo = null;
         String entityJidFrom = null;
-        entityJidTo = jidTo;
+        //entityJidTo = jidTo;
         entityJidFrom = (userAppPreference.getUserStringKey());
 
         Message message = new Message();
         message.setBody(messageText);
-        message.setFrom(entityJidFrom);
-        message.setTo(entityJidTo);
+        try {
+            message.setFrom(JidCreate.from(entityJidFrom));
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+        message.setTo(jidTo);
         message.setStanzaId(StanzaIdUtil.newStanzaId());
         message.setType(Message.Type.chat);
         return message;
@@ -115,8 +122,8 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
 
     void doSendMessage(Message message) {
         try {
-            final String jidFrom = message.getFrom();
-            final String jidTo = message.getTo();
+            //final String jidFrom = message.getFrom().asBareJid().toString();
+            //final String jidTo = message.getTo().asBareJid().toString();
             //TODO remove it after debug
 
             /*if (BuildConfig.DEBUG && (jidTo.contains("lebedenko")
@@ -126,12 +133,14 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                     || jidTo.contains("pronkin"))) */
             {
                 DeliveryReceiptRequest.addTo(message);
-                message.setTo(XmppUtils.entityJidWithRes(jidTo));
-                message.setFrom(XmppUtils.entityJidWithRes(jidFrom));
+                message.setTo(message.getTo());
+                message.setFrom(message.getFrom());
                 xmppConnection.sendStanza(message);
                 Log.i(TAG, "send msg id = " + message.getStanzaId());
             }
         } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -169,15 +178,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
         }*/
     }
 
-    @Override
-    public void onReceiptReceived(String fromJid, String toJid, String receiptId, Stanza receipt) {
-        Log.i(TAG, "on chat created receiptId = " + receiptId + " receipt = " + receipt.toString());
-        MessageContainer messageContainer = DbHelper.getMessageByReceiptId(receiptId);
-        if (messageContainer != null) {
-            messageContainer.isSent = true;
-            messageContainer.save();
-        }
-    }
+
 
     @Override
     public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
@@ -215,4 +216,13 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
 
+    @Override
+    public void onReceiptReceived(Jid fromJid, Jid toJid, String receiptId, Stanza receipt) {
+        Log.i(TAG, "on chat created receiptId = " + receiptId + " receipt = " + receipt.toString());
+        MessageContainer messageContainer = DbHelper.getMessageByReceiptId(receiptId);
+        if (messageContainer != null) {
+            messageContainer.isSent = true;
+            messageContainer.save();
+        }
+    }
 }

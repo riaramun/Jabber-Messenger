@@ -19,6 +19,7 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.roster.RosterLoadedListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jxmpp.jid.Jid;
 
 
 import java.util.Collection;
@@ -91,6 +92,8 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
                     e.printStackTrace();
                 } catch (SmackException.NotConnectedException e) {
                     e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             return false;
@@ -139,7 +142,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
                     }
 
                     rosterEntryModel.rosterGroupModel = rosterGroupModel;
-                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getUser()));
+                    rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getJid()));
                     rosterEntryModel.save();
                 }
             }
@@ -162,7 +165,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         Presence presence = (Presence) packet;
         if (presence != null && presence.getFrom() != null) {
             //Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom());
-            String bareJid = XmppUtils.entityJid(presence.getFrom());
+            String bareJid = presence.getFrom().asBareJid().toString();//XmppUtils.entityJid(presence.getFrom());
             if (!TextUtils.isEmpty(bareJid)) {
                 RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
                 if (rosterEntryModel != null) {
@@ -178,17 +181,17 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     }
 
     @Override
-    public void entriesAdded(Collection<String> addresses) {
+    public void entriesAdded(Collection<Jid> addresses) {
 
     }
 
     @Override
-    public void entriesUpdated(Collection<String> addresses) {
+    public void entriesUpdated(Collection<Jid> addresses) {
 
     }
 
     @Override
-    public void entriesDeleted(Collection<String> addresses) {
+    public void entriesDeleted(Collection<Jid> addresses) {
 
     }
 

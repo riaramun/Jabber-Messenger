@@ -5,6 +5,8 @@ import android.util.Log;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import lombok.AllArgsConstructor;
@@ -26,10 +28,14 @@ public class SmackXmppConnection {
 
         XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
         String serviceName = null;
-        configBuilder.setResource(RiaConstants.XMPP_RESOURCE_NAME);
-        serviceName = RiaConstants.XMPP_SERVICE_NAME;
+        try {
+            serviceName = RiaConstants.XMPP_SERVICE_NAME;
+            configBuilder.setResource(RiaConstants.XMPP_RESOURCE_NAME);
+            configBuilder.setXmppDomain(JidCreate.domainBareFrom(serviceName));
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
 
-        configBuilder.setServiceName(serviceName);
         //configBuilder.setPort(5222);
         configBuilder.setDebuggerEnabled(true);
         configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);

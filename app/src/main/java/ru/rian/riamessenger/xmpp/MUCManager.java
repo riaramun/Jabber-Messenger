@@ -10,19 +10,20 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.id.StanzaIdUtil;
-import org.jivesoftware.smackx.bookmarks.BookmarkManager;
-import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
-import org.jivesoftware.smackx.bookmarks.BookmarkedURL;
-import org.jivesoftware.smackx.bookmarks.Bookmarks;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatException;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -52,8 +53,8 @@ public class MUCManager implements InvitationListener {
 
     public void updateRoomsInDb() {
 
-        List<String> roomsJidList = DbHelper.getRoomsJidFromDb();
-        for (String roomJid : roomsJidList) {
+        List<EntityBareJid> roomsJidList = DbHelper.getRoomsJidFromDb();
+        for (EntityBareJid roomJid : roomsJidList) {
               joinRoom(roomJid);
         }
 
@@ -72,19 +73,25 @@ public class MUCManager implements InvitationListener {
         }*/
 
 
-       /* List<HostedRoom> rooms = null;
-        List<String> rooms2 = null;
+        List<HostedRoom> rooms = null;
+        List<EntityBareJid> rooms2 = null;
         try {
             //Iterator joinedRooms = MultiUserChat.getJoinedRooms(connection, connection.getUser());
             rooms2 = manager.getJoinedRooms(connection.getUser());
-            rooms = manager.getHostedRooms(RiaConstants.XMPP_SERVICE_NAME);
+            rooms = manager.getHostedRooms(JidCreate.domainBareFrom(RiaConstants.XMPP_SERVICE_NAME));
         } catch (SmackException.NoResponseException e) {
             e.printStackTrace();
         } catch (XMPPException.XMPPErrorException e) {
             e.printStackTrace();
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
-        }*/
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (MultiUserChatException.NotAMucServiceException e) {
+            e.printStackTrace();
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
         /*try {
             for (HostedRoom entityBareJid : manager.getHostedRooms(RiaConstants.XMPP_SERVICE_NAME)) {
                 //addRoomByJidToDb(entityBareJid);
@@ -98,10 +105,10 @@ public class MUCManager implements InvitationListener {
         }*/
     }
 
-    void addRoomByJidToDb(String entityBareJid/*, List<String> contactJids*/) {
+    void addRoomByJidToDb(EntityBareJid entityBareJid/*, List<String> contactJids*/) {
         ChatRoomModel chatRoomModel = new ChatRoomModel();
-        chatRoomModel.threadIdCol = entityBareJid;
-        chatRoomModel.name = entityBareJid.substring(0, entityBareJid.indexOf("@"));
+        chatRoomModel.threadIdCol = entityBareJid.asBareJid().toString();
+        chatRoomModel.name = entityBareJid.getLocalpart().toString();//entityBareJid.substring(0, entityBareJid.indexOf("@"));
         chatRoomModel.save();
         /*try {
 
@@ -124,9 +131,8 @@ public class MUCManager implements InvitationListener {
         try {
             //List<String> domains = manager.getServiceNames();
             String bareJid = roomName + "@" + RiaConstants.ROOM_DOMAIN;
-            MultiUserChat muc = manager.getMultiUserChat(bareJid);
-
-            muc.create(userAppPreference.getFirstSecondName());
+            MultiUserChat muc = manager.getMultiUserChat(JidCreate.entityBareFrom(bareJid));
+            muc.create(Resourcepart.from(userAppPreference.getFirstSecondName()));
             muc.sendConfigurationForm(new Form(DataForm.Type.submit));
             for (String jidStr : jidArrayList) {
                 muc.invite(jidStr, "");
@@ -148,16 +154,16 @@ public class MUCManager implements InvitationListener {
 
     @Override
     public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
-        final String roomBareJid = room.getRoom();
+        final EntityBareJid roomBareJid = room.getRoom();
         joinRoom(roomBareJid);
         addRoomByJidToDb(roomBareJid);
     }
 
-    void joinRoom(String roomJid) {
+    void joinRoom(EntityBareJid roomJid) {
         MultiUserChat multiUserChat = manager.getMultiUserChat(roomJid);
         try {
             String nickName = (userAppPreference.getFirstSecondName());
-            multiUserChat.join(nickName);
+            multiUserChat.join(Resourcepart.from(nickName));
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(RiaXmppService.TAG, e.getMessage());
@@ -185,8 +191,8 @@ public class MUCManager implements InvitationListener {
             @Override
             public void run() {
                 try {
-                    //String bareJid = JidCreate.entityBareFrom(roomJid);
-                    MultiUserChat muc = manager.getMultiUserChat(roomJid);
+                    EntityBareJid bareJid = JidCreate.entityBareFrom(roomJid);
+                    MultiUserChat muc = manager.getMultiUserChat(bareJid);
                     //String entityJidFrom = (userAppPreference.getUserStringKey());
                     //Message message = createMessage(roomJid, entityJidFrom, messageText);
                     //DbHelper.addMessageToDb(message, MessageContainer.CHAT_GROUP, roomJid, true);
