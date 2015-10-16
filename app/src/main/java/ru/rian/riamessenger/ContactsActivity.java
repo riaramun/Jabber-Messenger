@@ -75,7 +75,7 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
      void logout() {
          userAppPreference.setLoginStringKey("");
-         userAppPreference.setPassStringKey("");
+         //userAppPreference.setPassStringKey("");
         /*
         Intent intent = new Intent(this, EnterActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -3,10 +3,9 @@
     android:layout_height="match_parent"
     android:paddingBottom="0dp">
 
-    <fragment
-        android:id="@+id/contacts_fragment_id"
-        android:name="ru.rian.riamessenger.fragments.ContactsAddNewRoomFragment"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="CONTACTS_FRAGMENT_TAG" />
+        android:layout_height="match_parent" />
+
 </RelativeLayout>

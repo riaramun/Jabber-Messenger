@@ -31,7 +31,7 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
-import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.RiaXmppService;
 import ru.rian.riamessenger.utils.SysUtils;
 
 
@@ -62,6 +62,12 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
         }
     }
 
+    protected String getExtraJid(String arg_jid) {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        return bundle.getString(arg_jid);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -75,6 +81,7 @@ public abstract class RiaBaseActivity extends AppCompatActivity {
             getSupportLoaderManager().restartLoader(loaderId, bundle, callback);
         }
     }
+
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         String msg = null;
         switch (xmppErrorEvent.state) {

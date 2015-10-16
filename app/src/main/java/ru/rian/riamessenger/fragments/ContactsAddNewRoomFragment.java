@@ -26,24 +26,30 @@ import com.malinskiy.materialicons.widget.IconTextView;
 import com.tonicartos.superslim.LayoutManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.R;
+import ru.rian.riamessenger.RiaXmppService;
 import ru.rian.riamessenger.adapters.list.ContactsAdapter;
 import ru.rian.riamessenger.adapters.list.FastScroller;
 import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaConstants;
+import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.ChatRoomModel;
+import ru.rian.riamessenger.model.ChatRoomOccupantModel;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.riaevents.request.RoomCreateEvent;
-import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.riaevents.request.RoomEditEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.ScreenUtils;
 import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
@@ -147,12 +153,30 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             mHeaderDisplay = getResources().getInteger(R.integer.default_header_display);
             mAreMarginsFixed = getResources().getBoolean(R.bool.default_margins_fixed);
         }
-
+        Bundle bundle = getArguments();
+        Set<String> selectedJids = new HashSet();
+        if (bundle != null) {
+            String roomJid = bundle.getString(RiaBaseActivity.ARG_ROOM_JID);
+            if (roomJid != null) {
+                ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(roomJid);
+                if (chatRoomModel != null) {
+                    for (ChatRoomOccupantModel model : chatRoomModel.items()) {
+                        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(model.bareJid);
+                        if(rosterEntryModel != null) {
+                            participantsTextView.append(rosterEntryModel.name);
+                            participantsTextView.append("; ");
+                            selectedJids.add(rosterEntryModel.bareJid);
+                        }
+                    }
+                }
+            }
+        }
         mViews = new ViewHolder(view);
         mViews.initViews(new LayoutManager(getActivity()));
         mAdapter = new ContactsAdapter(ContactsAdapter.ListItemMode.ECheckNox, getActivity(), mHeaderDisplay, contactsListClickListener);
         mAdapter.setMarginsFixed(mAreMarginsFixed);
         mAdapter.setHeaderDisplay(mHeaderDisplay);
+        mAdapter.setSelectedJids(selectedJids);
         mViews.setAdapter(mAdapter);
 
     }
@@ -285,8 +309,20 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         RelativeLayout relativeLayout = (RelativeLayout) menu.findItem(R.id.add_new_line_edit).getActionView();
         roomEditText = (EditText) relativeLayout.findViewById(R.id.edit_query);
         roomEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-
         addButton = (IconTextView) relativeLayout.findViewById(R.id.add_news_line_icon_text_view);
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String roomJid = bundle.getString(RiaBaseActivity.ARG_ROOM_JID);
+            if (roomJid != null) {
+                ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(roomJid);
+                if (chatRoomModel != null) {
+                    roomEditText.setText(chatRoomModel.name);
+                    roomEditText.setEnabled(false);
+                }
+            }
+        }
+
         roomEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -317,7 +353,13 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             @Override
             public void onClick(View v) {
                 ScreenUtils.hideKeyboard(getContext());
-                addNewRoom(roomEditText);
+                if (roomEditText.isEnabled()) {
+                    addNewRoom(roomEditText);
+                } else {
+                    mAdapter.getSelectedUsersJidMap();
+                 //  RiaEventBus.post(new RoomEditEvent());
+                    //kick or add user
+                }
             }
         });
     }
@@ -329,7 +371,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 participantsArrayList.add(value);
             }
             String roomName = editText.getText().toString().trim();
-            roomName = roomName.replaceAll(" ","_");
+            roomName = roomName.replaceAll(" ", "_");
             EventBus.getDefault().post(new RoomCreateEvent(roomName, participantsArrayList));
             String bareJid = (roomName + "@" + RiaConstants.ROOM_DOMAIN);
 
@@ -339,6 +381,12 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
 
             getActivity().finish();
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tabId = FragIds.CONTACTS_FRAGMENT.ordinal();
     }
 
     @Override

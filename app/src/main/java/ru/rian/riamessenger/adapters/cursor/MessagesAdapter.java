@@ -110,7 +110,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         } else {
             if (getCursor().moveToPosition(position)) {
                 final MessageContainer messageContainer = DbHelper.getModelByCursor(getCursor(), MessageContainer.class);
-                if (messageContainer.fromJid.contains(currentJid)) {
+                if (messageContainer.fromJid.toLowerCase().contains(currentJid.toLowerCase())) {
                     resType = VIEW_TYPE_CONTENT_OUTCOME_MSG;
                 } else {
                     resType = VIEW_TYPE_CONTENT_INCOME_MSG;

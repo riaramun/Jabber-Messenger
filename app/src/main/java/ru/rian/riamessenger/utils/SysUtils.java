@@ -3,11 +3,10 @@ package ru.rian.riamessenger.utils;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.List;
 
-import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.RiaXmppService;
 
 /**
  * Created by Roman on 7/9/2015.

@@ -17,6 +17,7 @@
 package ru.rian.riamessenger.fragments;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -207,4 +208,5 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
     public void onLoaderReset(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader) {
 
     }
+
 }

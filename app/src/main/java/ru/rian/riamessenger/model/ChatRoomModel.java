@@ -6,6 +6,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import java.util.List;
+
 import ru.rian.riamessenger.common.DbColumns;
 
 /**
@@ -19,15 +21,18 @@ public class ChatRoomModel extends Model {
     public String threadIdCol;
 
 
+    @Column(name = DbColumns.OwnerJidCol)
+    public String ownerJidCol;
+
     @Column(name = DbColumns.NameCol)
     public String name;
 
-
     public ChatRoomModel() {
         super();
+        ownerJidCol = "";
     }
 
-    /*public List<RosterEntryModel> items() {
-        return getMany(RosterEntryModel.class, "ChatRoomModel");
-    }*/
+    public List<ChatRoomOccupantModel> items() {
+        return getMany(ChatRoomOccupantModel.class, "ChatRoomModel");
+    }
 }

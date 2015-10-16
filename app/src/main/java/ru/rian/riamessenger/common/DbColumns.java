@@ -5,6 +5,7 @@ package ru.rian.riamessenger.common;
  */
 public class DbColumns {
 
+    final public static String OwnerJidCol = "OwnerJidCol";
     final public static String MsgBodyCol = "body";
     final public static String ToJidCol = "ToJid";
     final public static String FromJidCol = "FromJid";

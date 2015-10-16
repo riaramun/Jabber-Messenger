@@ -14,9 +14,7 @@ import java.util.List;
 
 @Table(name = "RosterGroupModels", id = BaseColumns._ID)
 public class RosterGroupModel extends Model {
-    // This is the unique id given by the server
-    //@Column(name = "remote_id", unique = true)
-   // public long remoteId;
+
     // This is a regular field
     @Column(name = "Name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String name;

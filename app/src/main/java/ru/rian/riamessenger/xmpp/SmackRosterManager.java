@@ -42,7 +42,7 @@ import ru.rian.riamessenger.utils.XmppUtils;
 /**
  * Created by Roman on 8/10/2015.
  */
-public class SmackRosterManager implements RosterLoadedListener, RosterListener, StanzaListener {
+public class SmackRosterManager implements RosterLoadedListener, RosterListener {
 
     @Getter
     final
@@ -66,7 +66,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
         }
 */
         //roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
-        xmppConnection.addSyncStanzaListener(this, StanzaTypeFilter.PRESENCE);
+
         roster.setRosterLoadedAtLogin(false);
         roster.addRosterLoadedListener(this);
         roster.addRosterListener(this);
@@ -160,25 +160,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener,
     }
 
 
-    @Override
-    public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
-        Presence presence = (Presence) packet;
-        if (presence != null && presence.getFrom() != null) {
-            //Log.i("Service", "presence = " + presence.getStatus() + " mode " + presence.getMode() + " from " + presence.getFrom());
-            String bareJid = presence.getFrom().asBareJid().toString();//XmppUtils.entityJid(presence.getFrom());
-            if (!TextUtils.isEmpty(bareJid)) {
-                RosterEntryModel rosterEntryModel = new Select().from(RosterEntryModel.class).where(DbColumns.FromJidCol + "='" + bareJid + "'").executeSingle();
-                if (rosterEntryModel != null) {
-                    rosterEntryModel.setPresence(presence);
-                    try {
-                        rosterEntryModel.save();
-                    } catch (SQLiteDiskIOException e) {
-                        Log.i("Service", e.getMessage());
-                    }
-                }
-            }
-        }
-    }
+
 
     @Override
     public void entriesAdded(Collection<Jid> addresses) {

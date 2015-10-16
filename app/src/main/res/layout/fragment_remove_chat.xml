@@ -11,23 +11,25 @@
         android:id="@+id/chat_remove_buttton"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:gravity="center"
         android:layout_alignParentBottom="true"
         android:background="@drawable/list_item_bg_selector"
         android:clickable="true">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:gravity="center"
             android:clickable="false"
             android:orientation="horizontal">
 
             <com.malinskiy.materialicons.widget.IconTextView
                 style="@style/LoginViewIconImage"
+                android:layout_marginRight="5dp"
                 android:text="{zmdi-delete}" />
 
             <com.devspark.robototextview.widget.RobotoTextView
-                android:layout_width="wrap_content"
+                android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:text="@string/destroyRoomAlertMsg"
                 android:textSize="18sp"

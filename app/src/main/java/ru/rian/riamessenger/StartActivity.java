@@ -17,7 +17,6 @@ import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
-import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.SysUtils;
 
 public class StartActivity extends RiaBaseActivity {

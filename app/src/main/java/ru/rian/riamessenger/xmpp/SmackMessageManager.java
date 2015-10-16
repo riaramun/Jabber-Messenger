@@ -29,7 +29,6 @@ import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.SysUtils;
-import ru.rian.riamessenger.utils.XmppUtils;
 
 /**
  * Created by grigoriy on 29.06.15.
@@ -102,7 +101,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
     Message createMessage(Jid jidTo, String messageText) {
-     //  String entityJidTo = null;
+        //  String entityJidTo = null;
         String entityJidFrom = null;
         //entityJidTo = jidTo;
         entityJidFrom = (userAppPreference.getUserStringKey());
@@ -136,7 +135,7 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                 message.setTo(message.getTo());
                 message.setFrom(message.getFrom());
                 xmppConnection.sendStanza(message);
-                Log.i(TAG, "send msg id = " + message.getStanzaId());
+                //Log.i(TAG, "send msg id = " + message.getStanzaId());
             }
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
@@ -179,13 +178,17 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     }
 
 
-
     @Override
     public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
         final Message message = (Message) packet;
         // store message to DB
         if (!TextUtils.isEmpty(message.getBody())) {
-            Log.i(TAG, "received msg id= " + message.getStanzaId());
+
+            if (message.getFrom().getResourceOrNull().equals(userAppPreference.getFirstSecondName())) {
+                return;
+            }
+
+           // Log.i(TAG, "received msg id= " + message.getStanzaId());
             Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
@@ -196,10 +199,11 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                         isRead = messageInDb.isRead;
                     }
 
+
                     MessageContainer messageContainer = null;
                     int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
                     messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), isRead);
-                    if (!isRead && SysUtils.isApplicationBroughtToBackground(context)) {
+                    if (messageContainer != null && !isRead && SysUtils.isApplicationBroughtToBackground(context)) {
                         sendMsgBroadcastReceiver.sendOrderedBroadcastIntent(messageContainer);
                     } else {
                         //Message loader is not restarted immediately for unknown reason, so we do it by this event

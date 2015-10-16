@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -74,8 +73,8 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     @Bind(R.id.message_edit_text)
 
     EditText messageEditText;
-     MessagesAdapter messagesAdapter;
-     LinearLayoutManager linearLayoutManager;
+    MessagesAdapter messagesAdapter;
+    LinearLayoutManager linearLayoutManager;
 
     @OnTextChanged(R.id.message_edit_text)
     void onTextChanged(CharSequence text) {
@@ -143,12 +142,6 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         recyclerView.setAdapter(messagesAdapter);
     }
 
-     String getExtraJid(String arg_jid) {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        return bundle.getString(arg_jid);
-    }
-
 
     @Override
     public Loader<CursorRiaLoader.LoaderResult<Cursor>> onCreateLoader(int id, Bundle args) {
@@ -166,14 +159,16 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
         switch (loader.getId()) {
             case MESSAGES_LOADER_ID: {
-                messagesAdapter.changeCursor(data.result);
-                if (messagesAdapter.getItemCount() > 0) {
-                    linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
+                if (data.result != null && !data.result.isClosed()) {
+                    messagesAdapter.changeCursor(data.result);
+                    if (messagesAdapter.getItemCount() > 0) {
+                        linearLayoutManager.scrollToPosition(messagesAdapter.getItemCount() - 1);
+                    }
                 }
                 break;
             }
             case USER_STATUS_LOADER_ID: {
-                if (data.result != null) {
+                if (data.result != null && !data.result.isClosed()) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
                     int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
                     ((ImageView) findViewById(R.id.user_online_status_img)).setImageResource(resId);
@@ -194,7 +189,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
     }
 
-     void updateStatusBar() {
+    void updateStatusBar() {
         String jid_to = getExtraJid(ARG_TO_JID);
         String titleToSet = "";
         if (!TextUtils.isEmpty(jid_to)) {
@@ -241,12 +236,17 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
                 break;
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu_conversation, menu);
-        return true;
+        if (getExtraJid(ARG_ROOM_JID) != null) {
+            getMenuInflater().inflate(R.menu.menu_conversation, menu);
+            return true;
+        }
+        return false;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -255,6 +255,9 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_edit_room:
+                Intent intent = new Intent(this, AddNewRoomActivity.class);
+                intent.putExtras(getIntent().getExtras());
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

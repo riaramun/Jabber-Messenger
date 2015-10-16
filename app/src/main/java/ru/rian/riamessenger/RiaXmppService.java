@@ -1,4 +1,4 @@
-package ru.rian.riamessenger.services;
+package ru.rian.riamessenger;
 //TODO: Update this so that UI activities can just get references to the service
 // rather than using AIDL
 //TODO: Above seems to be done and working, but now need to update methods
@@ -23,8 +23,9 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
+import bolts.Continuation;
+import bolts.Task;
 import de.greenrobot.event.EventBus;
-import ru.rian.riamessenger.RiaBaseApplication;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -33,6 +34,7 @@ import ru.rian.riamessenger.riaevents.request.ChatMessageEvent;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.request.RoomCreateEvent;
+import ru.rian.riamessenger.riaevents.request.RoomEditEvent;
 import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.NetworkStateManager;
@@ -57,7 +59,7 @@ public class RiaXmppService extends Service {
     SmackRosterManager smackRosterManager;
     MUCManager mucManager;
 
-    public static final String TAG = "Service";
+    public static final String TAG = "RiaService";
 
     @Override
     public void onTrimMemory(final int level) {
@@ -134,9 +136,22 @@ public class RiaXmppService extends Service {
         }
     }
 
+    public void onEvent(RoomEditEvent event) {
+        if (mucManager != null) {
+            switch (event.getCommand()) {
+                case RoomEditEvent.INVITE_USER:
+                    mucManager.inviteUserToRoom(event.getRoomThreadId(), event.getUserJid());
+                    break;
+                case RoomEditEvent.KICK_USER:
+                    mucManager.kickUserFromRoom(event.getRoomThreadId(), event.getUserJid());
+                    break;
+            }
+        }
+    }
+
     public void onEvent(RoomCreateEvent event) {
         if (mucManager != null) {
-            mucManager.createRoom(event.getRoomName(), event.getParticipantsArrayList());
+            mucManager.createRoomAndSaveToDb(event.getRoomName(), event.getParticipantsArrayList());
         }
     }
 
@@ -239,29 +254,34 @@ public class RiaXmppService extends Service {
 
     boolean isConnecting = false;
 
-    void onStartService() {
+    synchronized void onStartService() {
+        NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
 
         Presence.Type presenceType = Presence.Type.available;
         if (!smackXmppConnection.isAuthenticated()) {
             presenceType = Presence.Type.unavailable;
         }
-        XmppUtils.changeCurrentUserStatus(new Presence(presenceType), userAppPreference.getUserStringKey(), xmppConnection);
-
-        if (!isConnecting && doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
+        if (!TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
+            XmppUtils.changeCurrentUserStatus(new Presence(presenceType), userAppPreference.getUserStringKey(), xmppConnection);
+        }
+        if (/*!isConnecting &&*/ doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
             setConnectingState(true);
             bolts.Task.callInBackground(new Callable<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object call() {
+                    initSmackModules();
                     smackXmppConnection.tryConnectToServer();
                     smackXmppConnection.tryLoginToServer();
                     connectionHandler.removeCallbacks(connectionRunnable);
                     if (doLoginAndPassExist() && smackXmppConnection.isAuthenticated()) {
                         boolean isOk = smackRosterManager.tryGetRosterFromServer();
                         if (!isOk) {
+                            Log.i(TAG, "everything is not ok, we've didn't get roster!!!");
+                            setConnectingState(false);
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
                             connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         } else {
-                            mucManager.updateRoomsInDb();
+                            mucManager.recoverRoomsFromDb();
                             Log.i(TAG, "everything is ok, we've got roster!!!");
                             setConnectingState(false);
                         }

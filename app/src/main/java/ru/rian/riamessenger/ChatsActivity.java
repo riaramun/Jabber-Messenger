@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
@@ -75,7 +76,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        int resId  = R.drawable.action_bar_status_offline;
+        int resId = R.drawable.action_bar_status_offline;
         getSupportActionBar().setHomeAsUpIndicator(resId);
 
         final int numberOfTabs = fragmentsIds.length;
@@ -168,7 +169,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
             return true;
         }
         if (id == android.R.id.home) {
-
+            Toast.makeText(this, getText(R.string.lastRoomMessageFromYou) + " " + userAppPreference.getFirstSecondName(), Toast.LENGTH_SHORT).show();
             return true;
         }
 

@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
-import ru.rian.riamessenger.services.RiaXmppService;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.SysUtils;
 

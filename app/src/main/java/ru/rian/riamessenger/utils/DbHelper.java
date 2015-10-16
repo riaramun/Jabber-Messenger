@@ -2,8 +2,10 @@ package ru.rian.riamessenger.utils;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
@@ -11,10 +13,10 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
@@ -22,7 +24,9 @@ import java.util.Date;
 import java.util.List;
 
 import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.model.ChatRoomModel;
+import ru.rian.riamessenger.model.ChatRoomOccupantModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.model.RosterGroupModel;
@@ -83,8 +87,25 @@ public class DbHelper {
         return rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
     }
 
+    static public List<ChatRoomModel> getChatRooms() {
+        return new Select().from(ChatRoomModel.class).execute();
+    }
+
     static public ChatRoomModel getChatRoomByJid(String bareJid) {
         return new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + bareJid + "'").executeSingle();
+    }
+
+    static public List<ChatRoomOccupantModel> getRoomOccupants(String roomJid) {
+        ChatRoomModel chatRoomModel = getChatRoomByJid(roomJid);
+        return new Select().from(ChatRoomOccupantModel.class).where(DbColumns.ChatRoomModel + "=" + chatRoomModel.getId()).execute();
+    }
+
+    static public List<ChatRoomOccupantModel> getRoomOccupantModelByUser(String userJid) {
+        return new Select().from(ChatRoomOccupantModel.class).where(DbColumns.FromJidCol + "='" + userJid + "'").execute();
+    }
+
+    static public ChatRoomOccupantModel getRoomOccupant(long roomId, String userJid) {
+        return new Select().from(ChatRoomOccupantModel.class).where(BaseColumns._ID + "=" + roomId + " and " + DbColumns.ThreadIdCol + "='" + userJid + "'").executeSingle();
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
@@ -118,63 +139,55 @@ public class DbHelper {
         return SQLiteUtils.rawQuery(MessageContainer.class, select, null);
     }
 
+    static List<ChatRoomOccupantModel> getOccupantsByRoomThreadId(String roomThreadId) {
+        String select = new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + roomThreadId + "'").toSql();
+        ChatRoomModel chatRoomModel = SQLiteUtils.rawQuerySingle(ChatRoomModel.class, select, null);
+        return chatRoomModel.items();
+    }
+
     public static List<MessageContainer> getAllNotSentMessages(String currentUserJid) {
-        String select = new Select().from(MessageContainer.class).where(DbColumns.SentFlagIdCol + "=0 and " + DbColumns.FromJidCol + "='" + currentUserJid + "'").toSql();
+        String select = new Select().from(MessageContainer.class).where(DbColumns.ChatTypeCol + " = " + MessageContainer.CHAT_SIMPLE + " and " + DbColumns.SentFlagIdCol + "=0 and " + DbColumns.FromJidCol + "='" + currentUserJid + "'").toSql();
         return SQLiteUtils.rawQuery(MessageContainer.class, select, null);
     }
 
-    /*public static MessageContainer addGroupMessageToDb(Message message, int chatType, String messageId, String from, String to, boolean isRead) {
-        MessageContainer messageContainer = new MessageContainer(chatType);
-        messageContainer.body = message.getBody();
-        messageContainer.stanzaID = message.getStanzaId();
-        messageContainer.toJid = to;
-        messageContainer.fromJid = from;
-        messageContainer.threadID = messageId;// message.getThread();
-        messageContainer.created = new Date();
-        messageContainer.isRead = isRead;
-        messageContainer.stanzaID = message.getStanzaId();
-        messageContainer.save();
-        return messageContainer;
-    }*/
-
     public static MessageContainer addMessageToDb(Message message, int chatType, Jid messageId, boolean isRead) {
-        int slashInd;
-        String msgId;
-        String from;
-        String to;
-        //from cijcjcjc@conference.kis-jabber/skurzhansky
-        //to lebedenko@kis-jabber/ria_mobile
+        MessageContainer messageContainer = null;
+        if (!TextUtils.isEmpty(message.getBody())) {
 
-       // slashInd = messageId.indexOf('/');
-        msgId = messageId.asBareJid().toString();//slashInd > 0 ? messageId.substring(0, slashInd) : messageId;
+            String msgId;
+            String from;
+            String to;
 
-        /*slashInd = message.getTo().indexOf('/');
-        to = slashInd > 0 ? message.getTo().substring(0, slashInd) : message.getTo();
+            msgId = messageId.asBareJid().toString();//slashInd > 0 ? messageId.substring(0, slashInd) : messageId;
+            //workaround for bugs...
+            if (message.getFrom().toString().contains(RiaConstants.ROOM_DOMAIN)
+                    || message.getTo().toString().contains(RiaConstants.ROOM_DOMAIN)) {
+                chatType = MessageContainer.CHAT_GROUP;
+            } else {
+                chatType = MessageContainer.CHAT_SIMPLE;
+            }
 
-        slashInd = message.getFrom().indexOf('/');
-        if (chatType == MessageContainer.CHAT_SIMPLE) {
-            from = slashInd > 0 ? message.getFrom().substring(0, slashInd) : message.getFrom();
-        } else {
-            from = slashInd > 0 ? message.getFrom().substring(slashInd + 1) : message.getFrom();
-        }*/
-        if (chatType == MessageContainer.CHAT_SIMPLE) {
-            from = message.getFrom().asBareJid().toString();
-        } else {
-            from = message.getFrom().getResourceOrNull().toString();
+            if (chatType == MessageContainer.CHAT_SIMPLE) {
+                from = message.getFrom().asBareJid().toString();
+            } else {
+                //if we send group message we must set resTo, another way resFrom
+                Resourcepart resFrom = message.getFrom().getResourceOrNull();
+                from = resFrom != null ? resFrom.toString() : message.getFrom().toString();
+            }
+
+            to = message.getTo().asBareJid().toString();
+
+            messageContainer = new MessageContainer(chatType);
+            messageContainer.body = message.getBody();
+            messageContainer.stanzaID = message.getStanzaId();
+            messageContainer.toJid = to;
+            messageContainer.fromJid = from;
+            messageContainer.threadID = msgId.toLowerCase();// message.getThread();
+            messageContainer.created = new Date();
+            messageContainer.isRead = isRead;
+            messageContainer.stanzaID = message.getStanzaId();
+            messageContainer.save();
         }
-
-        to = message.getTo().asBareJid().toString();
-
-        MessageContainer messageContainer = new MessageContainer(chatType);
-        messageContainer.body = message.getBody();
-        messageContainer.stanzaID = message.getStanzaId();
-        messageContainer.toJid = to;
-        messageContainer.fromJid = from;
-        messageContainer.threadID = msgId.toLowerCase();// message.getThread();
-        messageContainer.created = new Date();
-        messageContainer.isRead = isRead;
-        messageContainer.stanzaID = message.getStanzaId();
-        messageContainer.save();
         return messageContainer;
     }
 
@@ -194,5 +207,55 @@ public class DbHelper {
         }
         cursor.close();
         return roomsJids;
+    }
+
+    public static void addRoomToDb(EntityBareJid roomJid, String ownerJid, List<String> contactJids) {
+        try {
+            ActiveAndroid.beginTransaction();
+
+            ChatRoomModel chatRoomModel = new ChatRoomModel();
+            chatRoomModel.threadIdCol = roomJid.asBareJid().toString();
+            chatRoomModel.name = roomJid.getLocalpart().toString();//roomJid.substring(0, roomJid.indexOf("@"));
+            chatRoomModel.ownerJidCol = ownerJid;
+            chatRoomModel.save();
+
+            if (contactJids != null) {
+                for (String entityFullJid : contactJids) {
+                    ChatRoomOccupantModel chatRoomOccupantModel = new ChatRoomOccupantModel();
+                    chatRoomOccupantModel.bareJid = entityFullJid;
+                    chatRoomOccupantModel.chatRoomModel = chatRoomModel;
+                    chatRoomOccupantModel.save();
+                }
+            }
+            ActiveAndroid.setTransactionSuccessful();
+        } finally {
+            ActiveAndroid.endTransaction();
+        }
+    }
+
+    public static void deleteOccupantFromDb(EntityBareJid roomJid, String contactJid) {
+        ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(roomJid.asEntityBareJidString());
+        if (chatRoomModel != null) {
+            ChatRoomOccupantModel chatRoomOccupantModel = getRoomOccupant(chatRoomModel.getId(), contactJid);
+            if (chatRoomOccupantModel != null) {
+                chatRoomOccupantModel.delete();
+            }
+        }
+    }
+
+    public static void addOccupantToDb(EntityBareJid roomJid, List<String> contactJids) {
+        try {
+            ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(roomJid.asEntityBareJidString());
+            ActiveAndroid.beginTransaction();
+            for (String entityFullJid : contactJids) {
+                ChatRoomOccupantModel chatRoomOccupantModel = new ChatRoomOccupantModel();
+                chatRoomOccupantModel.bareJid = entityFullJid;
+                chatRoomOccupantModel.chatRoomModel = chatRoomModel;
+                chatRoomOccupantModel.save();
+            }
+            ActiveAndroid.setTransactionSuccessful();
+        } finally {
+            ActiveAndroid.endTransaction();
+        }
     }
 }

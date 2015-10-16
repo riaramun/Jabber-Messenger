@@ -18,6 +18,8 @@ public class MessageContainer extends Model {
 
     public MessageContainer() {
         super();
+        isSent = false;
+        isRead = false;
     }
 
     public MessageContainer(int chatType) {

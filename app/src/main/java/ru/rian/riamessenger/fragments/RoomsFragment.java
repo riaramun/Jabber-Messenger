@@ -43,8 +43,10 @@ import ru.rian.riamessenger.AddNewRoomActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
 import ru.rian.riamessenger.common.DbColumns;
+import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
+import ru.rian.riamessenger.model.ChatRoomModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
@@ -68,8 +70,10 @@ public class RoomsFragment extends BaseTabFragment {
     public void onEvent(ChatEvents chatEvents) {
         switch (chatEvents.getChatEventId()) {
             case ChatEvents.DO_REMOVE_CHAT:
-                String tableName = Cache.getTableInfo(MessageContainer.class).getTableName();
-                SQLiteUtils.execSql("DELETE FROM " + tableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
+                String messagetableName = Cache.getTableInfo(MessageContainer.class).getTableName();
+                SQLiteUtils.execSql("DELETE FROM " + messagetableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
+                String chatRoomTableName = Cache.getTableInfo(ChatRoomModel.class).getTableName();
+                SQLiteUtils.execSql("DELETE FROM " + chatRoomTableName + " WHERE " + DbColumns.ThreadIdCol + "='" + chatEvents.getChatThreadId() + "'");
                 initOrRestartLoader(tabId, getBundle(), this);
                 break;
         }
@@ -125,6 +129,8 @@ public class RoomsFragment extends BaseTabFragment {
         buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
         int loaderId = FragIds.ROOMS_FRAGMENT.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
+        //loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
+        //initOrRestartLoader(loaderId, getBundle(), this);
     }
 
 
@@ -134,6 +140,8 @@ public class RoomsFragment extends BaseTabFragment {
         switch (fragIds) {
             case ROOMS_FRAGMENT:
                 return new RoomsListenerLoader(getActivity());
+           /* case CHAT_USER_STATUS_LOADER_ID:
+                return new ChatsOnlineStatesLoader(getActivity(), args);*/
            /* case CHAT_USER_STATUS_LOADER_ID:
                 return new ChatsOnlineStatesLoader(getActivity(), args);*/
         }

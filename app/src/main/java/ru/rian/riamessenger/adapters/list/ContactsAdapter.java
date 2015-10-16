@@ -10,9 +10,11 @@ import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LinearSLM;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
@@ -37,15 +39,19 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     @Getter
     HashMap<Integer, String> selectedUsersJidMap = new HashMap<Integer, String>();
 
-     final ListItemMode listItemMode;
+    @Setter
+    @Getter
+    Set<String> selectedJids;
 
-     int mHeaderDisplay;
+    final ListItemMode listItemMode;
 
-     boolean mMarginsFixed;
+    int mHeaderDisplay;
 
-     final Context mContext;
+    boolean mMarginsFixed;
 
-     final ContactsListClickListener contactsListClickListener;
+    final Context mContext;
+
+    final ContactsListClickListener contactsListClickListener;
 
     @Override
     public String getTextToShowInBubble(final int pos) {
@@ -99,6 +105,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                         int pos = recyclerView.getChildAdapterPosition(v);
                         if (selectedUsersJidMap.containsKey(pos)) {
                             selectedUsersJidMap.remove(pos);
+                            selectedJids.remove(selectedUsersJidMap.get(pos));
                         } else {
                             String jid = getUser(pos);
                             selectedUsersJidMap.put(pos, jid);
@@ -156,7 +163,12 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                             ViewUtils.setOnlineStatus(contactViewHolder.onlineStatus, RosterEntryModel.UserStatus.USER_STATUS_UNAVAILIBLE.ordinal());
                         }
                     } else {
-                        contactViewHolder.contactSelected.setChecked(selectedUsersJidMap.containsKey(position));
+                        String jid = getUser(position);
+                        if (selectedJids.contains(jid)) {
+                            contactViewHolder.contactSelected.setChecked(true);
+                        } else {
+                            contactViewHolder.contactSelected.setChecked(selectedUsersJidMap.containsKey(position));
+                        }
                     }
                 }
                 lp.setSlm(LinearSLM.ID);
@@ -187,7 +199,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
         notifyHeaderChanges();
     }
 
-     void notifyHeaderChanges() {
+    void notifyHeaderChanges() {
         if (entries != null) {
             for (int i = 0; i < entries.size(); i++) {
                 LineItem item = entries.get(i);

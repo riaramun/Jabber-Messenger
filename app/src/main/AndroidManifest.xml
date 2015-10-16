@@ -39,6 +39,7 @@
             android:name=".ConversationActivity"
             android:configChanges="orientation"
             android:label=""
+            android:noHistory="false"
             android:parentActivityName=".ChatsActivity"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
@@ -60,23 +61,18 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ContactsActivity"
-            android:noHistory="true"
             android:configChanges="orientation"
             android:label="@string/rooms"
+            android:noHistory="true"
             android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".AddNewRoomActivity"
             android:configChanges="orientation"
             android:label=""
-            android:noHistory="true"
-            android:parentActivityName=".ChatsActivity"
             android:theme="@style/CustomActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChatsActivity" />
-        </activity>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|screenSize"
@@ -86,10 +82,10 @@
 
 
         <service
-            android:name=".services.RiaXmppService"
+            android:name=".RiaXmppService"
             android:enabled="true">
             <!--<intent-filter>
-                <action android:name="ru.rian.riamessenger.services.RiaXmppService" />
+                <action android:name="ru.rian.riamessenger.RiaXmppService" />
             </intent-filter>-->
             <intent-filter>
                 <action android:name="ru.rian.riamessenger.services.STOP_CONNECTION_SERVICE" />
@@ -102,7 +98,7 @@
             android:value="riamessenger.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1" />
+            android:value="4" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"

@@ -17,7 +17,7 @@ import ru.rian.riamessenger.ConversationActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
-import ru.rian.riamessenger.services.RiaXmppService;
+import ru.rian.riamessenger.RiaXmppService;
 import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 
