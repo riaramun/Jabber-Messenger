@@ -26,11 +26,9 @@ import com.malinskiy.materialicons.widget.IconTextView;
 import com.tonicartos.superslim.LayoutManager;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.ConversationActivity;
@@ -41,7 +39,6 @@ import ru.rian.riamessenger.adapters.list.FastScroller;
 import ru.rian.riamessenger.adapters.list.RosterEntryIdGetter;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaConstants;
-import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.listeners.ContactsListClickListener;
 import ru.rian.riamessenger.loaders.ContactsLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
@@ -75,7 +72,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 }
             }
             String textToSet = "";
-            for (String value : mAdapter.getSelectedUsersJidMap().values()) {
+            for (String value : mAdapter.getSelectedUsersJidMap()) {
                 textToSet += DbHelper.getRosterEntryByBareJid(value).name;
                 textToSet += ";\t";
             }
@@ -154,7 +151,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             mAreMarginsFixed = getResources().getBoolean(R.bool.default_margins_fixed);
         }
         Bundle bundle = getArguments();
-        Set<String> selectedJids = new HashSet();
+
         if (bundle != null) {
             String roomJid = bundle.getString(RiaBaseActivity.ARG_ROOM_JID);
             if (roomJid != null) {
@@ -162,10 +159,10 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 if (chatRoomModel != null) {
                     for (ChatRoomOccupantModel model : chatRoomModel.items()) {
                         RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(model.bareJid);
-                        if(rosterEntryModel != null) {
+                        if (rosterEntryModel != null) {
                             participantsTextView.append(rosterEntryModel.name);
                             participantsTextView.append("; ");
-                            selectedJids.add(rosterEntryModel.bareJid);
+                            mAdapter.getSelectedUsersJidMap().add(rosterEntryModel.bareJid);
                         }
                     }
                 }
@@ -176,7 +173,6 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         mAdapter = new ContactsAdapter(ContactsAdapter.ListItemMode.ECheckNox, getActivity(), mHeaderDisplay, contactsListClickListener);
         mAdapter.setMarginsFixed(mAreMarginsFixed);
         mAdapter.setHeaderDisplay(mHeaderDisplay);
-        mAdapter.setSelectedJids(selectedJids);
         mViews.setAdapter(mAdapter);
 
     }
@@ -356,8 +352,9 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 if (roomEditText.isEnabled()) {
                     addNewRoom(roomEditText);
                 } else {
-                    mAdapter.getSelectedUsersJidMap();
-                 //  RiaEventBus.post(new RoomEditEvent());
+                    Bundle bundle = getArguments();
+                    String roomJid = bundle.getString(RiaBaseActivity.ARG_ROOM_JID);
+                    EventBus.getDefault().post(new RoomEditEvent(roomJid, mAdapter.getSelectedUsersJidMap()));
                     //kick or add user
                 }
             }
@@ -367,7 +364,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
     void addNewRoom(EditText editText) {
         if (editText.getText().length() > 3 && !TextUtils.isEmpty(participantsTextView.getText())) {
             ArrayList<String> participantsArrayList = new ArrayList<>();
-            for (String value : mAdapter.getSelectedUsersJidMap().values()) {
+            for (String value : mAdapter.getSelectedUsersJidMap()) {
                 participantsArrayList.add(value);
             }
             String roomName = editText.getText().toString().trim();

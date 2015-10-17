@@ -23,11 +23,11 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import bolts.Continuation;
-import bolts.Task;
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
+import ru.rian.riamessenger.model.ChatRoomModel;
+import ru.rian.riamessenger.model.ChatRoomOccupantModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.request.ChatMessageEvent;
@@ -37,6 +37,7 @@ import ru.rian.riamessenger.riaevents.request.RoomCreateEvent;
 import ru.rian.riamessenger.riaevents.request.RoomEditEvent;
 import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.XmppUtils;
 import ru.rian.riamessenger.xmpp.MUCManager;
@@ -137,7 +138,26 @@ public class RiaXmppService extends Service {
     }
 
     public void onEvent(RoomEditEvent event) {
-        if (mucManager != null) {
+
+        ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(event.getRoomThreadId());
+
+        for (ChatRoomOccupantModel model : chatRoomModel.items()) {
+
+            if (event.getParticipantsArrayList().contains(model.bareJid)) {
+                //nothing to do, we already have this user in data base for this room
+            } else {
+                mucManager.inviteUserToRoom(chatRoomModel.threadIdCol, model.bareJid);
+                //add to db
+                ChatRoomOccupantModel chatRoomOccupantModel = new ChatRoomOccupantModel();
+                chatRoomOccupantModel.bareJid = model.bareJid;
+                chatRoomOccupantModel.chatRoomModel = chatRoomModel;
+                chatRoomOccupantModel.save();
+            }
+        }
+        //check hashset and kick others...
+        for(event.getParticipantsArrayList())
+
+        /*if (mucManager != null) {
             switch (event.getCommand()) {
                 case RoomEditEvent.INVITE_USER:
                     mucManager.inviteUserToRoom(event.getRoomThreadId(), event.getUserJid());
@@ -146,7 +166,7 @@ public class RiaXmppService extends Service {
                     mucManager.kickUserFromRoom(event.getRoomThreadId(), event.getUserJid());
                     break;
             }
-        }
+        }*/
     }
 
     public void onEvent(RoomCreateEvent event) {

@@ -1,5 +1,9 @@
 package ru.rian.riamessenger.riaevents.request;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,14 +15,8 @@ import lombok.Getter;
 public class RoomEditEvent {
 
     @Getter
-    final String roomThreadId;
+    String roomThreadId;
 
     @Getter
-    final String userJid;
-
-    @Getter
-    final int command;
-
-    static public final int INVITE_USER = 1;
-    static public final int KICK_USER = 2;
+    HashSet<String> participantsArrayList;
 }

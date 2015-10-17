@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.GridSLM;
 import com.tonicartos.superslim.LinearSLM;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.HashSet;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.base.BaseRiaRecyclerAdapter;
 import ru.rian.riamessenger.adapters.viewholders.ContactViewHolder;
@@ -37,11 +35,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
     }
 
     @Getter
-    HashMap<Integer, String> selectedUsersJidMap = new HashMap<Integer, String>();
-
-    @Setter
-    @Getter
-    Set<String> selectedJids;
+    HashSet<String> selectedUsersJidMap = new HashSet<String>();
 
     final ListItemMode listItemMode;
 
@@ -103,12 +97,13 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                     public void onClick(View v) {
                         RecyclerView recyclerView = (RecyclerView) v.getParent();
                         int pos = recyclerView.getChildAdapterPosition(v);
-                        if (selectedUsersJidMap.containsKey(pos)) {
-                            selectedUsersJidMap.remove(pos);
-                            selectedJids.remove(selectedUsersJidMap.get(pos));
+                        String jid = getUser(pos);
+                        if (selectedUsersJidMap.contains(jid)) {
+                            selectedUsersJidMap.remove(jid);
+
                         } else {
-                            String jid = getUser(pos);
-                            selectedUsersJidMap.put(pos, jid);
+
+                            selectedUsersJidMap.add(jid);
                         }
                         contactsListClickListener.onClick(ContactsAdapter.this, v);
                         ContactsAdapter.this.notifyItemChanged(pos);
@@ -164,11 +159,7 @@ public class ContactsAdapter extends BaseRiaRecyclerAdapter implements RosterEnt
                         }
                     } else {
                         String jid = getUser(position);
-                        if (selectedJids.contains(jid)) {
-                            contactViewHolder.contactSelected.setChecked(true);
-                        } else {
-                            contactViewHolder.contactSelected.setChecked(selectedUsersJidMap.containsKey(position));
-                        }
+                        contactViewHolder.contactSelected.setChecked(selectedUsersJidMap.contains(jid));
                     }
                 }
                 lp.setSlm(LinearSLM.ID);
