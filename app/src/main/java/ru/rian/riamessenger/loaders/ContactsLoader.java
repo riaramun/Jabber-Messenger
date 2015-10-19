@@ -33,13 +33,16 @@ import ru.rian.riamessenger.model.RosterGroupModel;
 
 public class ContactsLoader extends CursorRiaLoader {
 
-     int tabIdloader = -1;
-     String title_to_search = null;
+    int tabIdloader = -1;
+    String title_to_search = null;
+    List<String> jidToExcludeList;
 
     public ContactsLoader(Context ctx, Bundle args) {
         super(ctx);
+
         tabIdloader = args.getInt(BaseTabFragment.ARG_TAB_ID);
         title_to_search = args.getString(BaseTabFragment.ARG_TITLE_FILTER);
+        jidToExcludeList = args.getStringArrayList(BaseTabFragment.ARG_JID_TO_EXCLUDE);
 
         BaseTabFragment.FragIds fragIds = BaseTabFragment.FragIds.values()[tabIdloader];
 
@@ -57,7 +60,7 @@ public class ContactsLoader extends CursorRiaLoader {
     }
 
 
-     Cursor retrieveDataFromRoster() {
+    Cursor retrieveDataFromRoster() {
 
         String resultRecords;
         Cursor resultCursor = null;
@@ -72,27 +75,32 @@ public class ContactsLoader extends CursorRiaLoader {
                 List<RosterGroupModel> groupModelList = SQLiteUtils.processCursor(RosterGroupModel.class, groupCursor);
                 groupCursor.close();
                 long groupToExcludeId = 0;
-                if(groupModelList != null && groupModelList.size() > 0) {
+                if (groupModelList != null && groupModelList.size() > 0) {
                     groupToExcludeId = groupModelList.get(0).getId();
                 }
                 From from = new Select().from(RosterEntryModel.class);
 
                 String sqlReqText = "";
-                if(groupToExcludeId != 0) {
+                if (groupToExcludeId != 0) {
                     sqlReqText += " RosterGroupModel != " + groupToExcludeId;
                 }
 
                 if (!TextUtils.isEmpty(title_to_search)) {
-                    if(!TextUtils.isEmpty(sqlReqText)) {
+                    if (!TextUtils.isEmpty(sqlReqText)) {
                         sqlReqText += " and ";
                     }
                     sqlReqText += "Name LIKE '%" + title_to_search.toLowerCase(Locale.getDefault()) + "%'";
                 }
 
-                if(!TextUtils.isEmpty(sqlReqText)) {
-                    from.where(sqlReqText);
+                if (jidToExcludeList != null && jidToExcludeList.size() > 0) {
+                    for (String jid : jidToExcludeList) {
+                        sqlReqText += " and " + DbColumns.FromJidCol + " != '" + jid + "'";
+                    }
                 }
 
+                if (!TextUtils.isEmpty(sqlReqText)) {
+                    from.where(sqlReqText);
+                }
 
                 String queryResults = from.orderBy("Name ASC").toSql();
                 resultCursor = Cache.openDatabase().rawQuery(queryResults, null);
@@ -141,7 +149,7 @@ public class ContactsLoader extends CursorRiaLoader {
         return retrieveDataFromRoster();
     }
 
-     class EntrySortBasedOnName implements Comparator {
+    class EntrySortBasedOnName implements Comparator {
         public int compare(Object o1, Object o2) {
             val dd1 = (RosterEntry) o1;// where FBFriends_Obj is your object class
             val dd2 = (RosterEntry) o2;
@@ -149,7 +157,7 @@ public class ContactsLoader extends CursorRiaLoader {
         }
     }
 
-     class GroupSortBasedOnName implements Comparator {
+    class GroupSortBasedOnName implements Comparator {
         public int compare(Object o1, Object o2) {
             val dd1 = (RosterGroup) o1;// where FBFriends_Obj is your object class
             val dd2 = (RosterGroup) o2;

@@ -98,7 +98,7 @@
             android:value="riamessenger.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="4" />
+            android:value="5" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"

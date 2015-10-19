@@ -86,7 +86,7 @@ public class SmackXmppConnection {
                 //it is a workaround for this situation
             } else {
                 Log.i("RiaService", "EAuthenticationFailed");
-                userAppPreference.setLoginStringKey("");
+               // userAppPreference.setLoginStringKey("");
                 userAppPreference.setPassStringKey("");
                 RiaEventBus.post(XmppErrorEvent.State.EAuthenticationFailed);
             }

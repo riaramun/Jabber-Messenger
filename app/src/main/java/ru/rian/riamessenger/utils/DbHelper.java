@@ -105,7 +105,14 @@ public class DbHelper {
     }
 
     static public ChatRoomOccupantModel getRoomOccupant(long roomId, String userJid) {
-        return new Select().from(ChatRoomOccupantModel.class).where(BaseColumns._ID + "=" + roomId + " and " + DbColumns.ThreadIdCol + "='" + userJid + "'").executeSingle();
+        return new Select().from(ChatRoomOccupantModel.class).where(DbColumns.ChatRoomModel + "=" + roomId + " and " + DbColumns.FromJidCol + "='" + userJid + "'").executeSingle();
+    }
+
+    static public void addOccupantToDb(String participantJid, ChatRoomModel dbChatRoomModel) {
+        ChatRoomOccupantModel chatRoomOccupantModel = new ChatRoomOccupantModel();
+        chatRoomOccupantModel.bareJid = participantJid;
+        chatRoomOccupantModel.chatRoomModel = dbChatRoomModel;
+        chatRoomOccupantModel.save();
     }
 
     static public RosterEntryModel getRosterEntryByBareJid(String bareJid) {
@@ -139,11 +146,11 @@ public class DbHelper {
         return SQLiteUtils.rawQuery(MessageContainer.class, select, null);
     }
 
-    static List<ChatRoomOccupantModel> getOccupantsByRoomThreadId(String roomThreadId) {
+    /*static List<ChatRoomOccupantModel> getOccupantsByRoomThreadId(String roomThreadId) {
         String select = new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + roomThreadId + "'").toSql();
         ChatRoomModel chatRoomModel = SQLiteUtils.rawQuerySingle(ChatRoomModel.class, select, null);
         return chatRoomModel.items();
-    }
+    }*/
 
     public static List<MessageContainer> getAllNotSentMessages(String currentUserJid) {
         String select = new Select().from(MessageContainer.class).where(DbColumns.ChatTypeCol + " = " + MessageContainer.CHAT_SIMPLE + " and " + DbColumns.SentFlagIdCol + "=0 and " + DbColumns.FromJidCol + "='" + currentUserJid + "'").toSql();
@@ -243,7 +250,7 @@ public class DbHelper {
         }
     }
 
-    public static void addOccupantToDb(EntityBareJid roomJid, List<String> contactJids) {
+    /*public static void addOccupantToDb(EntityBareJid roomJid, List<String> contactJids) {
         try {
             ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(roomJid.asEntityBareJidString());
             ActiveAndroid.beginTransaction();
@@ -257,5 +264,5 @@ public class DbHelper {
         } finally {
             ActiveAndroid.endTransaction();
         }
-    }
+    }*/
 }

@@ -18,5 +18,5 @@ public class RoomEditEvent {
     String roomThreadId;
 
     @Getter
-    HashSet<String> participantsArrayList;
+    HashSet<String> participantsSet;
 }

@@ -69,7 +69,7 @@ public abstract class BaseTabFragment extends RiaBaseFragment implements LoaderM
 
     public static final String ARG_TAB_ID = "tabId";
     public static final String ARG_TITLE_FILTER = "title_filter";
-
+    public static final String ARG_JID_TO_EXCLUDE = "jids_to_exclude";
     public static BaseTabFragment newInstance(int tabId) {
 
         BaseTabFragment tabFragment = null;

@@ -150,6 +150,14 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
             mHeaderDisplay = getResources().getInteger(R.integer.default_header_display);
             mAreMarginsFixed = getResources().getBoolean(R.bool.default_margins_fixed);
         }
+
+        mViews = new ViewHolder(view);
+        mViews.initViews(new LayoutManager(getActivity()));
+        mAdapter = new ContactsAdapter(ContactsAdapter.ListItemMode.ECheckNox, getActivity(), mHeaderDisplay, contactsListClickListener);
+        mAdapter.setMarginsFixed(mAreMarginsFixed);
+        mAdapter.setHeaderDisplay(mHeaderDisplay);
+        mViews.setAdapter(mAdapter);
+
         Bundle bundle = getArguments();
 
         if (bundle != null) {
@@ -168,13 +176,6 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 }
             }
         }
-        mViews = new ViewHolder(view);
-        mViews.initViews(new LayoutManager(getActivity()));
-        mAdapter = new ContactsAdapter(ContactsAdapter.ListItemMode.ECheckNox, getActivity(), mHeaderDisplay, contactsListClickListener);
-        mAdapter.setMarginsFixed(mAreMarginsFixed);
-        mAdapter.setHeaderDisplay(mHeaderDisplay);
-        mViews.setAdapter(mAdapter);
-
     }
 
     @Override
@@ -315,6 +316,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                 if (chatRoomModel != null) {
                     roomEditText.setText(chatRoomModel.name);
                     roomEditText.setEnabled(false);
+                    addButton.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -356,6 +358,7 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
                     String roomJid = bundle.getString(RiaBaseActivity.ARG_ROOM_JID);
                     EventBus.getDefault().post(new RoomEditEvent(roomJid, mAdapter.getSelectedUsersJidMap()));
                     //kick or add user
+                    getActivity().finish();
                 }
             }
         });
@@ -391,6 +394,8 @@ public class ContactsAddNewRoomFragment extends BaseTabFragment {
         Bundle bundle = new Bundle();
         bundle.putInt(BaseTabFragment.ARG_TAB_ID, tabId);
         bundle.putString(BaseTabFragment.ARG_TITLE_FILTER, title_to_search);
+        ArrayList<String> stringArrayList = new ArrayList<String>(mAdapter.getSelectedUsersJidMap());
+        bundle.putStringArrayList(BaseTabFragment.ARG_JID_TO_EXCLUDE, stringArrayList);
         return bundle;
     }
 

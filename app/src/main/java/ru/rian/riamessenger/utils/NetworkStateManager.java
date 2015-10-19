@@ -10,7 +10,6 @@ import com.activeandroid.ActiveAndroid;
 
 import org.jivesoftware.smack.packet.Presence;
 
-import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.model.RosterEntryModel;
 
 public class NetworkStateManager {
@@ -34,19 +33,26 @@ public class NetworkStateManager {
         return isMobile || isWifi;
     }
 
-    public static void setCurrentUserPresence(Presence presence, String bareJid) {
-
-        RosterEntryModel rosterEntryModel = new RosterEntryModel();
-        rosterEntryModel.bareJid = bareJid;//XmppUtils.entityJidWithRes(bareJid);
-        rosterEntryModel.setPresence(presence);
-        try {
-            ActiveAndroid.beginTransaction();
-            rosterEntryModel.save();
-            ActiveAndroid.setTransactionSuccessful();
-        } catch (SQLiteDiskIOException e) {
-            Log.i("Service", e.getMessage());
-        } finally {
-            ActiveAndroid.endTransaction();
+    public static boolean setCurrentUserPresence(Presence presence, String bareJid) {
+        boolean isChanged = true;
+        RosterEntryModel rosterEntryModel = DbHelper.getRosterEntryByBareJid(bareJid);
+        if (rosterEntryModel == null) {
+            rosterEntryModel = new RosterEntryModel();
+            rosterEntryModel.bareJid = bareJid;
+        } else {
+            isChanged = rosterEntryModel.setPresence(presence);
         }
+        if (isChanged) {
+            try {
+                ActiveAndroid.beginTransaction();
+                rosterEntryModel.save();
+                ActiveAndroid.setTransactionSuccessful();
+            } catch (SQLiteDiskIOException e) {
+                Log.i("Service", e.getMessage());
+            } finally {
+                ActiveAndroid.endTransaction();
+            }
+        }
+        return isChanged;
     }
 }

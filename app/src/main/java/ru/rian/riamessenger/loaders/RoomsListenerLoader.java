@@ -27,7 +27,7 @@ public class RoomsListenerLoader extends CursorRiaLoader {
     protected Cursor loadCursor() throws Exception {
         String messages = Cache.getTableInfo(MessageContainer.class).getTableName();
         String req = "SELECT " + BaseColumns._ID + "," + DbColumns.ThreadIdCol + "," + DbColumns.MsgBodyCol + "," + DbColumns.FromJidCol + ","
-                + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol;
+                + "MAX(" + DbColumns.CreatedCol + ") AS " + DbColumns.CreatedCol + " FROM " + messages + " WHERE " + DbColumns.ChatTypeCol + "=" + MessageContainer.CHAT_GROUP + " GROUP BY " + DbColumns.ThreadIdCol + " ORDER BY " + DbColumns.CreatedCol + " DESC ";
         return Cache.openDatabase().rawQuery(req, null);
     }
 }

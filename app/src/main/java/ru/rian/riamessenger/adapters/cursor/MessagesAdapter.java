@@ -53,7 +53,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
                 } else {
                     cursor.moveToPrevious();
                     MessageContainer prevListItem = DbHelper.getModelByCursor(cursor, MessageContainer.class);
-                    if (!areTheDatesAtTheSameDay(prevListItem.created, messageContainer.created)) {
+                    if (prevListItem == null || !areTheDatesAtTheSameDay(prevListItem.created, messageContainer.created)) {
                         isFirstDayVideo = true;
                     }
                     cursor.moveToNext();

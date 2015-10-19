@@ -32,6 +32,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import lombok.RequiredArgsConstructor;
 import ru.rian.riamessenger.RiaXmppService;
 import ru.rian.riamessenger.common.DbColumns;
@@ -41,6 +42,7 @@ import ru.rian.riamessenger.model.ChatRoomOccupantModel;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.model.RosterEntryModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
+import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
 
 /**
@@ -65,7 +67,8 @@ public class MUCManager implements InvitationListener, StanzaListener {
         MultiUserChat multiUserChat = null;
         try {
             multiUserChat = manager.getMultiUserChat(JidCreate.entityBareFrom(threadId));
-            Occupant occupant = multiUserChat.getOccupant(JidCreate.entityFullFrom(userJid));
+            List<EntityFullJid> list = multiUserChat.getOccupants();
+            Occupant occupant = multiUserChat.getOccupant(JidCreate.entityFullFrom(userJid + "/" + RiaConstants.XMPP_RESOURCE_NAME));
             multiUserChat.kickParticipant(occupant.getNick(), "");
         } catch (XmppStringprepException e) {
             e.printStackTrace();
@@ -201,9 +204,11 @@ public class MUCManager implements InvitationListener, StanzaListener {
     @Override
     public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
         final EntityBareJid roomBareJid = room.getRoom();
-        joinRoom(roomBareJid);
-        //List<String> usersJids = getRoomParticipants(roomBareJid.asEntityBareJidString());
-        DbHelper.addRoomToDb(roomBareJid, "", null);
+        if (!manager.getJoinedRooms().contains(room.getRoom())) {
+            joinRoom(roomBareJid);
+            //List<String> usersJids = getRoomParticipants(roomBareJid.asEntityBareJidString());
+            DbHelper.addRoomToDb(roomBareJid, "", null);
+        }
     }
 
     void joinRoom(EntityBareJid roomJid) {
@@ -243,6 +248,7 @@ public class MUCManager implements InvitationListener, StanzaListener {
             DbHelper.addMessageToDb(message, MessageContainer.CHAT_GROUP, JidCreate.entityBareFrom(roomJid), true);
         } catch (Exception e) {
             e.printStackTrace();
+            EventBus.getDefault().post(new XmppErrorEvent(XmppErrorEvent.State.EMessageNotSend));
         }
     }
 

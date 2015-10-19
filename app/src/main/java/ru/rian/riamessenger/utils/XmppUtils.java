@@ -16,14 +16,15 @@ public class XmppUtils {
     static public void changeCurrentUserStatus(Presence presence, String jid, XMPPConnection xmppConnection) {
         try {
             presence.setFrom(JidCreate.from(jid));
-            NetworkStateManager.setCurrentUserPresence(presence, jid);
-            changeCurrentUserPresenceOnServer(presence, xmppConnection);
+            if (NetworkStateManager.setCurrentUserPresence(presence, jid)) {
+                changeCurrentUserPresenceOnServer(presence, xmppConnection);
+            }
         } catch (XmppStringprepException e) {
             e.printStackTrace();
         }
     }
 
-     static void changeCurrentUserPresenceOnServer(Presence presence, XMPPConnection xmppConnection) {
+    static void changeCurrentUserPresenceOnServer(Presence presence, XMPPConnection xmppConnection) {
         if (xmppConnection != null) {
             try {
                 xmppConnection.sendStanza(presence);

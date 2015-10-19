@@ -118,7 +118,7 @@ public class LoginActivity extends RiaBaseActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
                 userAppPreference.setFirstSecondName(nameEditText.getText().toString().trim());
-                userAppPreference.setLoginStringKey(loginEditText.getText().toString());
+                userAppPreference.setLoginStringKey(loginEditText.getText().toString().trim());
                 userAppPreference.setPassStringKey(passwordEditText.getText().toString());
 
 

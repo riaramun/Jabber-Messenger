@@ -40,15 +40,22 @@ public class RosterEntryModel extends Model {
     // Make sure to have a default constructor for every ActiveAndroid model
     public RosterEntryModel() {
         super();
+        presence = UserStatus.USER_STATUS_UNAVAILIBLE.ordinal();
     }
 
-    public void setPresence(Presence presence) {
+    public boolean setPresence(Presence presence) {
+        Integer pres;
         if (presence.isAway())
-            this.presence = UserStatus.USER_STATUS_AWAY.ordinal();
+            pres = UserStatus.USER_STATUS_AWAY.ordinal();
         else if (presence.isAvailable())
-            this.presence = UserStatus.USER_STATUS_AVAILIBLE.ordinal();
+            pres = UserStatus.USER_STATUS_AVAILIBLE.ordinal();
         else
-            this.presence = UserStatus.USER_STATUS_UNAVAILIBLE.ordinal();
+            pres = UserStatus.USER_STATUS_UNAVAILIBLE.ordinal();
+        if (pres == this.presence) {
+            return false;
+        }
+        this.presence = pres;
+        return true;
     }
 
     public enum UserStatus {

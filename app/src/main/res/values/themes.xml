@@ -4,7 +4,7 @@
     <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
         <item name="android:textCursorDrawable">@null</item>
-        <item name="android:windowContentOverlay">@color/dark_blue</item>
+
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
@@ -17,7 +17,7 @@
         <item name="colorPrimaryDark">@color/dark_blue</item>
         <item name="android:colorPrimaryDark">@color/dark_blue</item>
         <!-- <item name="android:windowFullscreen">true</item>-->
-        <item name="android:windowContentOverlay">@color/dark_blue</item>
+
 
     </style>
     <!-- ActionBar styles -->

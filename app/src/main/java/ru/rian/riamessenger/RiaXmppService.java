@@ -19,6 +19,9 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -65,7 +68,7 @@ public class RiaXmppService extends Service {
     @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
-        if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+        if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && !TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
             Presence presence = new Presence(Presence.Type.available);
             presence.setMode(Presence.Mode.away);
             XmppUtils.changeCurrentUserStatus(presence, userAppPreference.getUserStringKey(), xmppConnection);
@@ -138,33 +141,26 @@ public class RiaXmppService extends Service {
     }
 
     public void onEvent(RoomEditEvent event) {
-
-        ChatRoomModel chatRoomModel = DbHelper.getChatRoomByJid(event.getRoomThreadId());
-
-        for (ChatRoomOccupantModel model : chatRoomModel.items()) {
-
-            if (event.getParticipantsArrayList().contains(model.bareJid)) {
-                //nothing to do, we already have this user in data base for this room
-            } else {
-                mucManager.inviteUserToRoom(chatRoomModel.threadIdCol, model.bareJid);
-                //add to db
-                ChatRoomOccupantModel chatRoomOccupantModel = new ChatRoomOccupantModel();
-                chatRoomOccupantModel.bareJid = model.bareJid;
-                chatRoomOccupantModel.chatRoomModel = chatRoomModel;
-                chatRoomOccupantModel.save();
+        ChatRoomModel dbChatRoomModel = DbHelper.getChatRoomByJid(event.getRoomThreadId());
+        HashSet<String> participants = event.getParticipantsSet();
+        if (participants != null) {
+            Iterator<String> iterator = participants.iterator();
+            while (iterator.hasNext()) {
+                String participantNew = iterator.next();
+                if (DbHelper.getRoomOccupant(dbChatRoomModel.getId(), participantNew) == null) {
+                    //if it is a new occupant
+                  //  List<ChatRoomOccupantModel> items = dbChatRoomModel.items();
+                    mucManager.inviteUserToRoom(dbChatRoomModel.threadIdCol, participantNew);
+                    //add to db
+                    DbHelper.addOccupantToDb(participantNew, dbChatRoomModel);
+                }
             }
         }
-        //check hashset and kick others...
-        for(event.getParticipantsArrayList())
-
-        /*if (mucManager != null) {
-            switch (event.getCommand()) {
-                case RoomEditEvent.INVITE_USER:
-                    mucManager.inviteUserToRoom(event.getRoomThreadId(), event.getUserJid());
-                    break;
-                case RoomEditEvent.KICK_USER:
-                    mucManager.kickUserFromRoom(event.getRoomThreadId(), event.getUserJid());
-                    break;
+        /*for (ChatRoomOccupantModel dbOccupModel : dbChatRoomModel.items()) {
+            if (!participants.contains(dbOccupModel.bareJid)) {
+                //kick him and remove from db
+                mucManager.kickUserFromRoom(dbChatRoomModel.threadIdCol, dbOccupModel.bareJid);
+                dbOccupModel.delete();
             }
         }*/
     }
