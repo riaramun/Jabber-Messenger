@@ -64,7 +64,7 @@ public class SmackXmppConnection {
 
 
     public void tryConnectToServer() {
-        if (isConnected() || xmppConnection == null) return;
+        if (isConnected() || isAuthenticated() ||  xmppConnection == null) return;
         try {
             Log.i("RiaService", "tryConnectToServer");
             xmppConnection.connect();
@@ -80,15 +80,14 @@ public class SmackXmppConnection {
             Log.i("RiaService", "tryLoginToServer");
             xmppConnection.login(userAppPreference.getLoginStringKey(), userAppPreference.getPassStringKey());
         } catch (Exception e) {
-            if (e.getMessage().contains("No response") || e.getMessage().contains("reply timeout") || e.getMessage().contains("is no longer connected")) {
-                Log.i("RiaService", e.getMessage());
-                //From time to time we ca not login to server because of "No response received within reply timeout"
-                //it is a workaround for this situation
-            } else {
-                Log.i("RiaService", "EAuthenticationFailed");
-               // userAppPreference.setLoginStringKey("");
+            Log.i("RiaService", e.getMessage());
+            if (e.getLocalizedMessage().contains("not-authorized")) {
+                // userAppPreference.setLoginStringKey("");
                 userAppPreference.setPassStringKey("");
                 RiaEventBus.post(XmppErrorEvent.State.EAuthenticationFailed);
+            } else {
+                //From time to time we ca not login to server because of "No response received within reply timeout"
+                //it is a workaround for this situation
             }
             Log.i("RiaService", "sign in error, " + e.getMessage());
             e.printStackTrace();

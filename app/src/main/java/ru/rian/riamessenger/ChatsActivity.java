@@ -11,6 +11,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -142,10 +143,13 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         } else {
             EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
         }
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_TO_JID, userAppPreference.getUserStringKey());
-        initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
-
+        if(!TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
+            //it is possible that our roster is empty
+            //in this case we init our loader when we get it
+            Bundle bundle = new Bundle();
+            bundle.putString(ARG_TO_JID, userAppPreference.getUserStringKey());
+            initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
+        }
         progressBar.setVisibility(!userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
 
     }
@@ -204,11 +208,20 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     }
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
+        int resId;
         switch (xmppErrorEvent.state) {
             case EAuthenticated:
-                NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getUserStringKey());
+                resId = R.drawable.action_bar_status_online;
+                getSupportActionBar().setHomeAsUpIndicator(resId);
+                break;
+            case EDbUpdated:
+                Bundle bundle = new Bundle();
+                bundle.putString(ARG_TO_JID, userAppPreference.getUserStringKey());
+                initOrRestartLoader(USER_STATUS_LOADER_ID, bundle, this);
                 break;
             case EAuthenticationFailed:
+                resId = R.drawable.action_bar_status_offline;
+                getSupportActionBar().setHomeAsUpIndicator(resId);
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 break;
@@ -242,7 +255,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
             case USER_STATUS_LOADER_ID: {
                 if (data.result != null && data.result.moveToFirst()) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
-                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel, this);
                     getSupportActionBar().setHomeAsUpIndicator(resId);
                 }
             }

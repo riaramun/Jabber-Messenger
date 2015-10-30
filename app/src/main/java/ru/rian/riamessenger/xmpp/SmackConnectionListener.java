@@ -45,7 +45,9 @@ public class SmackConnectionListener implements ConnectionListener {
 
     @Override
     public void authenticated(final XMPPConnection connection, boolean resumed) {
-        RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
+        if (DbHelper.rosterTableIsNotEmpty()) {
+            RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
+        }
         Log.i(RiaXmppService.TAG, "EAuthenticated");
         //add current user entry to track his presence via loader
         userAppPreference.setAuthStateKey(true);

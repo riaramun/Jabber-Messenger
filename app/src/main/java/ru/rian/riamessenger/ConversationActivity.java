@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.malinskiy.materialicons.widget.IconTextView;
@@ -41,10 +42,12 @@ import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ScreenUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
 import ru.rian.riamessenger.utils.XmppUtils;
+import ru.rian.riamessenger.xmpp.SmackRosterManager;
 
 /**
  * Created by Roman on 7/21/2015.
@@ -170,7 +173,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
             case USER_STATUS_LOADER_ID: {
                 if (data.result != null && !data.result.isClosed()) {
                     RosterEntryModel rosterEntryModel = DbHelper.getModelByCursor(data.result, RosterEntryModel.class);
-                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+                    int resId = ViewUtils.getIconIdByPresence(rosterEntryModel, this);
                     ((ImageView) findViewById(R.id.user_online_status_img)).setImageResource(resId);
                 }
             }
@@ -197,12 +200,12 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
             if (rosterEntryModel != null) {
                 progressBar.setVisibility(View.GONE);
                 if (rosterEntryModel.rosterGroupModel != null &&
-                        rosterEntryModel.rosterGroupModel.name.equals(getString(R.string.robots))) {
+                        rosterEntryModel.rosterGroupModel.name.equals(SmackRosterManager.FIRST_SORTED_GROUP)) {
                     titleToSet = rosterEntryModel.name;
                 } else {
                     titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);
                 }
-                int resId = ViewUtils.getIconIdByPresence(rosterEntryModel);
+                int resId = ViewUtils.getIconIdByPresence(rosterEntryModel, this);
                 ((ImageView) findViewById(R.id.user_online_status_img)).setImageResource(resId);
             } else {
                 progressBar.setVisibility(View.VISIBLE);
@@ -221,6 +224,15 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         switch (xmppErrorEvent.state) {
+
+            case EMessageNotSend:
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ConversationActivity.this, "Message sending error", Toast.LENGTH_LONG);
+                    }
+                });
+                break;
             case EDbUpdating:
             case EDbUpdated:
                 this.runOnUiThread(new Runnable() {

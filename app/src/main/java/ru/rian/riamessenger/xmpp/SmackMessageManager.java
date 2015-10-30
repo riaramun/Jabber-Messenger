@@ -17,12 +17,14 @@ import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
+import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.prefs.UserAppPreference;
@@ -137,10 +139,9 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                 xmppConnection.sendStanza(message);
                 //Log.i(TAG, "send msg id = " + message.getStanzaId());
             }
-        } catch (SmackException.NotConnectedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            EventBus.getDefault().post(new XmppErrorEvent(XmppErrorEvent.State.EMessageNotSend));
         }
     }
 
@@ -182,24 +183,20 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
     public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
         final Message message = (Message) packet;
         // store message to DB
-        if (!TextUtils.isEmpty(message.getBody())) {
-
-            if (message.getFrom().getResourceOrNull().equals(userAppPreference.getFirstSecondName())) {
+        if (message.getBodies().size() > 0 && !TextUtils.isEmpty(message.getBody())) {
+           Resourcepart resourcepart = message.getFrom().getResourceOrNull();
+            if (resourcepart != null && resourcepart.equals(userAppPreference.getFirstSecondName())) {
                 return;
             }
-
-           // Log.i(TAG, "received msg id= " + message.getStanzaId());
+            // Log.i(TAG, "received msg id= " + message.getStanzaId());
             Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-
                     Boolean isRead = false;
                     MessageContainer messageInDb = DbHelper.getMessageByReceiptId(message.getStanzaId());
                     if (messageInDb != null) {
                         isRead = messageInDb.isRead;
                     }
-
-
                     MessageContainer messageContainer = null;
                     int msgType = message.getType() == Message.Type.groupchat ? MessageContainer.CHAT_GROUP : MessageContainer.CHAT_SIMPLE;
                     messageContainer = DbHelper.addMessageToDb(message, msgType, message.getFrom(), isRead);
@@ -213,9 +210,13 @@ public class SmackMessageManager implements ReceiptReceivedListener, StanzaListe
                 }
             });
         } else {
-            Log.i(TAG, "on null message from chat id = " + message.getThread()
-                    + " from " + message.getFrom()
-                    + " to " + message.getTo());
+            // if we get a message without a body, we check it's stanza id,
+            // if the stanza id coincides with it, we conclude that it is a confirmation receipt
+            MessageContainer messageContainer = DbHelper.getMessageByReceiptId(message.getStanzaId());
+            if (messageContainer != null) {
+                messageContainer.isSent = true;
+                messageContainer.save();
+            }
         }
     }
 

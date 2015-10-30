@@ -82,8 +82,9 @@ public class LoginActivity extends RiaBaseActivity {
 
         String login = userAppPreference.getLoginStringKey();
         String pass = userAppPreference.getPassStringKey();
+        String name = userAppPreference.getFirstSecondName();
 
-
+        nameEditText.setText(name);
         loginEditText.setText(login);
         passwordEditText.setText(pass);
 
@@ -153,6 +154,7 @@ public class LoginActivity extends RiaBaseActivity {
             public void run() {
                 switch (xmppErrorEvent.state) {
                     case EAuthenticated:
+                    case EDbUpdated:
                         progressBar.setVisibility(View.INVISIBLE);
                         Intent intent = new Intent(LoginActivity.this, ChatsActivity.class);
                         startActivity(intent);

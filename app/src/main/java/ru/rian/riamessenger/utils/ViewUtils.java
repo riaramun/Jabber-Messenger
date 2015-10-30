@@ -16,6 +16,7 @@
 
 package ru.rian.riamessenger.utils;
 
+import android.content.Context;
 import android.widget.TextView;
 
 import ru.rian.riamessenger.R;
@@ -40,10 +41,10 @@ public class ViewUtils {
         onlineStatus.setBackgroundResource(resId);
     }
 
-    public static int getIconIdByPresence(RosterEntryModel rosterEntryModel) {
+    public static int getIconIdByPresence(RosterEntryModel rosterEntryModel, Context context) {
         int resId = -1;
 
-        if (rosterEntryModel == null) {
+        if (rosterEntryModel == null || !NetworkStateManager.isNetworkAvailable(context)) {
             resId = R.drawable.action_bar_status_offline;
         } else {
             RosterEntryModel.UserStatus mode = RosterEntryModel.UserStatus.values()[rosterEntryModel.presence];

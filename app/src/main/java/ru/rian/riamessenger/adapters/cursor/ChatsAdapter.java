@@ -28,6 +28,7 @@ import ru.rian.riamessenger.utils.DbHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ViewUtils;
+import ru.rian.riamessenger.xmpp.SmackRosterManager;
 
 /**
  * Created by Roman on 6/30/2015.
@@ -79,7 +80,7 @@ public class ChatsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                     if (rosterEntryModel != null) {
                         String titleToSet;
                         if (rosterEntryModel.rosterGroupModel != null
-                                && rosterEntryModel.rosterGroupModel.name.equals(mContext.getString(R.string.robots))) {
+                                && rosterEntryModel.rosterGroupModel.name.equals(SmackRosterManager.FIRST_SORTED_GROUP)) {
                             titleToSet = rosterEntryModel.name;
                         } else {
                             titleToSet = RiaTextUtils.capFirst(rosterEntryModel.name);

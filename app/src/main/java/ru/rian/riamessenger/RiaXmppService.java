@@ -21,7 +21,6 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -30,7 +29,6 @@ import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.model.ChatRoomModel;
-import ru.rian.riamessenger.model.ChatRoomOccupantModel;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.connection.InternetConnEvent;
 import ru.rian.riamessenger.riaevents.request.ChatMessageEvent;
@@ -87,9 +85,11 @@ public class RiaXmppService extends Service {
         xmppConnection = new XMPPTCPConnection(SmackXmppConnection.getConfig(userAppPreference));
         xmppConnection.addConnectionListener(new SmackConnectionListener(this, userAppPreference, sendMsgBroadcastReceiver));
         xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
+
         smackRosterManager = new SmackRosterManager(this, userAppPreference, xmppConnection);
         smackXmppConnection = new SmackXmppConnection(xmppConnection, userAppPreference);
         xmppMessageManager = new SmackMessageManager(this, xmppConnection, sendMsgBroadcastReceiver, userAppPreference);
+
         mucManager = new MUCManager(this, xmppConnection, userAppPreference);
         mucManager.init();
     }
@@ -149,7 +149,7 @@ public class RiaXmppService extends Service {
                 String participantNew = iterator.next();
                 if (DbHelper.getRoomOccupant(dbChatRoomModel.getId(), participantNew) == null) {
                     //if it is a new occupant
-                  //  List<ChatRoomOccupantModel> items = dbChatRoomModel.items();
+                    //  List<ChatRoomOccupantModel> items = dbChatRoomModel.items();
                     mucManager.inviteUserToRoom(dbChatRoomModel.threadIdCol, participantNew);
                     //add to db
                     DbHelper.addOccupantToDb(participantNew, dbChatRoomModel);
@@ -181,9 +181,9 @@ public class RiaXmppService extends Service {
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
         switch (xmppErrorEvent.state) {
             case EDbUpdated:
-                connectionHandler.removeCallbacks(connectionRunnable);
-                Log.i(TAG, "everything is ok, we've got roster!!!");
                 setConnectingState(false);
+                NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.available), userAppPreference.getUserStringKey());
+                connectionHandler.removeCallbacks(connectionRunnable);
                 if (xmppMessageManager != null) {
                     xmppMessageManager.sendAllNotSentMessages();
                 }
@@ -196,7 +196,7 @@ public class RiaXmppService extends Service {
         switch (event.getEventId()) {
 
             case TO_SIGN_IN:
-                if (smackXmppConnection.isAuthenticated()) {
+                if (smackXmppConnection.isAuthenticated() && DbHelper.rosterTableIsNotEmpty()) {
                     RiaEventBus.post(XmppErrorEvent.State.EAuthenticated);
                     XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.available), userAppPreference.getUserStringKey(), xmppConnection);
                 } else {
@@ -280,38 +280,40 @@ public class RiaXmppService extends Service {
         if (!TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
             XmppUtils.changeCurrentUserStatus(new Presence(presenceType), userAppPreference.getUserStringKey(), xmppConnection);
         }
-        if (/*!isConnecting &&*/ doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
+        if ( doLoginAndPassExist() && NetworkStateManager.isNetworkAvailable(this)) {
             setConnectingState(true);
             bolts.Task.callInBackground(new Callable<Object>() {
                 @Override
                 public Object call() {
-                    initSmackModules();
+                    //if sign in failed it doesn't sign in second time for some reason
+                    //so we try to reinitialise smack modules
+                    if (!smackXmppConnection.isAuthenticated()) {
+                        initSmackModules();
+                    }
+
+                    connectionHandler.removeCallbacks(connectionRunnable);
+                    connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
+
                     smackXmppConnection.tryConnectToServer();
                     smackXmppConnection.tryLoginToServer();
-                    connectionHandler.removeCallbacks(connectionRunnable);
+
                     if (doLoginAndPassExist() && smackXmppConnection.isAuthenticated()) {
                         boolean isOk = smackRosterManager.tryGetRosterFromServer();
                         if (!isOk) {
-                            Log.i(TAG, "everything is not ok, we've didn't get roster!!!");
-                            setConnectingState(false);
+                            Log.i(TAG, "we haven't  got roster, try again");
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
-                            connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
                         } else {
                             mucManager.recoverRoomsFromDb();
                             Log.i(TAG, "everything is ok, we've got roster!!!");
                             setConnectingState(false);
+                            connectionHandler.removeCallbacks(connectionRunnable);
                         }
                         if (xmppMessageManager != null) {
                             xmppMessageManager.sendAllNotSentMessages();
                         }
                     } else {
-                        setConnectingState(false);
                         xmppConnection.disconnect();
                         XmppUtils.changeCurrentUserStatus(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey(), xmppConnection);
-                        connectionHandler.removeCallbacks(connectionRunnable);
-                        connectionHandler.postDelayed(connectionRunnable, RiaConstants.GETTING_ROSTER_NEXT_TRY_TIME_OUT);
-                        //if sign in failed it doesn't sign in second time for some reason
-                        //so we try to reinitialise smack modules
                     }
                     return null;
                 }

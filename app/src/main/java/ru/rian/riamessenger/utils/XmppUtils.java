@@ -1,5 +1,7 @@
 package ru.rian.riamessenger.utils;
 
+import android.text.TextUtils;
+
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Presence;
@@ -14,13 +16,15 @@ import ru.rian.riamessenger.common.RiaConstants;
 public class XmppUtils {
 
     static public void changeCurrentUserStatus(Presence presence, String jid, XMPPConnection xmppConnection) {
-        try {
-            presence.setFrom(JidCreate.from(jid));
-            if (NetworkStateManager.setCurrentUserPresence(presence, jid)) {
-                changeCurrentUserPresenceOnServer(presence, xmppConnection);
+        if(!TextUtils.isEmpty(jid)) {
+            try {
+                presence.setFrom(JidCreate.from(jid));
+                if (NetworkStateManager.setCurrentUserPresence(presence, jid)) {
+                    changeCurrentUserPresenceOnServer(presence, xmppConnection);
+                }
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
             }
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
         }
     }
 

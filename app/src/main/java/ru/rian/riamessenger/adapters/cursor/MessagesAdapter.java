@@ -99,7 +99,7 @@ public class MessagesAdapter extends CursorRecyclerViewAdapter {
         }
     }
 
-     static final DateFormat dateFormat = new SimpleDateFormat("dd.mm.yy");
+     static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
      static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @Override

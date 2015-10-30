@@ -90,7 +90,9 @@ public class DbHelper {
     static public List<ChatRoomModel> getChatRooms() {
         return new Select().from(ChatRoomModel.class).execute();
     }
-
+    static public List<RosterGroupModel> getRosterGroupModels() {
+        return new Select().from(RosterGroupModel.class).execute();
+    }
     static public ChatRoomModel getChatRoomByJid(String bareJid) {
         return new Select().from(ChatRoomModel.class).where(DbColumns.ThreadIdCol + "='" + bareJid + "'").executeSingle();
     }
@@ -183,9 +185,14 @@ public class DbHelper {
             }
 
             to = message.getTo().asBareJid().toString();
-
+            String text;
+            if (TextUtils.isEmpty(message.getSubject())) {
+                text = message.getBody();
+            } else {
+                text = message.getSubject() + "\n" + message.getBody();
+            }
             messageContainer = new MessageContainer(chatType);
-            messageContainer.body = message.getBody();
+            messageContainer.body = text;
             messageContainer.stanzaID = message.getStanzaId();
             messageContainer.toJid = to;
             messageContainer.fromJid = from;
