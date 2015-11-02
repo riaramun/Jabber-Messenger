@@ -31,7 +31,8 @@ public class SmackXmppConnection {
         String serviceName = null;
         try {
             serviceName = RiaConstants.XMPP_SERVICE_NAME;
-            configBuilder.setResource(RiaConstants.XMPP_RESOURCE_NAME);
+
+            configBuilder.setResource(userAppPreference.getUniqueXmppRes());
             configBuilder.setXmppDomain(JidCreate.domainBareFrom(serviceName));
         } catch (XmppStringprepException e) {
             e.printStackTrace();

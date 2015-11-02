@@ -49,8 +49,4 @@ public class XmppUtils {
         int slashInd = jidWithRes.indexOf('/');
         return slashInd > 0 ? jidWithRes.substring(0, slashInd) : jidWithRes;
     }
-
-    public static String entityJidWithRes(String jid) {
-        return entityJid(jid) + "/" + RiaConstants.XMPP_RESOURCE_NAME;
-    }
 }

@@ -4,7 +4,6 @@
     <string name="app_name">RiaMessenger</string>
     <string name="new_message">New message</string>
     <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>
-    <string name="robots">!Загрузка!</string>
     <string name="fullNamePrompt">Nombre y apellido</string>
     <string name="nicknamePrompt">Alias</string>
     <string name="destroyChatAlertTitle">Удалить чат и историю переписки?</string>

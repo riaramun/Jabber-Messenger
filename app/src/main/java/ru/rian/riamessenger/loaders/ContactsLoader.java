@@ -120,7 +120,7 @@ public class ContactsLoader extends CursorRiaLoader {
                     listCursor = rosterGroupModel.items();
                 }*/
                 String groupTableName = Cache.getTableInfo(RosterGroupModel.class).getTableName();
-                resultRecords = new Select().from(RosterEntryModel.class).where("RosterEntryModels.RosterGroupModel IN (SELECT _id" + " FROM " + groupTableName + " WHERE name ='" + getContext().getString(R.string.robots) + "')").orderBy("name ASC").toSql();
+                resultRecords = new Select().from(RosterEntryModel.class).where("RosterEntryModels.RosterGroupModel IN (SELECT _id" + " FROM " + groupTableName + " WHERE name ='" + SmackRosterManager.FIRST_SORTED_GROUP + "')").orderBy("name ASC").toSql();
 
                 //  tableName = Cache.getTableInfo(RosterGroupModel.class).getTableName();
                 //  resultRecords = new Select().from(RosterGroupModel.class).where("name = ?", getContext().getString(R.string.robots)).toSql();

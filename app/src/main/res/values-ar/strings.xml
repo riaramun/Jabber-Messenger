@@ -4,7 +4,6 @@
     <string name="app_name">RiaMessenger</string>
     <string name="new_message">New message</string>
     <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>
-    <string name="robots">!Загрузка!</string>
     <string name="fullNamePrompt">الاسم بالكامل</string>
     <string name="nicknamePrompt">الاسم المستعار</string>
     <!-- Комната используется в том же смысле, что и комната в помещении. При переводе примера псевдонима использовать устоявщиеся формы примеров имен для каждого языка, например, для английского, это может быть John Smith или John Doe. -->

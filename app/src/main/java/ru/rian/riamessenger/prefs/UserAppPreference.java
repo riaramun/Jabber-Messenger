@@ -18,7 +18,7 @@ public class UserAppPreference {
     static final String LOGIN_STRING_KEY = "LOGIN_STRING_KEY";
     static final String CURRENT_JID_STRING_KEY = "CURRENT_JID_STRING_KEY";
     static final String CONNECTING_STATE_BOOL_KEY = "CONNECTING_STATE_BOOL_KEY";
-    static final String AUTH_STATE_BOOL_KEY = "AUTH_STATE_BOOL_KEY";
+    static final String XMPP_RES_STR_KEY = "XMPP_RES_STR_KEY";
 
     static Editor mEditor;
 
@@ -59,12 +59,13 @@ public class UserAppPreference {
         mEditor.putBoolean(CONNECTING_STATE_BOOL_KEY, value).apply();
     }
 
-    public boolean getAuthStateKey() {
-        return sharedPreferences.getBoolean(AUTH_STATE_BOOL_KEY, false);
-    }
-
-    public void setAuthStateKey(boolean value) {
-        mEditor.putBoolean(AUTH_STATE_BOOL_KEY, value).apply();
+    public String getUniqueXmppRes() {
+        String res = sharedPreferences.getString(XMPP_RES_STR_KEY, "");
+        if (TextUtils.isEmpty(res)) {
+            res = "ria_mobile_andr_" + Math.random();
+            mEditor.putString(XMPP_RES_STR_KEY, res).apply();
+        }
+        return sharedPreferences.getString(XMPP_RES_STR_KEY, "");
     }
 
     public String getPassStringKey() {

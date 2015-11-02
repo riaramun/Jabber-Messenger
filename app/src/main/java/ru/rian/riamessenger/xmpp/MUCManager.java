@@ -63,7 +63,7 @@ public class MUCManager implements InvitationListener, StanzaListener {
         connection.addSyncStanzaListener(this, StanzaTypeFilter.PRESENCE);
     }
 
-    public void kickUserFromRoom(String threadId, String userJid) {
+  /*  public void kickUserFromRoom(String threadId, String userJid) {
         MultiUserChat multiUserChat = null;
         try {
             multiUserChat = manager.getMultiUserChat(JidCreate.entityBareFrom(threadId));
@@ -81,8 +81,7 @@ public class MUCManager implements InvitationListener, StanzaListener {
         } catch (SmackException.NoResponseException e) {
             e.printStackTrace();
         }
-
-    }
+    }*/
 
     public void inviteUserToRoom(String threadId, String userJid) {
         MultiUserChat multiUserChat = null;

@@ -21,6 +21,7 @@ import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.xmpp.SmackRosterManager;
 
 
 public class ContactsActivity extends TabsRiaBaseActivity {
@@ -127,7 +128,7 @@ public class ContactsActivity extends TabsRiaBaseActivity {
 
     public class SamplePagerAdapter extends FragmentPagerAdapter {
 
-         final String[] TITLES = {getString(R.string.robots), getString(R.string.groups), getString(R.string.contacts)};
+         final String[] TITLES = {SmackRosterManager.FIRST_SORTED_GROUP, getString(R.string.groups), getString(R.string.contacts)};
 
          final ArrayList<String> mTitles;
 
