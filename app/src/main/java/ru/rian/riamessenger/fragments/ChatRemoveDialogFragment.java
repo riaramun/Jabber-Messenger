@@ -16,12 +16,14 @@
 
 package ru.rian.riamessenger.fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import de.greenrobot.event.EventBus;
 import ru.rian.riamessenger.R;
@@ -31,10 +33,20 @@ public class ChatRemoveDialogFragment extends DialogFragment {
 
     static public final String TAG = ChatRemoveDialogFragment.class.getSimpleName();
     static public final String ARG_REMOVE_CHAT = "remove_chat_arg";
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setStyle(STYLE_NO_FRAME, R.style.Base_Theme_AppCompat_Light_Dialog_FixedSize);
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_remove_chat, container, false);
+
         rootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -51,5 +63,12 @@ public class ChatRemoveDialogFragment extends DialogFragment {
         });
         return rootView;
     }
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
 
+        // request a window without the title
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
 }

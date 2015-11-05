@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Delete;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
@@ -79,18 +80,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
     }
 
     public boolean tryGetRosterFromServer() {
-        if (xmppConnection.isAuthenticated() && !ActiveAndroid.inTransaction()) {
-            try {
-                roster.reload();
-                Log.i("RiaService", "tryGetRosterFromServer");
-            } catch (SmackException.NotLoggedInException e) {
-                e.printStackTrace();
-            } catch (SmackException.NotConnectedException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
         if (DbHelper.rosterTableIsNotEmpty()) {
 
             if (TextUtils.isEmpty(FIRST_SORTED_GROUP)) {
@@ -101,6 +91,18 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
             }
             return true;
         } else {
+            if (xmppConnection.isAuthenticated() && !ActiveAndroid.inTransaction()) {
+                try {
+                    roster.reload();
+                    Log.i("RiaService", "tryGetRosterFromServer");
+                } catch (SmackException.NotLoggedInException e) {
+                    e.printStackTrace();
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             return false;
         }
     }
@@ -130,10 +132,19 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
 
     void doSaveRosterToDb(final Roster roster) {
         if (ActiveAndroid.inTransaction()) return;
+
+        //clean data
+        try {
+            new Delete().from(RosterEntryModel.class).execute();
+            new Delete().from(RosterGroupModel.class).execute();
+        } catch (Exception e){
+
+        }
+
+
         Log.i("RiaService", "doSaveRosterToDb b");
         try {
             ActiveAndroid.beginTransaction();
-
             ArrayList rosterList = new ArrayList(roster.getGroups());
             Collections.sort(rosterList, new GroupSortBasedOnName());
             RosterGroup group = (RosterGroup) rosterList.get(0);
@@ -157,6 +168,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
 
                     rosterEntryModel.rosterGroupModel = rosterGroupModel;
                     rosterEntryModel.setPresence(roster.getPresence(rosterEntry.getJid()));
+
                     rosterEntryModel.save();
                 }
             }

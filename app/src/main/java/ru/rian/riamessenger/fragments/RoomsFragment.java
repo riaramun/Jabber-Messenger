@@ -20,7 +20,6 @@ package ru.rian.riamessenger.fragments;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,7 +32,6 @@ import android.view.ViewGroup;
 
 import com.activeandroid.Cache;
 import com.activeandroid.util.SQLiteUtils;
-import com.gc.materialdesign.views.ButtonFloat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,7 +41,6 @@ import ru.rian.riamessenger.AddNewRoomActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.adapters.cursor.RoomsAdapter;
 import ru.rian.riamessenger.common.DbColumns;
-import ru.rian.riamessenger.loaders.ChatsOnlineStatesLoader;
 import ru.rian.riamessenger.loaders.RoomsListenerLoader;
 import ru.rian.riamessenger.loaders.base.CursorRiaLoader;
 import ru.rian.riamessenger.model.ChatRoomModel;
@@ -51,22 +48,15 @@ import ru.rian.riamessenger.model.MessageContainer;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class RoomsFragment extends BaseTabFragment {
-     LinearLayoutManager linearLayoutManager;
+    LinearLayoutManager linearLayoutManager;
 
     @Bind(R.id.recycler_view)
 
     RecyclerView recyclerView;
 
-    @Bind(R.id.buttonFloat)
+    RoomsAdapter roomsAdapter;
 
-    ButtonFloat buttonFloat;
-     RoomsAdapter roomsAdapter;
 
-    @OnClick(R.id.buttonFloat)
-    void onClick() {
-        Intent intent = new Intent(getActivity(), AddNewRoomActivity.class);
-        getActivity().startActivity(intent);
-    }
     public void onEvent(ChatEvents chatEvents) {
         switch (chatEvents.getChatEventId()) {
             case ChatEvents.DO_REMOVE_CHAT:
@@ -78,7 +68,8 @@ public class RoomsFragment extends BaseTabFragment {
                 break;
         }
     }
-     final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+
+    final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             int childPosition = recyclerView.getChildAdapterPosition(v);
@@ -95,8 +86,8 @@ public class RoomsFragment extends BaseTabFragment {
         View rootView = inflater.inflate(R.layout.fragment_rooms, container, false);
         ButterKnife.bind(this, rootView);
 
-        buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
-        buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
+        //buttonFloat.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.floating_buton_color));
+        // buttonFloat.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_group_add_white));
         roomsAdapter = new RoomsAdapter(getActivity(), userAppPreference.getFirstSecondName(), roomsListClickListener, onLongClickListener);
 
         recyclerView.setAdapter(roomsAdapter);
@@ -105,7 +96,7 @@ public class RoomsFragment extends BaseTabFragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
-        recyclerView.setItemAnimator(itemAnimator);
+        //recyclerView.setItemAnimator(itemAnimator);
 
         return rootView;
     }
@@ -121,12 +112,11 @@ public class RoomsFragment extends BaseTabFragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_rooms, menu);
         //SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
-       // setSearchViewListenersAndStyle(searchView);
+        // setSearchViewListenersAndStyle(searchView);
     }
 
     public void onResume() {
         super.onResume();
-        buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
         int loaderId = FragIds.ROOMS_FRAGMENT.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
         //loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
@@ -147,6 +137,7 @@ public class RoomsFragment extends BaseTabFragment {
         }
         return null;
     }
+
     @Override
     public void onLoadFinished(Loader<CursorRiaLoader.LoaderResult<Cursor>> loader, CursorRiaLoader.LoaderResult<Cursor> data) {
         roomsAdapter.changeCursor(data.result);
@@ -154,6 +145,5 @@ public class RoomsFragment extends BaseTabFragment {
 
     @Override
     protected void rosterLoaded(boolean isLoaded) {
-        buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
     }
 }

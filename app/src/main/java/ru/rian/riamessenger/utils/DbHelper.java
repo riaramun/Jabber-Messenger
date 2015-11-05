@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ru.rian.riamessenger.RiaXmppService;
 import ru.rian.riamessenger.common.DbColumns;
 import ru.rian.riamessenger.common.RiaConstants;
 import ru.rian.riamessenger.model.ChatRoomModel;
@@ -84,7 +85,9 @@ public class DbHelper {
     public static boolean rosterTableIsNotEmpty() {
         List<RosterEntryModel> rosterEntryModels = new Select().from(RosterEntryModel.class).execute();
         final int currenUserEtriesNumber = 2;
-        return rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
+        boolean isNotEmpty = rosterEntryModels != null && rosterEntryModels.size() > currenUserEtriesNumber;
+        Log.i(RiaXmppService.TAG, "rosterTableIsNotEmpty " + isNotEmpty);
+        return isNotEmpty;
     }
 
     static public List<ChatRoomModel> getChatRooms() {

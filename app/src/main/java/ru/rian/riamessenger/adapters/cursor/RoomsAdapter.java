@@ -138,7 +138,7 @@ public class RoomsAdapter extends CursorRecyclerViewAdapter implements RosterEnt
                 break;
             case VIEW_TYPE_EMPTY_ITEM:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_chats_empty, parent, false);
-                itemView.setLayoutParams(new RecyclerView.LayoutParams(parent.getWidth(), parent.getHeight()));
+                itemView.setLayoutParams(new RecyclerView.LayoutParams(parent.getWidth(), parent.getHeight()-getActionBarHeight()));
                 vh = new EmptyViewHolder(itemView);
                 break;
         }

@@ -15,11 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.malinskiy.materialicons.widget.IconTextView;
 
 import javax.inject.Inject;
@@ -56,7 +56,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
 
     @Bind(R.id.progress_bar)
 
-    ProgressBarCircularIndeterminate progressBar;
+    ProgressBar progressBar;
 
     @Inject
     public

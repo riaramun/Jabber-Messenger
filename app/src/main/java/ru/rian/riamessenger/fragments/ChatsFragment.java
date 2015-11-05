@@ -17,11 +17,11 @@
 package ru.rian.riamessenger.fragments;
 
 
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,13 +33,10 @@ import android.view.ViewGroup;
 
 import com.activeandroid.Cache;
 import com.activeandroid.util.SQLiteUtils;
-import com.gc.materialdesign.views.ButtonFloat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
-import ru.rian.riamessenger.ContactsActivity;
 import ru.rian.riamessenger.R;
 import ru.rian.riamessenger.RiaApplication;
 import ru.rian.riamessenger.adapters.cursor.ChatsAdapter;
@@ -52,31 +49,31 @@ import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 
 public class ChatsFragment extends BaseTabFragment {
 
-     LinearLayoutManager linearLayoutManager;
+    LinearLayoutManager linearLayoutManager;
 
     @Bind(R.id.recycler_view)
 
     RecyclerView recyclerView;
 
-    @Bind(R.id.buttonFloat)
+    ChatsAdapter chatsAdapter;
 
-    ButtonFloat buttonFloat;
-
-    @OnClick(R.id.buttonFloat)
-    void onClick() {
-        Intent intent = new Intent(getActivity(), ContactsActivity.class);
-        getActivity().startActivity(intent);
-    }
-
-     ChatsAdapter chatsAdapter;
-
-     final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+    final View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             int childPosition = recyclerView.getChildAdapterPosition(v);
-            MessageContainer messageContainer = chatsAdapter.getItem(childPosition);
-            if (messageContainer != null)
-                EventBus.getDefault().post(new ChatEvents(ChatEvents.SHOW_REMOVE_DIALOG, messageContainer.threadID));
+            final MessageContainer messageContainer = chatsAdapter.getItem(childPosition);
+            if (messageContainer != null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
+                builder.setTitle(getString(R.string.destroyChatAlertTitle))
+                        .setPositiveButton(getString(R.string.destroyAlertConfirm), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                EventBus.getDefault().post(new ChatEvents(ChatEvents.DO_REMOVE_CHAT, messageContainer.threadID));
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.destroyAlertCancel), null)                        //Do nothing on no
+                        .show();
+            }
+            // EventBus.getDefault().post(new ChatEvents(ChatEvents.SHOW_REMOVE_DIALOG, messageContainer.threadID));
             return true;
         }
     };
@@ -99,8 +96,8 @@ public class ChatsFragment extends BaseTabFragment {
         ButterKnife.bind(this, rootView);
         RiaApplication.component().inject(this);
 
-        buttonFloat.setDrawableIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
-        buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
+        // buttonFloat.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
+        //  buttonFloat.setBackgroundColor(getResources().getColor(R.color.floating_buton_color));
 
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -111,7 +108,7 @@ public class ChatsFragment extends BaseTabFragment {
 
         recyclerView.setAdapter(chatsAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(itemAnimator);
+        //  recyclerView.setItemAnimator(itemAnimator);
 
         return rootView;
     }
@@ -127,7 +124,7 @@ public class ChatsFragment extends BaseTabFragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_chats, menu);
 //        SearchView searchView = (SearchView) menu.findItem(R.id.search_news).getActionView();
-  //      setSearchViewListenersAndStyle(searchView);
+        //      setSearchViewListenersAndStyle(searchView);
     }
 
     @Override
@@ -161,20 +158,16 @@ public class ChatsFragment extends BaseTabFragment {
 
     public void onResume() {
         super.onResume();
-        if(buttonFloat != null)
-        buttonFloat.setVisibility(userAppPreference.getConnectingStateKey() ? View.GONE : View.VISIBLE);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
     }
 
     @Override
     protected void rosterLoaded(boolean isLoaded) {
-        if(buttonFloat != null)
-        buttonFloat.setVisibility(isLoaded ? View.VISIBLE : View.GONE);
         int loaderId = FragIds.CHAT_USER_STATUS_LOADER_ID.ordinal();
         initOrRestartLoader(loaderId, getBundle(), this);
     }
 
 
-     static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
+    static final String ARG_JID_TO_EXCLUDE = "jid_to_exclude";
 }

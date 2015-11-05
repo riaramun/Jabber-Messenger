@@ -13,7 +13,7 @@
     <string name="authorizationFormMessage">Внутренний специализированный мессенджер с доступом только для сотрудников МИА Россия Сегодня</string>
     <string name="Sign_in">Войти</string>
     <string name="chats">Чаты</string>
-    <string name="rooms">Команты</string>
+    <string name="rooms">Комнаты</string>
     <string name="groups">Группы</string>
     <string name="contacts">Контакты</string>
     <string name="rosterUpdateMessage">Идет обновление списка..</string>

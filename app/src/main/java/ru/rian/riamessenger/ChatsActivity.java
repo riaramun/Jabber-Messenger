@@ -3,20 +3,22 @@ package ru.rian.riamessenger;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import org.jivesoftware.smack.packet.Presence;
 
@@ -26,6 +28,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import io.karim.MaterialTabs;
 import ru.rian.riamessenger.common.RiaEventBus;
@@ -62,7 +65,23 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     ViewPager viewPager;
 
     @Bind(R.id.progress_bar)
-    ProgressBarCircularIndeterminate progressBar;
+
+    ProgressBar progressBar;
+
+    @Bind(R.id.buttonFloat)
+    FloatingActionButton buttonFloat;
+
+    @OnClick(R.id.buttonFloat)
+    void onClick() {
+        Class activityClass;
+        if (viewPager.getCurrentItem() == 0) {
+            activityClass = ContactsActivity.class;
+        } else {
+            activityClass = AddNewRoomActivity.class;
+        }
+        Intent intent = new Intent(this, activityClass);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +89,8 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_chats);
         ButterKnife.bind(this);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -92,6 +112,14 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
             @Override
             public void onPageSelected(int position) {
                 removeFragment();
+                switch (position) {
+                    case 0:
+                        buttonFloat.setImageDrawable(ContextCompat.getDrawable(ChatsActivity.this, R.drawable.ic_add_white));
+                        break;
+                    case 1:
+                        buttonFloat.setImageDrawable(ContextCompat.getDrawable(ChatsActivity.this, R.drawable.ic_group_add_white));
+                        break;
+                }
             }
 
             @Override
@@ -110,7 +138,8 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
                 Bundle bundle = new Bundle();
                 bundle.putString(ChatRemoveDialogFragment.ARG_REMOVE_CHAT, chatEvents.getChatThreadId());
                 chatRemoveDialogFragment.setArguments(bundle);
-                addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container);
+               // addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container);
+                chatRemoveDialogFragment.show(getSupportFragmentManager(),ChatRemoveDialogFragment.TAG);
                 break;
         }
     }
@@ -143,7 +172,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
         } else {
             EventBus.getDefault().post(new RiaUpdateCurrentUserPresenceEvent(true));
         }
-        if(!TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
+        if (!TextUtils.isEmpty(userAppPreference.getUserStringKey())) {
             //it is possible that our roster is empty
             //in this case we init our loader when we get it
             Bundle bundle = new Bundle();

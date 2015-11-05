@@ -57,7 +57,7 @@ public class RobotsFragment extends BaseTabFragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         val itemAnimator = new DefaultItemAnimator();
-        recyclerView.setItemAnimator(itemAnimator);
+       // recyclerView.setItemAnimator(itemAnimator);
 
         return rootView;
     }

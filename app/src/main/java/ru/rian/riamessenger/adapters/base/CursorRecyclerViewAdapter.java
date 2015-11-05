@@ -20,6 +20,8 @@ package ru.rian.riamessenger.adapters.base;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.os.Build;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 
 /**
@@ -34,13 +36,13 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     protected final Context mContext;
 
-     Cursor mCursor;
+    Cursor mCursor;
 
-     boolean mDataValid;
+    boolean mDataValid;
 
-     int mRowIdColumn;
+    int mRowIdColumn;
 
-     final DataSetObserver mDataSetObserver;
+    final DataSetObserver mDataSetObserver;
 
     protected CursorRecyclerViewAdapter(Context context, Cursor cursor) {
         mContext = context;
@@ -108,7 +110,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
      * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
      * closed.
      */
-     Cursor swapCursor(Cursor newCursor) {
+    Cursor swapCursor(Cursor newCursor) {
         if (newCursor == mCursor) {
             return null;
         }
@@ -133,7 +135,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         return oldCursor;
     }
 
-     class NotifyingDataSetObserver extends DataSetObserver {
+    class NotifyingDataSetObserver extends DataSetObserver {
         @Override
         public void onChanged() {
             super.onChanged();
@@ -148,5 +150,11 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             notifyDataSetChanged();
             //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
         }
+    }
+
+    public int getActionBarHeight() {
+        int height;
+        height = ((AppCompatActivity) mContext).getSupportActionBar().getHeight();
+        return height;
     }
 }

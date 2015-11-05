@@ -29,7 +29,7 @@
         <item name="android:layout_width">32dp</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:visibility">invisible</item>
-        <item name="android:background">#1161BE</item>
+      <!--  <item name="android:background">#1161BE</item> -->
     </style>
 
     <style name="commonListItemStyle">
@@ -74,8 +74,7 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_marginRight">24dp</item>
         <item name="android:layout_marginBottom">24dp</item>
-        <item name="android:visibility">gone</item>
-        <item name="android:background">@color/floating_buton_color</item>
+        <item name="android:visibility">visible</item>
     </style>
 
     <style name="RecyclerViewCommon">
@@ -119,5 +118,12 @@
         <item name="android:gravity">center</item>
         <item name="android:text">""</item>
     </style>
-
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">@color/dark_blue</item>
+        <!-- Used for the title and text -->
+        <!--<item name="android:textColorPrimary">#FFFFFF</item>-->
+        <!-- Used for the background -->
+        <!--<item name="android:background">#4CAF50</item>-->
+    </style>
 </resources>

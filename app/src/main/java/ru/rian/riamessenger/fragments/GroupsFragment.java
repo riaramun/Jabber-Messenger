@@ -79,11 +79,11 @@ public class GroupsFragment extends BaseTabFragment {
 
         // Change animations are enabled by default since support-v7-recyclerview v22.
         // Need to disable them when using animation indicator.
-        animator.setSupportsChangeAnimations(false);
+        //animator.setSupportsChangeAnimations(false);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mWrappedAdapter);  // requires *wrapped* adapter
-        mRecyclerView.setItemAnimator(animator);
+       // mRecyclerView.setItemAnimator(animator);
         mRecyclerView.setHasFixedSize(false);
 
         // additional decorations
@@ -118,7 +118,7 @@ public class GroupsFragment extends BaseTabFragment {
         }
 
         if (mRecyclerView != null) {
-            mRecyclerView.setItemAnimator(null);
+           // mRecyclerView.setItemAnimator(null);
             mRecyclerView.setAdapter(null);
             mRecyclerView = null;
         }

@@ -1,33 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ContactsActivity">
 
-    <io.karim.MaterialTabs
-        android:id="@+id/material_tabs"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/dark_blue"
-        android:textColor="#b9d1ec"
-        android:textSize="14sp"
-        app:mtIndicatorColor="@color/yellow_color_normal"
-        app:mtIndicatorHeight="2dp"
-        app:mtPaddingMiddle="false"
-        app:mtSameWeightTabs="true"
-        app:mtTextAllCaps="true"
-        app:mtTextColorSelected="#ffffff" />
+        android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/material_tabs"
-        android:layout_weight="1"
-        tools:context=".ContactsActivity" />
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/dark_blue"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <io.karim.MaterialTabs
+                android:id="@+id/material_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/dark_blue"
+                android:textColor="#b9d1ec"
+                android:textSize="14sp"
+                app:mtIndicatorColor="@color/yellow_color_normal"
+                app:mtIndicatorHeight="2dp"
+                app:mtPaddingMiddle="false"
+                app:mtSameWeightTabs="true"
+                app:mtTextAllCaps="true"
+                app:mtTextColorSelected="#ffffff" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".ChatsActivity" />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <ProgressBar
         style="@style/RiaProgressBar"
         android:layout_centerInParent="true" />
 </RelativeLayout>

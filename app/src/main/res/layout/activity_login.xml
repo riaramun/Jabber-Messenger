@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,16 +8,39 @@
     <RelativeLayout
         android:id="@+id/russia_logo"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
-        android:layout_alignParentTop="true"
-        android:background="@color/dark_blue"
-        android:elevation="4dp">
+        android:layout_height="160dp">
 
-        <ImageView
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="40dp"
+                android:src="@color/dark_blue" />
+
+            <ImageView
+                android:paddingBottom="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/logo_russia" />
+        </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/lang_floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/logo_russia" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="24dp"
+            android:scaleType="center"
+            android:src="@drawable/ru"
+            app:backgroundTint="@color/transparent"
+            app:fabSize="mini" />
     </RelativeLayout>
 
     <ScrollView
@@ -37,9 +61,9 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_marginTop="64dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -50,8 +74,8 @@
                 <EditText
                     android:id="@+id/name_edit_text"
                     style="@style/CredentialsEditText"
-                    android:inputType="textCapWords"
-                    android:hint="@string/nicknamePrompt">
+                    android:hint="@string/nicknamePrompt"
+                    android:inputType="textCapWords">
 
                     <requestFocus />
                 </EditText>
@@ -97,7 +121,7 @@
 
             </LinearLayout>
 
-            <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+            <ProgressBar
                 style="@style/RiaProgressBar"
                 android:layout_marginTop="20dp" />
 
@@ -119,12 +143,12 @@
 
             <com.devspark.robototextview.widget.RobotoButton
                 android:id="@+id/enter_button"
-                android:enabled="false"
                 android:layout_width="@dimen/enter_button_width"
                 android:layout_height="@dimen/enter_button_height"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/btn_bg_selector"
+                android:enabled="false"
                 android:gravity="center"
                 android:text="@string/Sign_in"
                 android:textColor="@color/white"

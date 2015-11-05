@@ -57,14 +57,14 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:theme="@style/CustomActionBarTheme"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ContactsActivity"
             android:configChanges="orientation"
             android:label="@string/rooms"
             android:noHistory="true"
-            android:theme="@style/CustomActionBarTheme"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".AddNewRoomActivity"

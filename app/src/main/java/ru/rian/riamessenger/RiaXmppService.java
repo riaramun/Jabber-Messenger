@@ -303,10 +303,10 @@ public class RiaXmppService extends Service {
                             Log.i(TAG, "we haven't  got roster, try again");
                             NetworkStateManager.setCurrentUserPresence(new Presence(Presence.Type.unavailable), userAppPreference.getUserStringKey());
                         } else {
+                            connectionHandler.removeCallbacks(connectionRunnable);
                             mucManager.recoverRoomsFromDb();
                             Log.i(TAG, "everything is ok, we've got roster!!!");
                             setConnectingState(false);
-                            connectionHandler.removeCallbacks(connectionRunnable);
                         }
                         if (xmppMessageManager != null) {
                             xmppMessageManager.sendAllNotSentMessages();

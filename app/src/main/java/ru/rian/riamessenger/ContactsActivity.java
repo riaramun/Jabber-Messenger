@@ -5,10 +5,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -32,31 +32,31 @@ public class ContactsActivity extends TabsRiaBaseActivity {
      final String[] fragmentsTags = {BaseTabFragment.ROBOTS_FRAGMENT_TAG, BaseTabFragment.GROUPS_FRAGMENT_TAG, BaseTabFragment.CONTACTS_FRAGMENT_TAG};
 
     @Bind(R.id.progress_bar)
-
-    ProgressBarCircularIndeterminate progressBar;
+    ProgressBar progressBar;
 
     @Inject
-    public
     UserAppPreference userAppPreference;
 
     @Bind(R.id.material_tabs)
-
     MaterialTabs contactsMaterialTabs;
 
     @Bind(R.id.view_pager)
-
     ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         RiaBaseApplication.component().inject(this);
+        setContentView(R.layout.activity_contacts);
+        ButterKnife.bind(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        setContentView(R.layout.activity_contacts);
-        ButterKnife.bind(this);
 
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);

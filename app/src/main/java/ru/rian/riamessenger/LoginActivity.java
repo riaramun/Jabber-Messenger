@@ -2,15 +2,16 @@ package ru.rian.riamessenger;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.devspark.robototextview.widget.RobotoButton;
-import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import javax.inject.Inject;
 
@@ -31,6 +32,13 @@ import ru.rian.riamessenger.utils.SysUtils;
 public class LoginActivity extends RiaBaseActivity {
 
 
+    @Bind(R.id.lang_floating_button)
+    FloatingActionButton langFloatingButton;
+
+    @OnClick(R.id.lang_floating_button)
+    void onLangClick() {
+
+    }
 
     @Inject
     public UserAppPreference userAppPreference;
@@ -48,7 +56,7 @@ public class LoginActivity extends RiaBaseActivity {
     EditText passwordEditText;
 
     @Bind(R.id.progress_bar)
-    ProgressBarCircularIndeterminate progressBar;
+    ProgressBar progressBar;
 
     @OnTextChanged({R.id.login_edit_text, R.id.password_edit_text, R.id.name_edit_text})
     void onTextChanged(CharSequence text) {

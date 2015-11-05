@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.crashlytics.android.Crashlytics;
-import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import javax.inject.Inject;
 
@@ -27,7 +27,7 @@ public class StartActivity extends RiaBaseActivity {
 
     @Bind(R.id.progress_bar)
 
-    ProgressBarCircularIndeterminate progressBar;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
