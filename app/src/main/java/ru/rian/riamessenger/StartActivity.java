@@ -17,6 +17,7 @@ import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
+import ru.rian.riamessenger.utils.LocaleHelper;
 import ru.rian.riamessenger.utils.SysUtils;
 
 public class StartActivity extends RiaBaseActivity {
@@ -32,6 +33,7 @@ public class StartActivity extends RiaBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
         Fabric.with(this, new Crashlytics());
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_start);
@@ -59,7 +61,7 @@ public class StartActivity extends RiaBaseActivity {
         launchNextActivity(event.isAuth());
     }*/
 
-     void launchNextActivity(boolean isAuth) {
+    void launchNextActivity(boolean isAuth) {
         Class<?> cl = null;
         if (isAuth) {
             cl = ChatsActivity.class;
@@ -70,7 +72,7 @@ public class StartActivity extends RiaBaseActivity {
         startActivity(intent);
     }
 
-     void createRosterStoreFile() {
+    void createRosterStoreFile() {
         String path = getCacheDir().getAbsolutePath();
         userAppPreference.setRosterPathStringKey(path);
     }

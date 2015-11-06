@@ -42,6 +42,7 @@ import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.request.RoomMessageEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.LocaleHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.RiaTextUtils;
 import ru.rian.riamessenger.utils.ScreenUtils;
@@ -101,6 +102,7 @@ public class ConversationActivity extends RiaBaseActivity implements LoaderManag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
         setContentView(R.layout.activity_conversation);
 
         RiaBaseApplication.component().inject(this);

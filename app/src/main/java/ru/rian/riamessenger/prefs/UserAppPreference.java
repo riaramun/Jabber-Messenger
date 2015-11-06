@@ -62,10 +62,15 @@ public class UserAppPreference {
     public String getUniqueXmppRes() {
         String res = sharedPreferences.getString(XMPP_RES_STR_KEY, "");
         if (TextUtils.isEmpty(res)) {
-            res = "ria_mobile_andr_" + Math.random();
+            res = "ria_mobile_andr_" + randomWithRange(0, 10000);
             mEditor.putString(XMPP_RES_STR_KEY, res).apply();
         }
-        return sharedPreferences.getString(XMPP_RES_STR_KEY, "");
+        return res;
+    }
+
+    int randomWithRange(int min, int max) {
+        int range = Math.abs(max - min) + 1;
+        return (int) (Math.random() * range) + (min <= max ? min : max);
     }
 
     public String getPassStringKey() {

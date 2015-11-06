@@ -3,6 +3,8 @@ package ru.rian.riamessenger;
 import android.content.Context;
 import android.os.StrictMode;
 
+import ru.rian.riamessenger.utils.LocaleHelper;
+
 public class RiaApplication extends RiaBaseApplication {
 
     public static Context mContext = null;

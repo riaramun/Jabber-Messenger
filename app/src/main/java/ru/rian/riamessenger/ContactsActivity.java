@@ -1,5 +1,6 @@
 package ru.rian.riamessenger;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,7 @@ import ru.rian.riamessenger.common.TabsRiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.LocaleHelper;
 import ru.rian.riamessenger.xmpp.SmackRosterManager;
 
 
@@ -46,6 +48,7 @@ public class ContactsActivity extends TabsRiaBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
 
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_contacts);
@@ -53,15 +56,16 @@ public class ContactsActivity extends TabsRiaBaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        getSupportActionBar().setTitle(getString(R.string.chats));
         final int numberOfTabs = fragmentsIds.length;
         SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(), numberOfTabs);
         viewPager.setAdapter(adapter);
+        contactsMaterialTabs.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL), Typeface.NORMAL);
         contactsMaterialTabs.setViewPager(viewPager);
+
     }
 
 

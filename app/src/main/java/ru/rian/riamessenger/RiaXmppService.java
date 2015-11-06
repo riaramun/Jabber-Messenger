@@ -54,7 +54,7 @@ public class RiaXmppService extends Service {
     public static boolean IS_STARTED = false;
 
     final SendMsgBroadcastReceiver sendMsgBroadcastReceiver;
-
+    SmackConnectionListener smackConnectionListener;
     XMPPTCPConnection xmppConnection;
     SmackXmppConnection smackXmppConnection;
     SmackMessageManager xmppMessageManager;
@@ -83,7 +83,8 @@ public class RiaXmppService extends Service {
 
     void initSmackModules() {
         xmppConnection = new XMPPTCPConnection(SmackXmppConnection.getConfig(userAppPreference));
-        xmppConnection.addConnectionListener(new SmackConnectionListener(this, userAppPreference, sendMsgBroadcastReceiver));
+        smackConnectionListener = new SmackConnectionListener(this, userAppPreference, sendMsgBroadcastReceiver);
+        xmppConnection.addConnectionListener(smackConnectionListener);
         xmppConnection.setPacketReplyTimeout(RiaConstants.CONNECTING_TIME_OUT);
 
         smackRosterManager = new SmackRosterManager(this, userAppPreference, xmppConnection);
@@ -310,6 +311,11 @@ public class RiaXmppService extends Service {
                         }
                         if (xmppMessageManager != null) {
                             xmppMessageManager.sendAllNotSentMessages();
+                            try {
+                                smackConnectionListener.handleOfflineMessages(xmppConnection);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     } else {
                         xmppConnection.disconnect();

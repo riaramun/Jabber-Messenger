@@ -2,6 +2,7 @@ package ru.rian.riamessenger;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,7 @@ import ru.rian.riamessenger.riaevents.request.RiaUpdateCurrentUserPresenceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
 import ru.rian.riamessenger.riaevents.ui.ChatEvents;
 import ru.rian.riamessenger.utils.DbHelper;
+import ru.rian.riamessenger.utils.LocaleHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.ViewUtils;
 
@@ -86,6 +88,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
         RiaBaseApplication.component().inject(this);
         setContentView(R.layout.activity_chats);
         ButterKnife.bind(this);
@@ -127,6 +130,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
 
             }
         });
+        contactsMaterialTabs.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL), Typeface.NORMAL);
         contactsMaterialTabs.setViewPager(viewPager);
     }
 
@@ -138,8 +142,8 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
                 Bundle bundle = new Bundle();
                 bundle.putString(ChatRemoveDialogFragment.ARG_REMOVE_CHAT, chatEvents.getChatThreadId());
                 chatRemoveDialogFragment.setArguments(bundle);
-               // addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container);
-                chatRemoveDialogFragment.show(getSupportFragmentManager(),ChatRemoveDialogFragment.TAG);
+                // addFragment(chatRemoveDialogFragment, ChatRemoveDialogFragment.TAG, R.id.container);
+                chatRemoveDialogFragment.show(getSupportFragmentManager(), ChatRemoveDialogFragment.TAG);
                 break;
         }
     }
@@ -153,7 +157,7 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     }*/
 
     void logout() {
-        userAppPreference.setLoginStringKey("");
+        //userAppPreference.setLoginStringKey("");
         userAppPreference.setPassStringKey("");
         DbHelper.clearDb();
         RiaEventBus.post(RiaServiceEvent.RiaEvent.TO_SIGN_OUT);
@@ -237,11 +241,17 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
     }
 
     public void onEvent(final XmppErrorEvent xmppErrorEvent) {
-        int resId;
+        final int resId;
         switch (xmppErrorEvent.state) {
             case EAuthenticated:
                 resId = R.drawable.action_bar_status_online;
-                getSupportActionBar().setHomeAsUpIndicator(resId);
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSupportActionBar().setHomeAsUpIndicator(resId);
+                    }
+                });
+
                 break;
             case EDbUpdated:
                 Bundle bundle = new Bundle();
@@ -250,7 +260,13 @@ public class ChatsActivity extends TabsRiaBaseActivity implements LoaderManager.
                 break;
             case EAuthenticationFailed:
                 resId = R.drawable.action_bar_status_offline;
-                getSupportActionBar().setHomeAsUpIndicator(resId);
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSupportActionBar().setHomeAsUpIndicator(resId);
+                    }
+                });
+
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 break;

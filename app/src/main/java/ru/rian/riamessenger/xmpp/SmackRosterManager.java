@@ -85,7 +85,7 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
 
             if (TextUtils.isEmpty(FIRST_SORTED_GROUP)) {
                 List rosterList = DbHelper.getRosterGroupModels();
-                Collections.sort(rosterList, new GroupSortBasedOnName());
+                Collections.sort(rosterList, new GroupModelSortBasedOnName());
                 RosterGroupModel group = (RosterGroupModel) rosterList.get(0);
                 FIRST_SORTED_GROUP = group.name;
             }
@@ -195,7 +195,13 @@ public class SmackRosterManager implements RosterLoadedListener, RosterListener 
             return dd1.getName().compareToIgnoreCase(dd2.getName());//where uname is field name
         }
     }
-
+    class GroupModelSortBasedOnName implements Comparator {
+        public int compare(Object o1, Object o2) {
+            val dd1 = (RosterGroupModel) o1;// where FBFriends_Obj is your object class
+            val dd2 = (RosterGroupModel) o2;
+            return dd1.name.compareToIgnoreCase(dd2.name);//where uname is field name
+        }
+    }
     @Override
     public void entriesAdded(Collection<Jid> addresses) {
 

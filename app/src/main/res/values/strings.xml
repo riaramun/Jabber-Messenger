@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ar">Arabic</string>
+    <string name="es">Spanish</string>
+    <string name="en">English</string>
+    <string name="ru">Русский</string>
     <string name="app_name">РИА чат</string>
     <string name="new_message">New message</string>
     <string name="path_expand_less">M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z</string>

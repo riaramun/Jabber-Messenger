@@ -1,0 +1,63 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <RadioGroup
+        android:id="@+id/lang_change_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="false"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/ru"
+            android:button="@null"
+            android:drawableRight="@drawable/abc_btn_radio_material"
+            android:drawableLeft="@drawable/ru"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:drawablePadding="40dp"
+            android:checked="false"
+            android:text="@string/ru" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/en"
+            android:drawableRight="@drawable/abc_btn_radio_material"
+            android:button="@null"
+            android:drawableLeft="@drawable/en"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:drawablePadding="40dp"
+            android:checked="false"
+            android:text="@string/en" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/es"
+            android:button="@null"
+            android:drawableRight="@drawable/abc_btn_radio_material"
+            android:drawableLeft="@drawable/es"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:drawablePadding="40dp"
+            android:checked="false"
+            android:text="@string/es" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/ar"
+            android:button="@null"
+            android:drawableRight="@drawable/abc_btn_radio_material"
+            android:drawableLeft="@drawable/ar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:drawablePadding="40dp"
+            android:checked="false"
+            android:text="@string/ar" />
+
+    </RadioGroup>
+
+</FrameLayout>

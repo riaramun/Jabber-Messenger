@@ -36,6 +36,7 @@
                 app:mtPaddingMiddle="false"
                 app:mtSameWeightTabs="true"
                 app:mtTextAllCaps="true"
+
                 app:mtTextColorSelected="#ffffff" />
 
         </android.support.design.widget.AppBarLayout>

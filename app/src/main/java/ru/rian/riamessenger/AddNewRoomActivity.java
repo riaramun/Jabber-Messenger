@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.fragments.BaseTabFragment;
 import ru.rian.riamessenger.fragments.ContactsAddNewRoomFragment;
+import ru.rian.riamessenger.utils.LocaleHelper;
 
 
 public class AddNewRoomActivity extends RiaBaseActivity {
@@ -15,6 +16,7 @@ public class AddNewRoomActivity extends RiaBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getSupportActionBar().hide();
         setContentView(R.layout.activity_add_new_room);

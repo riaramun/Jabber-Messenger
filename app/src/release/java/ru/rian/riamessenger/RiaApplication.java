@@ -3,6 +3,8 @@ package ru.rian.riamessenger;
 import android.content.Context;
 import android.os.StrictMode;
 
+import ru.rian.riamessenger.utils.LocaleHelper;
+
 public class RiaApplication extends RiaBaseApplication {
 
      static Context mContext = null;
@@ -10,6 +12,7 @@ public class RiaApplication extends RiaBaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        LocaleHelper.onCreate(this);
         configureStrictMode();
         mContext = getApplicationContext();
     }

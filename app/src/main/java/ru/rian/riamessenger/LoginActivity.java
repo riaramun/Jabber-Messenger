@@ -3,12 +3,16 @@ package ru.rian.riamessenger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.devspark.robototextview.widget.RobotoButton;
@@ -22,9 +26,11 @@ import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import ru.rian.riamessenger.common.RiaBaseActivity;
 import ru.rian.riamessenger.common.RiaEventBus;
+import ru.rian.riamessenger.fragments.LangChangeDialog;
 import ru.rian.riamessenger.prefs.UserAppPreference;
 import ru.rian.riamessenger.riaevents.request.RiaServiceEvent;
 import ru.rian.riamessenger.riaevents.response.XmppErrorEvent;
+import ru.rian.riamessenger.utils.LocaleHelper;
 import ru.rian.riamessenger.utils.NetworkStateManager;
 import ru.rian.riamessenger.utils.ScreenUtils;
 import ru.rian.riamessenger.utils.SysUtils;
@@ -34,14 +40,28 @@ public class LoginActivity extends RiaBaseActivity {
 
     @Bind(R.id.lang_floating_button)
     FloatingActionButton langFloatingButton;
+    DialogFragment dialogFragment;
 
     @OnClick(R.id.lang_floating_button)
     void onLangClick() {
-
+        dialogFragment = LangChangeDialog.showDialog(LoginActivity.this, new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                String lang = LangChangeDialog.getStringResourceByName(checkedId, LoginActivity.this);
+                LocaleHelper.setLocale(LoginActivity.this, lang);
+                Log.i("", lang);
+                updateViews();
+                dialogFragment.dismiss();
+            }
+        });
     }
 
     @Inject
     public UserAppPreference userAppPreference;
+
+
+    @Bind(R.id.messager_info)
+    TextView messageInfo;
 
     @Bind(R.id.enter_button)
     RobotoButton enterButton;
@@ -77,9 +97,34 @@ public class LoginActivity extends RiaBaseActivity {
         requestLogin();
     }
 
+    void initFloatLangButtonWithImage() {
+        String lang = LocaleHelper.getLanguage(this);
+        int id = -1;
+        if (lang.equals("ru")) {
+            id = R.drawable.ru;
+        } else if (lang.equals("en")) {
+            id = R.drawable.en;
+        } else if (lang.equals("es")) {
+            id = R.drawable.es;
+        } else if (lang.equals("ar")) {
+            id = R.drawable.ar;
+        }
+        langFloatingButton.setImageDrawable(ContextCompat.getDrawable(this, id));
+    }
+
+    void updateViews() {
+        passwordEditText.setHint(getText(R.string.passwordPrompt));
+        loginEditText.setHint(getText(R.string.loginPrompt));
+        nameEditText.setHint(getText(R.string.nicknamePrompt));
+        enterButton.setText(getText(R.string.Sign_in));
+        messageInfo.setText(getText(R.string.authorizationFormMessage));
+        initFloatLangButtonWithImage();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.onCreate(this);
         RiaBaseApplication.component().inject(this);
 
         setContentView(R.layout.activity_login);
@@ -96,9 +141,11 @@ public class LoginActivity extends RiaBaseActivity {
         loginEditText.setText(login);
         passwordEditText.setText(pass);
 
+        initFloatLangButtonWithImage();
         // loginEditText.setText(RiaConstants.XMPP_LOGIN);
         // passwordEditText.setText(RiaConstants.XMPP_PASS);
     }
+
     /*@Override
     public void onConfigurationChanged(Configuration newConfig)
     {
@@ -122,7 +169,7 @@ public class LoginActivity extends RiaBaseActivity {
 
     void requestLogin() {
         ScreenUtils.hideKeyboard(this);
-        if(NetworkStateManager.isNetworkAvailable(this)) {
+        if (NetworkStateManager.isNetworkAvailable(this)) {
             if (progressBar.getVisibility() != View.VISIBLE && enterButton.isEnabled()) {
                 progressBar.setVisibility(View.VISIBLE);
 
